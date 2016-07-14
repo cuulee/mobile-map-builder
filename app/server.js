@@ -10,6 +10,7 @@ import { Log } from './models'
 
 const numCPUs = os.cpus().length
 
+
 if (cluster.isMaster) {
   // Fork workers.
   for (var i = 0; i < numCPUs; i++) {
@@ -19,6 +20,9 @@ if (cluster.isMaster) {
   cluster.on('exit', (worker, code, signal) => {
     console.log(`worker ${ worker.process.pid } died`)
   })
+  console.log(`HTTP [PORT]: ${ PORT }`)
+  console.log(`JWT [SECRET]: ${ SECRET }`)
+  console.log(`CPU Cores: ${ numCPUs }`)
 } else {
   // Set up Server
   const app = express()
@@ -53,5 +57,3 @@ if (cluster.isMaster) {
   // Start Listening
   app.listen(PORT)
 }
-console.log(`HTTP [PORT]: ${ PORT }`)
-console.log(`JWT [SECRET]: ${ SECRET }`)
