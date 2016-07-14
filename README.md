@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/dlcspm/data-generator.svg?branch=master)](https://travis-ci.org/dlcspm/data-generator)
+
 # Data Generator
 
 An application that helps you build data bundles (MBTiles & GeoPackages) from TileServers.
@@ -8,7 +10,7 @@ An application that helps you build data bundles (MBTiles & GeoPackages) from Ti
 
 ![image](https://cloud.githubusercontent.com/assets/550895/16849152/3a88b8ea-49c7-11e6-91bd-ead7c08569c4.png)
 
-- [SQLite Database Browser](http://sqlitebrowser.org/) - Previews MBTiles SQL tables & views. 
+- [SQLite Database Browser](http://sqlitebrowser.org/) - Previews MBTiles SQL tables & views.
 
 ![image](https://cloud.githubusercontent.com/assets/550895/16849211/77e61188-49c7-11e6-9a05-e42bc30d2fea.png)
 
@@ -31,7 +33,7 @@ An application that helps you build data bundles (MBTiles & GeoPackages) from Ti
 | tile_column | INT   | 156                              |
 | tile_row    | INT   | 85                               |
 | tile_id     | UUID  | 9e8b4eb18049340b2f116a7bb5e69349 |
-  
+
 **`metadata`**
 
 | Name        | Type        | Example                 |
