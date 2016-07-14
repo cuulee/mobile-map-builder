@@ -54,7 +54,7 @@ An application that helps you build data bundles (MBTiles & GeoPackages) from Ti
 ```sql
 CREATE VIEW tiles AS
   SELECT
-    map.zoom_level ASS zoom_level,
+    map.zoom_level AS zoom_level,
     map.tile_column AS tile_column,
     map.tile_row AS tile_row,
     images.tile_data AS tile_data
