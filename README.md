@@ -6,14 +6,14 @@ An application that helps you build data bundles (MBTiles & GeoPackages) from Ti
 
 ### Tables
 
-**images**
+**`images`**
 
 | Name      | Type | Example                          |
 |-----------|------|----------------------------------|
 | tile_data | BLOB | PNG/JPG image                    |
 | tile_id   | UUID | 9e8b4eb18049340b2f116a7bb5e69349 |
 
-**map**
+**`map`**
 
 | Name        | Type  | Example                          |
 |-------------|-------|----------------------------------|
@@ -22,7 +22,7 @@ An application that helps you build data bundles (MBTiles & GeoPackages) from Ti
 | tile_row    | INT   | 85                               |
 | tile_id     | UUID  | 9e8b4eb18049340b2f116a7bb5e69349 |
   
-**metadata**
+**`metadata`**
 
 | Name        | Type        | Example                 |
 |-------------|-------------|--------------------------|
@@ -37,7 +37,7 @@ An application that helps you build data bundles (MBTiles & GeoPackages) from Ti
 
 ### Views
 
-**tiles**
+**`tiles`**
 
 ```sql
 CREATE VIEW tiles AS
