@@ -37,6 +37,8 @@ An application that helps you build data bundles (MBTiles & GeoPackages) from Ti
 
 ### Views
 
+**tiles**
+
 ```sql
 CREATE VIEW tiles AS
   SELECT
@@ -47,4 +49,3 @@ CREATE VIEW tiles AS
   FROM map
   JOIN images ON images.tile_id = map.tile_id
 ```
-
