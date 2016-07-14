@@ -61,3 +61,28 @@ CREATE VIEW tiles AS
   FROM map
   JOIN images ON images.tile_id = map.tile_id
 ```
+
+### Testings
+
+Test server speeds & performance.
+
+```bash
+$ siege -c100 -t1M http://localhost:5000
+** SIEGE 3.0.8
+** Preparing 100 concurrent users for battle.
+The server is now under siege...^C
+Lifting the server siege...      done.
+
+Transactions:		        6891 hits
+Availability:		      100.00 %
+Elapsed time:		       34.39 secs
+Data transferred:	        2.04 MB
+Response time:		        0.01 secs
+Transaction rate:	      200.38 trans/sec
+Throughput:		        0.06 MB/sec
+Concurrency:		        1.16
+Successful transactions:        6891
+Failed transactions:	           0
+Longest transaction:	        0.25
+Shortest transaction:	        0.00
+```
