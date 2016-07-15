@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/dlcspm/data-generator.svg?branch=master)](https://travis-ci.org/dlcspm/data-generator)
+[![Coverage Status](https://coveralls.io/repos/github/dlcspm/data-generator/badge.svg?branch=master)](https://coveralls.io/github/dlcspm/data-generator?branch=master)
 
 # Data Generator
 
