@@ -1,28 +1,18 @@
-import os from 'os'
 import cluster from 'cluster'
 import express from 'express'
 import multer from 'multer'
 import bodyParser from 'body-parser'
-import mongoose from 'mongoose'
-import { PORT, SECRET } from './config'
+import { PORT, SECRET, CORES } from './config'
 import routes from './routes'
 import { Log } from './models'
 
-const numCPUs = os.cpus().length
-
-
 if (cluster.isMaster) {
   // Fork workers.
-  for (var i = 0; i < numCPUs; i++) {
-    cluster.fork()
-  }
+  for (var i = 0; i < CORES; i++) { cluster.fork() }
 
-  cluster.on('exit', (worker, code, signal) => {
-    console.log(`worker ${ worker.process.pid } died`)
-  })
   console.log(`HTTP [PORT]: ${ PORT }`)
   console.log(`JWT [SECRET]: ${ SECRET }`)
-  console.log(`CPU Cores: ${ numCPUs }`)
+  console.log(`CPU Cores: ${ CORES }`)
 } else {
   // Set up Server
   const app = express()
