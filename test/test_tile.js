@@ -1,13 +1,13 @@
 import test from 'ava'
 import Tile, { validateTile, parseSwitch, parseUrl } from '../app/utils/Tile'
 
-const X = 655
-const Y = 854
-const ZOOM = 15
-const SWITCH = 'abc'
-const SCHEME_NO_SWITCH = 'http://tile.openstreetmap.fr/hot/{zoom}/{x}/{y}.png'
-const SCHEME = 'http://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png'
-const TILE = { x: X, y: Y, zoom: ZOOM, scheme: SCHEME }
+export const X = 655
+export const Y = 854
+export const ZOOM = 15
+export const SWITCH = 'abc'
+export const SCHEME_NO_SWITCH = 'http://tile.openstreetmap.fr/hot/{zoom}/{x}/{y}.png'
+export const SCHEME = 'http://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png'
+export const TILE = { x: X, y: Y, zoom: ZOOM, scheme: SCHEME }
 
 test('Tile', t => {
   const tile = new Tile(TILE)
