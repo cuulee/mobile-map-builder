@@ -46,4 +46,5 @@ if (cluster.isMaster) {
 
   // Start Listening
   app.listen(PORT)
+  console.log(`Started worker ${ cluster.worker.id }`)
 }
