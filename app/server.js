@@ -1,8 +1,5 @@
-import os from 'os'
 import cluster from 'cluster'
 import { PORT, SECRET, CORES } from './config'
-
-const numCPUs = os.cpus().length
 
 if (cluster.isMaster) {
   // Fork workers.
@@ -20,7 +17,8 @@ if (cluster.isMaster) {
 
   console.log(`HTTP [PORT]: ${ PORT }`)
   console.log(`JWT [SECRET]: ${ SECRET }`)
-  console.log(`CPU Cores: ${ numCPUs }`)
+  console.log(`CPU Cores: ${ CORES }`)
+
 } else {
   require('./app')
 }
