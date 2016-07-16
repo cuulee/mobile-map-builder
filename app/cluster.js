@@ -4,7 +4,7 @@ import { PORT, SECRET, CORES } from './config'
 
 if (cluster.isMaster) {
   // Fork workers.
-  range(CORES, 0).map(i => cluster.fork())
+  range(CORES).map(() => cluster.fork())
 
   cluster.on('online', (worker) => {
     console.log(`[${ worker.process.pid }] Web Worker started ${ worker.id }`)
