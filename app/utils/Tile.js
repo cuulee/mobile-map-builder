@@ -1,10 +1,9 @@
 import uuid from 'node-uuid'
+import turf from 'turf'
 import { sample } from 'lodash'
-import GlobalMercator from './GlobalMercator'
+import { mercator } from './GlobalMercator'
 
-const mercator = new GlobalMercator()
-
-export const validateTile = ({x, y, zoom}) => {
+export const validateTile = ({ x, y, zoom }) => {
   let tileCountXY = Math.pow(2, zoom)
   if (x >= tileCountXY || y >= tileCountXY) {
     throw new Error('Illegal parameters for tile')
@@ -35,23 +34,38 @@ export const parseUrl = ({ scheme, x, y, zoom, quadkey }) => {
 }
 
 export default class Tile {
-  constructor({ x, y, zoom, scheme }) {
+  constructor({ x, y, zoom, scheme, quadkey }) {
+
+    if (typeof x == 'undefined') { throw new Error('[x] required') }
+    if (typeof y == 'undefined') { throw new Error('[y] required') }
+    if (typeof zoom == 'undefined') { throw new Error('[zoom] required') }
+    if (typeof scheme == 'undefined') { throw new Error('[scheme] required') }
+    if (typeof quadkey != 'undefined' && typeof quadkey != 'string') { throw new Error('[quadkey] must be string') }
+
+    // User Input
     this.x = x
     this.y = y
     this.zoom = zoom
     this.scheme = scheme
+    this.quadkey = quadkey
+
+    // Extra Properties
     this.bounds = mercator.GoogleLatLonBounds({ x: x, y: y, zoom: zoom })
+    this.geometry = turf.bboxPolygon(this.bounds).geometry
     this.quadkey = mercator.GoogleQuadKey({ x: x, y: y, zoom: zoom })
-    this.url = parseUrl(this)
+    this.url = parseUrl({ x: x, y: y, zoom: zoom, scheme: scheme, quadkey: this.quadkey })
     this.id = uuid.v4()
-    validateTile(this)
+
+    // Validation
+    validateTile({ x: x, y: y, zoom: zoom })
   }
 }
 
-
-/*if (require.main === module) {
-  const scheme = 'http://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png'
-  //const scheme = 'http://tile.openstreetmap.fr/hot/{quadkey}.png'
-  const tile = new Tile({ zoom: 13, x: 2389, y: 2946, scheme: scheme })
+if (require.main === module) {
+  /* istanbul ignore next */
+  const { GOOGLE } = require('../../test/globals')
+  /* istanbul ignore next */
+  const tile = new Tile(GOOGLE)
+  /* istanbul ignore next */
   console.log(tile)
-}*/
+}

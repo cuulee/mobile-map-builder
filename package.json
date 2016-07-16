@@ -31,7 +31,8 @@
     "mongoose": "^4.5.4",
     "multer": "^1.1.0",
     "node-uuid": "^1.4.7",
-    "sqlite3": "^3.1.4"
+    "sqlite3": "^3.1.4",
+    "turf": "^3.0.14"
   },
   "devDependencies": {
     "ava": "^0.15.2",
@@ -49,24 +50,15 @@
   },
   "ava": {
     "files": [
-      "test/*.js"
+      "test/test_*.js"
     ],
     "babel": "inherit",
     "concurrency": 5,
-    "failFast": false,
+    "failFast": true,
     "tap": true,
     "require": [
       "babel-register",
       "ignore-styles"
-    ]
-  },
-  "nyc": {
-    "include": [
-      "app"
-    ],
-    "exclude": [
-      "node_modules",
-      "build"
     ]
   }
 }

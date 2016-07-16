@@ -248,30 +248,43 @@ export default class GlobalMercator {
     return { x: x, y: y, zoom: zoom }
   }
 }
+export const mercator = new GlobalMercator()
 
-/*if (require.main === module) {
-  const LATLNG = { lat: 45, lng: -75 }
-  const METERS = { mx: -8348961.809495518, my: 5621521.486192067, zoom: 13 }
-  const PIXELS = { px: 611669.3333333334, py: 1342753.919383204, zoom: 13 }
-  const TILE = { tx: 2389, ty: 5245, zoom: 13 }
-  const GOOGLE = { x: 2389, y: 2946, zoom: 13 }
-  const QUADKEY = '0302321010121'
-
+if (require.main === module) {
+  /* istanbul ignore next */
+  const { LATLNG, METERS, PIXELS, TILE, GOOGLE, QUADKEY } = require('../../test/globals')
+  /* istanbul ignore next */
   const mercator = new GlobalMercator()
+  /* istanbul ignore next */
   console.log(mercator.LatLonToMeters(LATLNG))
+  /* istanbul ignore next */
   console.log(mercator.MetersToPixels(METERS))
+  /* istanbul ignore next */
   console.log(mercator.MetersToLatLon(METERS))
+  /* istanbul ignore next */
   console.log(mercator.PixelsToTile(PIXELS))
+  /* istanbul ignore next */
   console.log(mercator.MetersToTile(METERS))
+  /* istanbul ignore next */
   console.log(mercator.PixelsToMeters(PIXELS))
+  /* istanbul ignore next */
   console.log(mercator.TileBounds(TILE))
+  /* istanbul ignore next */
   console.log(mercator.TileQuadKey(TILE))
+  /* istanbul ignore next */
   console.log(mercator.QuadKeyGoogle(QUADKEY))
+  /* istanbul ignore next */
   console.log(mercator.QuadKeyTile(QUADKEY))
+  /* istanbul ignore next */
   console.log(mercator.TileGoogle(TILE))
+  /* istanbul ignore next */
   console.log(mercator.GoogleTile(GOOGLE))
+  /* istanbul ignore next */
   console.log(mercator.GoogleBounds(GOOGLE))
+  /* istanbul ignore next */
   console.log(mercator.GoogleLatLonBounds(GOOGLE))
+  /* istanbul ignore next */
   console.log(mercator.TileLatLonBounds(TILE))
+  /* istanbul ignore next */
   console.log(mercator.GoogleQuadKey(GOOGLE))
-}*/
+}
