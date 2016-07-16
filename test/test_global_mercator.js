@@ -65,7 +65,7 @@ test('TileLatLonBounds', t => {
 })
 
 test('GoogleTile', t => {
-  let google = mercator.GoogleTile(TILE)
+  let google = mercator.TileGoogle(TILE)
   t.deepEqual(google, GOOGLE)
 })
 
@@ -74,11 +74,16 @@ test('TileQuadKey', t => {
   t.deepEqual(quadkee, QUADKEY)
 })
 
-test('QuadKeyGoogleTile', t => {
-  let tile = mercator.QuadKeyGoogleTile(QUADKEY)
-  t.deepEqual(tile, GOOGLE)
+test('QuadKeyGoogle', t => {
+  let google = mercator.QuadKeyGoogle(QUADKEY)
+  t.deepEqual(google, GOOGLE)
 })
 
-test('Throws Error QuadKeyGoogleTile', t => {
-  t.throws(() => mercator.QuadKeyGoogleTile(QUADKEY_BAD), 'Invalid QuadKey digit sequence')
+test('QuadKeyTile', t => {
+  let tile = mercator.QuadKeyTile(QUADKEY)
+  t.deepEqual(tile, TILE)
+})
+
+test('Throws Error QuadKeyTile', t => {
+  t.throws(() => mercator.QuadKeyTile(QUADKEY_BAD), 'Invalid QuadKey digit sequence')
 })

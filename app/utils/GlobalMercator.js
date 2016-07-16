@@ -124,16 +124,29 @@ export default class GlobalMercator {
     }
   }
 
-  GoogleTile({ tx, ty, zoom }) {
+  TileGoogle({ tx, ty, zoom }) {
     // Converts TMS tile coordinates to Google Tile coordinates
 
     if (typeof tx == 'undefined') { throw new Error('[tx] required') }
     if (typeof ty == 'undefined') { throw new Error('[ty] required') }
     if (typeof zoom == 'undefined') { throw new Error('[zoom] required') }
 
-    let x = tx
-    let y = (Math.pow(2, zoom) - 1) - ty
-    return { gx: x, gy: y, zoom: zoom }
+    let gx = tx
+    let gy = (Math.pow(2, zoom) - 1) - ty
+    return { gx: gx, gy: gy, zoom: zoom }
+  }
+
+  GoogleTile({ gx, gy, zoom }) {
+    // Converts Google Tile coordinates to TMS tile coordinates
+
+    if (typeof gx == 'undefined') { throw new Error('[gx] required') }
+    if (typeof gy == 'undefined') { throw new Error('[gy] required') }
+    if (typeof zoom == 'undefined') { throw new Error('[zoom] required') }
+
+    let tx = gx
+    let ty = Math.pow(2, zoom) - gy - 1
+
+    return { tx: tx, ty: ty, zoom: zoom }
   }
 
   TileQuadKey({ tx, ty, zoom }) {
@@ -158,8 +171,17 @@ export default class GlobalMercator {
     return quadKey
   }
 
-  QuadKeyGoogleTile(quadKey) {
-    // Converts TMS tile coordinates to Microsoft QuadKey
+  QuadKeyTile(quadKey) {
+    // Converts QuadKey to TMS tile coordinates
+
+    if (typeof quadKey !== 'string') { throw new Error('[quadKey] must be string') }
+
+    let google = this.QuadKeyGoogle(quadKey)
+    return this.GoogleTile(google)
+  }
+
+  QuadKeyGoogle(quadKey) {
+    // Converts QuadKey to Google tile
 
     if (typeof quadKey !== 'string') { throw new Error('[quadKey] must be string') }
 
@@ -190,12 +212,13 @@ export default class GlobalMercator {
     return { gx: gx, gy: gy, zoom: zoom }
   }
 }
-/*
-if (require.main === module) {
+
+/*if (require.main === module) {
   const LATLNG = { lat: 45, lng: -75 }
   const METERS = { mx: -8348961.809495518, my: 5621521.486192067, zoom: 13 }
   const PIXELS = { px: 611669.3333333334, py: 1342753.919383204, zoom: 13 }
   const TILE = { tx: 2389, ty: 5245, zoom: 13 }
+  const GOOGLE = { gx: 2389, gy: 2946, zoom: 13 }
   const QUADKEY = '0302321010121'
 
   const mercator = new GlobalMercator()
@@ -207,8 +230,9 @@ if (require.main === module) {
   console.log(mercator.PixelsToMeters(PIXELS))
   console.log(mercator.TileBounds(TILE))
   console.log(mercator.TileLatLonBounds(TILE))
-  console.log(mercator.GoogleTile(TILE))
   console.log(mercator.TileQuadKey(TILE))
-  console.log(mercator.QuadKeyGoogleTile(QUADKEY))
-}
-*/
+  console.log(mercator.QuadKeyGoogle(QUADKEY))
+  console.log(mercator.QuadKeyTile(QUADKEY))
+  console.log(mercator.TileGoogle(TILE))
+  console.log(mercator.GoogleTile(GOOGLE))
+}*/
