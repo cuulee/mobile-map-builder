@@ -87,3 +87,8 @@ Failed transactions:	           0
 Longest transaction:	        0.25
 Shortest transaction:	        0.00
 ```
+
+### References
+
+- http://www.maptiler.org/google-maps-coordinates-tile-bounds-projection
+- https://msdn.microsoft.com/en-us/library/bb259689.aspx

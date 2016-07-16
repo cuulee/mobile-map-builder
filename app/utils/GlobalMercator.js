@@ -1,10 +1,4 @@
-import _ from 'lodash'
-
-/*
-Credits to:
-
-http://www.maptiler.org/google-maps-coordinates-tile-bounds-projection/
-*/
+import { range } from 'lodash'
 
 export default class GlobalMercator {
   constructor({ tileSize=256 } = {}) {
@@ -152,7 +146,7 @@ export default class GlobalMercator {
     let quadKey = ''
     ty = (Math.pow(2, zoom) - 1) - ty
 
-    _.range(zoom, 0, -1).map(i => {
+    range(zoom, 0, -1).map(i => {
       let digit = 0
       let mask = 1 << (i - 1)
 
@@ -166,8 +160,6 @@ export default class GlobalMercator {
 
   QuadKeyGoogleTile(quadKey) {
     // Converts TMS tile coordinates to Microsoft QuadKey
-    // Credits to:
-    // https://msdn.microsoft.com/en-us/library/bb259689.aspx
 
     if (typeof quadKey !== 'string') { throw new Error('[quadKey] must be string') }
 
@@ -175,7 +167,7 @@ export default class GlobalMercator {
     let gy = 0
     let zoom = quadKey.length
 
-    _.range(zoom, 0, -1).map(i => {
+    range(zoom, 0, -1).map(i => {
       let mask = 1 << (i - 1)
 
       switch(parseInt(quadKey[zoom - i])) {
