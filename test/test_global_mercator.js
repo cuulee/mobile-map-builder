@@ -8,17 +8,21 @@ const METERS = { mx: -8348961.809495518, my: 5621521.486192067, zoom: 13 }
 const METERS_OFFSET = { mx: -8348961.809495518, my: 5621521.486192066, zoom: 13 }
 const PIXELS = { px: 611669.3333333334, py: 1342753.919383204, zoom: 13 }
 const TILE = { tx: 2389, ty: 5245, zoom: 13 }
-const METERS_BOUNDS = {
-  southwest: { mx: -8350592.466098936, my: 5620873.31197872, zoom: 13 },
-  northeast: { mx: -8345700.496288683, my: 5625765.281788971, zoom: 13 }
-}
-const LATLNG_BOUNDS = {
-  southwest: { lat: 44.99588261816546, lng: -75.01464843750001, zoom: 13 },
-  northeast: { lat: 45.02695045318546, lng: -74.97070312499999, zoom: 13 }
-}
-const GOOGLE = { gx: 2389, gy: 2946, zoom: 13 }
-const QUADKEY = '0302321010121'
-const QUADKEY_BAD = '030486861'
+const METERS_BOUNDS = [
+  -8350592.466098936,
+  5620873.31197872,
+  -8345700.496288683,
+  5625765.281788971
+]
+const LATLNG_BOUNDS = [
+  -75.01464843750001,
+  44.99588261816546,
+  -74.97070312499999,
+  45.02695045318546
+]
+const GOOGLE = { x: 2389, y: 2946, zoom: 13 }
+const QUADKEY = { quadkey: '0302321010121' }
+const QUADKEY_BAD = { quadkey: '030486861' }
 
 test('Global Mercator', t => {
   t.true(!!mercator)
