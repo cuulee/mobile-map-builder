@@ -1,9 +1,8 @@
-import { range } from 'lodash'
 import cluster from 'cluster'
+import { range } from 'lodash'
 import { PORT, SECRET, CORES } from './config'
 
 if (cluster.isMaster) {
-  // Fork workers.
   range(CORES).map(() => cluster.fork())
 
   cluster.on('online', (worker) => {
@@ -11,6 +10,6 @@ if (cluster.isMaster) {
   })
   console.log(`HTTP [PORT]: ${ PORT }`)
   console.log(`JWT [SECRET]: ${ SECRET }`)
-  console.log(`CPU Cores: ${ CORES }`)
+  console.log(`CPU [CORES]: ${ CORES }`)
 
 } else { require('./server') }
