@@ -4,5 +4,5 @@ import { GOOGLE } from './globals'
 
 test('GeoJSON', async t => {
   const geojson = new GeoJSON(GOOGLE)
-  t.pass()
+  t.pass(!!geojson)
 })
