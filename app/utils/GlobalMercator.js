@@ -166,6 +166,8 @@ export default class GlobalMercator {
 
   QuadKeyGoogleTile(quadKey) {
     // Converts TMS tile coordinates to Microsoft QuadKey
+    // Credits to:
+    // https://msdn.microsoft.com/en-us/library/bb259689.aspx
 
     if (typeof quadKey !== 'string') { throw new Error('[quadKey] must be string') }
 
