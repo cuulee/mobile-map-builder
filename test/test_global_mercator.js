@@ -17,7 +17,8 @@ const LATLNG_BOUNDS = {
   northeast: { lat: 45.02695045318546, lng: -74.97070312499999, zoom: 13 }
 }
 const GOOGLE = { gx: 2389, gy: 2946, zoom: 13 }
-const QUADTREE = '0302321010121'
+const QUADKEY = '0302321010121'
+const QUADKEY_BAD = '030486861'
 
 test('Global Mercator', t => {
   t.true(!!mercator)
@@ -68,7 +69,16 @@ test('GoogleTile', t => {
   t.deepEqual(google, GOOGLE)
 })
 
-test('QuadTree', t => {
-  let quadtree = mercator.QuadTree(TILE)
-  t.deepEqual(quadtree, QUADTREE)
+test('TileQuadKey', t => {
+  let quadkee = mercator.TileQuadKey(TILE)
+  t.deepEqual(quadkee, QUADKEY)
+})
+
+test('QuadKeyGoogleTile', t => {
+  let tile = mercator.QuadKeyGoogleTile(QUADKEY)
+  t.deepEqual(tile, GOOGLE)
+})
+
+test('Throws Error QuadKeyGoogleTile', t => {
+  t.throws(() => mercator.QuadKeyGoogleTile(QUADKEY_BAD), 'Invalid QuadKey digit sequence')
 })

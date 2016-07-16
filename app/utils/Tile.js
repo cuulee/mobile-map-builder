@@ -42,9 +42,10 @@ export default class Tile {
   }
 }
 
-/* istanbul ignore if */
+/*
 if (require.main === module) {
   const scheme = 'http://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png'
   const tile = new Tile({ zoom: 15, x: 83, y: 120, scheme: scheme })
   console.log(tile)
 }
+*/
