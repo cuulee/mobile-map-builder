@@ -97,6 +97,7 @@ export default class GlobalMercator {
     return { tx: tx, ty: ty, zoom: zoom }
   }
 
+
   TileBounds({ tx, ty, zoom }) {
     // Returns bounds of the given tile in EPSG:900913 coordinates
 
@@ -110,6 +111,7 @@ export default class GlobalMercator {
     return [ min.mx, min.my, max.mx, max.my ]
   }
 
+
   TileLatLonBounds({ tx, ty, zoom }) {
     // Returns bounds of the given tile in latutude/longitude using WGS84 datum
 
@@ -122,6 +124,28 @@ export default class GlobalMercator {
     let max = this.MetersToLatLon({ mx: bounds[2], my: bounds[3] })
 
     return [ min.lng, min.lat, max.lng, max.lat ]
+  }
+
+  GoogleBounds({ x, y, zoom }) {
+    // Converts Google tile system in Mercator bounds (meters)
+
+    if (typeof x == 'undefined') { throw new Error('[x] required') }
+    if (typeof y == 'undefined') { throw new Error('[y] required') }
+    if (typeof zoom == 'undefined') { throw new Error('[zoom] required') }
+
+    let tile = this.GoogleTile({ x: x, y: y, zoom: zoom })
+    return this.TileBounds(tile)
+  }
+
+  GoogleLatLonBounds({ x, y, zoom }) {
+    // Converts Google tile system in LatLng bounds (degrees)
+
+    if (typeof x == 'undefined') { throw new Error('[x] required') }
+    if (typeof y == 'undefined') { throw new Error('[y] required') }
+    if (typeof zoom == 'undefined') { throw new Error('[zoom] required') }
+
+    let tile = this.GoogleTile({ x: x, y: y, zoom: zoom })
+    return this.TileLatLonBounds(tile)
   }
 
   TileGoogle({ tx, ty, zoom }) {
@@ -150,6 +174,17 @@ export default class GlobalMercator {
     return { tx: tx, ty: ty, zoom: zoom }
   }
 
+  GoogleQuadKey({ x, y, zoom }) {
+    // Converts Google Tile coordinates to Microsoft QuadKey
+
+    if (typeof x == 'undefined') { throw new Error('[x] required') }
+    if (typeof y == 'undefined') { throw new Error('[y] required') }
+    if (typeof zoom == 'undefined') { throw new Error('[zoom] required') }
+
+    let tile = this.GoogleTile({ x: x, y: y, zoom: zoom })
+    return this.TileQuadKey(tile)
+  }
+
   TileQuadKey({ tx, ty, zoom }) {
     // Converts TMS tile coordinates to Microsoft QuadKey
 
@@ -168,24 +203,22 @@ export default class GlobalMercator {
       quadkey = quadkey.concat(digit)
     })
 
-    return { quadkey: quadkey }
+    return quadkey
   }
 
-  QuadKeyTile({ quadkey }) {
+  QuadKeyTile(quadkey) {
     // Converts QuadKey to TMS tile coordinates
 
-    if (typeof quadkey == 'undefined') { throw new Error('[quadkey] required') }
     if (typeof quadkey !== 'string') { throw new Error('[quadkey] must be string') }
 
-    let google = this.QuadKeyGoogle({ quadkey: quadkey })
+    let google = this.QuadKeyGoogle(quadkey)
 
     return this.GoogleTile(google)
   }
 
-  QuadKeyGoogle({ quadkey }) {
+  QuadKeyGoogle(quadkey) {
     // Converts QuadKey to Google tile
 
-    if (typeof quadkey == 'undefined') { throw new Error('[quadkey] required') }
     if (typeof quadkey !== 'string') { throw new Error('[quadkey] must be string') }
 
     let x = 0
@@ -222,7 +255,7 @@ export default class GlobalMercator {
   const PIXELS = { px: 611669.3333333334, py: 1342753.919383204, zoom: 13 }
   const TILE = { tx: 2389, ty: 5245, zoom: 13 }
   const GOOGLE = { x: 2389, y: 2946, zoom: 13 }
-  const QUADKEY = { quadkey: '0302321010121' }
+  const QUADKEY = '0302321010121'
 
   const mercator = new GlobalMercator()
   console.log(mercator.LatLonToMeters(LATLNG))
@@ -232,10 +265,13 @@ export default class GlobalMercator {
   console.log(mercator.MetersToTile(METERS))
   console.log(mercator.PixelsToMeters(PIXELS))
   console.log(mercator.TileBounds(TILE))
-  console.log(mercator.TileLatLonBounds(TILE))
   console.log(mercator.TileQuadKey(TILE))
   console.log(mercator.QuadKeyGoogle(QUADKEY))
   console.log(mercator.QuadKeyTile(QUADKEY))
   console.log(mercator.TileGoogle(TILE))
   console.log(mercator.GoogleTile(GOOGLE))
+  console.log(mercator.GoogleBounds(GOOGLE))
+  console.log(mercator.GoogleLatLonBounds(GOOGLE))
+  console.log(mercator.TileLatLonBounds(TILE))
+  console.log(mercator.GoogleQuadKey(GOOGLE))
 }*/

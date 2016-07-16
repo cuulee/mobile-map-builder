@@ -8,21 +8,21 @@ const METERS = { mx: -8348961.809495518, my: 5621521.486192067, zoom: 13 }
 const METERS_OFFSET = { mx: -8348961.809495518, my: 5621521.486192066, zoom: 13 }
 const PIXELS = { px: 611669.3333333334, py: 1342753.919383204, zoom: 13 }
 const TILE = { tx: 2389, ty: 5245, zoom: 13 }
-const METERS_BOUNDS = [
+const BOUNDS = [
   -8350592.466098936,
   5620873.31197872,
   -8345700.496288683,
   5625765.281788971
 ]
-const LATLNG_BOUNDS = [
+const BOUNDS_LATLNG = [
   -75.01464843750001,
   44.99588261816546,
   -74.97070312499999,
   45.02695045318546
 ]
 const GOOGLE = { x: 2389, y: 2946, zoom: 13 }
-const QUADKEY = { quadkey: '0302321010121' }
-const QUADKEY_BAD = { quadkey: '030486861' }
+const QUADKEY = '0302321010121'
+const QUADKEY_BAD = '030486861'
 
 test('Global Mercator', t => {
   t.true(!!mercator)
@@ -60,12 +60,12 @@ test('PixelsToMeters', t => {
 
 test('TileBounds', t => {
   let bounds = mercator.TileBounds(TILE)
-  t.deepEqual(bounds, METERS_BOUNDS)
+  t.deepEqual(bounds, BOUNDS)
 })
 
 test('TileLatLonBounds', t => {
   let bounds = mercator.TileLatLonBounds(TILE)
-  t.deepEqual(bounds, LATLNG_BOUNDS)
+  t.deepEqual(bounds, BOUNDS_LATLNG)
 })
 
 test('GoogleTile', t => {
@@ -90,4 +90,19 @@ test('QuadKeyTile', t => {
 
 test('Throws Error QuadKeyTile', t => {
   t.throws(() => mercator.QuadKeyTile(QUADKEY_BAD), 'Invalid QuadKey digit sequence')
+})
+
+test('GoogleBounds', t => {
+  let bounds = mercator.GoogleBounds(GOOGLE)
+  t.deepEqual(bounds, BOUNDS)
+})
+
+test('GoogleLatLngBounds', t => {
+  let bounds = mercator.GoogleLatLonBounds(GOOGLE)
+  t.deepEqual(bounds, BOUNDS_LATLNG)
+})
+
+test('GoogleQuadKey', t => {
+  let quadkey = mercator.GoogleQuadKey(GOOGLE)
+  t.deepEqual(quadkey, QUADKEY)
 })
