@@ -12,7 +12,7 @@ const TILE = { x: X, y: Y, zoom: ZOOM, quadkey: '012123', scheme: SCHEME }
 
 test('Tile', t => {
   const tile = new Tile(TILE)
-  let re = new RegExp(`http://tile-[${ SWITCH }].openstreetmap.fr/hot/${ ZOOM }/${ X }/${ Y }.png`)
+  const re = new RegExp(`http://tile-[${ SWITCH }].openstreetmap.fr/hot/${ ZOOM }/${ X }/${ Y }.png`)
   t.deepEqual(tile.x, X)
   t.deepEqual(tile.y, Y)
   t.deepEqual(tile.zoom, ZOOM)
@@ -21,27 +21,27 @@ test('Tile', t => {
 })
 
 test('Parse Switch', t => {
-  let re = new RegExp(SCHEME.replace(/{switch:[a-z,\d]*}/i, `[${ SWITCH }]`))
-  let url = parseSwitch(SCHEME)
+  const re = new RegExp(SCHEME.replace(/{switch:[a-z,\d]*}/i, `[${ SWITCH }]`))
+  const url = parseSwitch(SCHEME)
   t.true(!!url.match(re))
 })
 
 test('Parse Switch - No Switch', t => {
-  let re = new RegExp(SCHEME_NO_SWITCH)
-  let url = parseSwitch(SCHEME_NO_SWITCH)
+  const re = new RegExp(SCHEME_NO_SWITCH)
+  const url = parseSwitch(SCHEME_NO_SWITCH)
   t.true(!!url.match(re))
 })
 
 test('Parse Url', t => {
-  let re = new RegExp(`http://tile-[${ SWITCH }].openstreetmap.fr/hot/${ ZOOM }/${ X }/${ Y }.png`)
-  let url = parseUrl(TILE)
+  const re = new RegExp(`http://tile-[${ SWITCH }].openstreetmap.fr/hot/${ ZOOM }/${ X }/${ Y }.png`)
+  const url = parseUrl(TILE)
   t.true(!!url.match(re))
 })
 
 test('Parse Url - QuadKey', t => {
-  let tile = TILE
+  const tile = TILE
   tile.scheme = SCHEME_QUADKEY
-  let url = parseUrl(tile)
+  const url = parseUrl(tile)
   t.true(!!url)
 })
 
@@ -50,6 +50,16 @@ test('Validate Tile', t => {
 })
 
 test('Throw Error Tile', t => {
-  let tile = {x: X, y: Y, zoom: 2, scheme: SCHEME}
+  const tile = {x: X, y: Y, zoom: 2, scheme: SCHEME}
   t.throws(() => validateTile(tile), 'Illegal parameters for tile')
+})
+
+test('map', t => {
+  const tile = new Tile(TILE)
+  tile.map(i => t.true(!!i))
+})
+
+test('forEach', t => {
+  const tile = new Tile(TILE)
+  tile.forEach(i => t.true(!!i))
 })

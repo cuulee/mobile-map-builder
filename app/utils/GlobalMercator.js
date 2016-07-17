@@ -1,9 +1,10 @@
 import { range } from 'lodash'
 
 export default class GlobalMercator {
+  name = 'GlobalMercator'
+
   constructor({ tileSize=256 } = {}) {
     // Initialize the TMS Global Mercator pyramid
-
     this.tileSize = tileSize
     this.initialResolution = 2 * Math.PI * 6378137 / this.tileSize
     this.originShift = 2 * Math.PI * 6378137 / 2.0

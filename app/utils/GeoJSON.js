@@ -2,8 +2,10 @@ import { omit } from 'lodash'
 import Tile from './Tile'
 
 export default class GeoJSON {
-  constructor({ x, y, zoom, scheme, quadkey }) {
+  name = 'GeoJSON'
 
+  constructor({ x, y, zoom, scheme, quadkey }) {
+    // Validate Types
     if (typeof x == 'undefined') { throw new Error('[x] required') }
     if (typeof y == 'undefined') { throw new Error('[y] required') }
     if (typeof zoom == 'undefined') { throw new Error('[zoom] required') }
@@ -22,9 +24,9 @@ export default class GeoJSON {
 
 if (require.main === module) {
   /* istanbul ignore next */
-  const scheme = 'http://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png'
+  const { GOOGLE } = require('../../test/globals')
   /* istanbul ignore next */
-  const geojson = new GeoJSON({ zoom: 13, x: 2389, y: 2946, scheme: scheme, quadkey: '0302321010121' })
+  const geojson = new GeoJSON(GOOGLE)
   /* istanbul ignore next */
   console.log(geojson)
 }

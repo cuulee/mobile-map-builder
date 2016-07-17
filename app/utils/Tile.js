@@ -3,6 +3,13 @@ import turf from 'turf'
 import { sample } from 'lodash'
 import { mercator } from './GlobalMercator'
 
+/**
+ * Validate Tile
+ * @param  {number} x - Tile X
+ * @param  {number} y - Tile Y
+ * @param  {number} zoom - Zoom Level
+ * @return {bool} True if valid
+ */
 export const validateTile = ({ x, y, zoom }) => {
   let tileCountXY = Math.pow(2, zoom)
   if (x >= tileCountXY || y >= tileCountXY) {
@@ -11,11 +18,16 @@ export const validateTile = ({ x, y, zoom }) => {
   return true
 }
 
+/**
+ * Parse Switch
+ * @param  {string} url - URL Scheme
+ * @return {string} Parsed URL with switch replaced
+ */
 export const parseSwitch = (url) => {
-  let pattern = /{switch:([a-z,\d]*)}/i
-  let found = url.match(pattern)
+  const pattern = /{switch:([a-z,\d]*)}/i
+  const found = url.match(pattern)
   if (found) {
-    let random = sample(found[1].split(','))
+    const random = sample(found[1].split(','))
     return url.replace(pattern, random)
   }
   return url
@@ -34,8 +46,10 @@ export const parseUrl = ({ scheme, x, y, zoom, quadkey }) => {
 }
 
 export default class Tile {
-  constructor({ x, y, zoom, scheme, quadkey }) {
+  name = 'Tile'
 
+  constructor({ x, y, zoom, scheme, quadkey }) {
+    // Validate Types
     if (typeof x == 'undefined') { throw new Error('[x] required') }
     if (typeof y == 'undefined') { throw new Error('[y] required') }
     if (typeof zoom == 'undefined') { throw new Error('[zoom] required') }
@@ -59,6 +73,16 @@ export default class Tile {
     // Validation
     validateTile({ x: x, y: y, zoom: zoom })
   }
+  map(func) {
+    Object.keys(this).map(key => {
+      const item = {}
+      item[key] = this[key]
+      return func(item)
+    })
+  }
+  forEach(func) {
+    return this.map(func)
+  }
 }
 
 if (require.main === module) {
@@ -67,5 +91,5 @@ if (require.main === module) {
   /* istanbul ignore next */
   const tile = new Tile(GOOGLE)
   /* istanbul ignore next */
-  console.log(tile)
+  tile.map(i => console.log(i))
 }
