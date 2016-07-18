@@ -5,10 +5,10 @@ import { mercator } from './GlobalMercator'
 
 /**
  * Validate Tile
- * @param  {number} x - Tile X
- * @param  {number} y - Tile Y
- * @param  {number} zoom - Zoom Level
- * @return {bool} True if valid
+ * @param  {Number} x - Tile X
+ * @param  {Number} y - Tile Y
+ * @param  {Number} zoom - Zoom Level
+ * @return {Boolean} True if valid
  */
 export const validateTile = ({ x, y, zoom }) => {
   let tileCountXY = Math.pow(2, zoom)
@@ -20,8 +20,8 @@ export const validateTile = ({ x, y, zoom }) => {
 
 /**
  * Parse Switch
- * @param  {string} url - URL Scheme
- * @return {string} Parsed URL with switch replaced
+ * @param  {String} url - URL Scheme
+ * @return {String} Parsed URL with switch replaced
  */
 export const parseSwitch = (url) => {
   const pattern = /{switch:([a-z,\d]*)}/i
