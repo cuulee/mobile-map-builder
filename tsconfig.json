@@ -1,4 +1,5 @@
 {
+  "compileOnSave": true,
   "compilerOptions": {
     "target": "es5",
     "module": "commonjs",
@@ -10,10 +11,13 @@
     "noImplicitAny": false
   },
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "app/utils/GlobalMercator.ts"
   ],
   "files": [
     "test.ts",
-    "typings/index.d.ts"
+    "test2.ts",
+    "typings/index.d.ts",
+    "app/utils/GlobalTest.ts"
   ]
 }

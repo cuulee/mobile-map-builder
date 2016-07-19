@@ -3,22 +3,20 @@ import turf from 'turf'
 import { sample } from 'lodash'
 import { mercator } from './GlobalMercator'
 
-
-interface Tile {
-  x: number,
-  y: number,
-  zoom: number
-}
-
-function validateTile(tile: Tile) {
+/**
+ * Validate Tile
+ * @param  {Number} x - Tile X
+ * @param  {Number} y - Tile Y
+ * @param  {Number} zoom - Zoom Level
+ * @return {Boolean} True if valid
+ */
+const validateTile = (x: number, y: number, zoom: number) => {
   let tileCountXY = Math.pow(2, zoom)
   if (x >= tileCountXY || y >= tileCountXY) {
     throw new Error('Illegal parameters for tile')
   }
   return true
 }
-
-validateTile({x: 1, y: 1, zoom: 2})
 
 /**
  * Parse Switch

@@ -1,16 +1,19 @@
 import { range } from 'lodash'
 
 export default class GlobalMercator {
-  name = 'GlobalMercator'
+  public name: string = 'GlobalMercator'
+  public tileSize: number
+  private initialResolution: number
+  private originShift: number
 
-  constructor({ tileSize=256 } = {}) {
+  constructor(public tileSize:number =  256) {
     // Initialize the TMS Global Mercator pyramid
     this.tileSize = tileSize
     this.initialResolution = 2 * Math.PI * 6378137 / this.tileSize
     this.originShift = 2 * Math.PI * 6378137 / 2.0
   }
 
-  Resolution(zoom) {
+  private Resolution(zoom): number {
     // Resolution (meters/pixel) for given zoom level (measured at Equator)
 
     if (typeof zoom == 'undefined') { throw new Error('[zoom] required') }
@@ -18,14 +21,12 @@ export default class GlobalMercator {
     return this.initialResolution / Math.pow(2, zoom)
   }
 
-  LatLonToMeters({ lat, lng }) {
+  LatLonToMeters(latlng: { lat: number, lng: number }) {
+    const { lat, lng } = latlng
     // Converts given lat/lon in WGS84 Datum to XY in Spherical Mercator EPSG:900913
 
-    if (typeof lat == 'undefined') { throw new Error('[lat] required') }
-    if (typeof lng == 'undefined') { throw new Error('[lng] required') }
-
-    let mx = lng * this.originShift / 180.0
-    let my = Math.log(Math.tan((90 + lat) * Math.PI / 360.0 )) / (Math.PI / 180.0)
+    let mx: number = lng * this.originShift / 180.0
+    let my: number = Math.log(Math.tan((90 + lat) * Math.PI / 360.0 )) / (Math.PI / 180.0)
     my = my * this.originShift / 180.0
 
     return { mx: mx, my: my }
@@ -85,15 +86,15 @@ export default class GlobalMercator {
     return { mx: mx, my: my, zoom: zoom }
   }
 
-  PixelsToTile({ px, py, zoom }) {
+  PixelsToTile({ px:number, py:number, zoom:number }) {
     // Returns a tile covering region in given pixel coordinates
 
     if (typeof px == 'undefined') { throw new Error('[px] required') }
     if (typeof py == 'undefined') { throw new Error('[py] required') }
     if (typeof zoom == 'undefined') { throw new Error('[zoom] required') }
 
-    let tx = parseInt(Math.ceil(px / parseFloat(this.tileSize)) - 1)
-    let ty = parseInt(Math.ceil(py / parseFloat(this.tileSize)) - 1)
+    let tx = Math.ceil(px / parseFloat(this.tileSize)) - 1
+    let ty = Math.ceil(py / parseFloat(this.tileSize)) - 1
 
     return { tx: tx, ty: ty, zoom: zoom }
   }
