@@ -46,8 +46,7 @@
     "eslint": "^3.0.1",
     "ignore-styles": "^4.0.0",
     "nodemon": "^1.9.2",
-    "nyc": "^7.0.0",
-    "ts-node": "^0.9.3"
+    "nyc": "^7.0.0"
   },
   "ava": {
     "files": [

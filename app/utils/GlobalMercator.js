@@ -1,20 +1,24 @@
 import { range } from 'lodash'
 
+
 export default class GlobalMercator {
   public name: string = 'GlobalMercator'
   public tileSize: number
   private initialResolution: number
   private originShift: number
 
-  constructor(public tileSize:number =  256) {
+  constructor(tileSize = 256) {
+    if (instanceof tileSize != 'number') { new Error('[tileSize] Must be a number.') }
+
     // Initialize the TMS Global Mercator pyramid
     this.tileSize = tileSize
     this.initialResolution = 2 * Math.PI * 6378137 / this.tileSize
     this.originShift = 2 * Math.PI * 6378137 / 2.0
   }
 
-  private Resolution(zoom): number {
+  Resolution(zoom) {
     // Resolution (meters/pixel) for given zoom level (measured at Equator)
+    if (instanceof zoom != 'number') { new Error('[zoom] Must be a number.') }
 
     if (typeof zoom == 'undefined') { throw new Error('[zoom] required') }
 

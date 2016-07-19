@@ -1,27 +1,50 @@
+// http://www.maptiler.org/google-maps-coordinates-tile-bounds-projection/
+
 import uuid from 'node-uuid'
 import turf from 'turf'
 import { sample } from 'lodash'
 import { mercator } from './GlobalMercator'
 
 /**
- * Validate Tile
- * @param  {Number} x - Tile X
- * @param  {Number} y - Tile Y
+ * Validate Tile - Test for common mistakes to validate the TMS/Google tile.
+ *
+ * @name validateTile
+ * @param  {Number} x - Google Tile X
+ * @param  {Number} y - Google Tile Y
  * @param  {Number} zoom - Zoom Level
- * @return {Boolean} True if valid
+ * @param  {String} scheme (Optional) - Scheme URL
+ * @return {Object<Tile>} Returns itself
+ * @example
+ * validateTile({x: 180, y: 150, zoom: 13})
+ *
+ * //= {x: 180, y: 150, zoom: 13, scheme: <scheme>}
+ * or
+ * //= throw Error(msg)
  */
-const validateTile = (x: number, y: number, zoom: number) => {
+const validateTile = ({ x, y, zoom, scheme }) => {
+  if (typeof x !== 'number') { throw new Error('[x] Must be a Number') }
+  if (typeof y !== 'number') { throw new Error('[y] Must be a Number') }
+  if (typeof zoom !== 'number') { throw new Error('[zoom] Must be a Number') }
+  if (typeof scheme !== 'string' && typeof !== 'undefined') { throw new Error('[scheme] (Optional) Must be a String.') }
+
   let tileCountXY = Math.pow(2, zoom)
   if (x >= tileCountXY || y >= tileCountXY) {
     throw new Error('Illegal parameters for tile')
   }
-  return true
+  return { x: x, y: y, zoom: zoom, scheme: scheme }
 }
 
 /**
- * Parse Switch
- * @param  {string} url - URL Scheme
- * @return {string} Parsed URL with switch replaced
+ * Parse Switch - Replaces {switch:a,b,c} with a random sample.
+ *
+ * @name parseSwitch
+ * @param  {String} url - URL Scheme
+ * @return {String} Parsed URL with switch replaced
+ * @example
+ * scheme = 'http://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png'
+ * const url = parseUrl(scheme)
+ *
+ * //= 'http://tile-a.openstreetmap.fr/hot/{zoom}/{x}/{y}.png'
  */
 export const parseSwitch = (url) => {
   const pattern = /{switch:([a-z,\d]*)}/i
@@ -33,6 +56,19 @@ export const parseSwitch = (url) => {
   return url
 }
 
+/**
+ * paserUrl -
+ * @param  {String} scheme - Slippy map URL scheme
+ * @param  {Number} x - Tile X
+ * @param  {Number} y - Tile Y
+ * @param  {Number} zoom - Zoom Level
+ * @param  {String} quadkey - Microsoft QuadKey
+ * @return {String}
+ * @example
+ * const tile = { x: 2389, y: 2946, zoom: 13, scheme: SCHEME }
+ * tile.scheme = 'http://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png'
+ * const url = parseUrl(tile)
+ */
 export const parseUrl = ({ scheme, x, y, zoom, quadkey }) => {
   let url = scheme
   url = url.replace(/{zoom}/, zoom)
@@ -54,7 +90,7 @@ export default class Tile {
     if (typeof y == 'undefined') { throw new Error('[y] required') }
     if (typeof zoom == 'undefined') { throw new Error('[zoom] required') }
     if (typeof scheme == 'undefined') { throw new Error('[scheme] required') }
-    if (typeof quadkey != 'undefined' && typeof quadkey != 'string') { throw new Error('[quadkey] must be string') }
+    if (typeof quadkey !== 'undefined' && typeof quadkey !== 'string') { throw new Error('[quadkey] must be string') }
 
     // User Input
     this.x = x
