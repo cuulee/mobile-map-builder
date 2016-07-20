@@ -5,6 +5,13 @@ import turf from 'turf'
 import { sample } from 'lodash'
 //import { mercator } from './GlobalMercator'
 
+interface tile {
+  x:number,
+  y:number,
+  zoom:number,
+  scheme:string
+}
+
 /**
  * Validate Tile - Test for common mistakes to validate the TMS/Google tile.
  *
@@ -21,17 +28,12 @@ import { sample } from 'lodash'
  * or
  * //= throw Error(msg)
  */
-const validateTile = ({ x, y, zoom, scheme }) => {
-  if (typeof x !== 'number') { throw new Error('[x] Must be a Number') }
-  if (typeof y !== 'number') { throw new Error('[y] Must be a Number') }
-  if (typeof zoom !== 'number') { throw new Error('[zoom] Must be a Number') }
-  if (typeof scheme !== 'string' && typeof scheme !== 'undefined') { throw new Error('[scheme] (Optional) Must be a String.') }
-
-  let tileCountXY = Math.pow(2, zoom)
-  if (x >= tileCountXY || y >= tileCountXY) {
+const validateTile = (tile: { x:number, y:number, zoom:number, scheme?:string }) => {
+  let tileCountXY = Math.pow(2, tile.zoom)
+  if (tile.x >= tileCountXY || tile.y >= tileCountXY) {
     throw new Error('Illegal parameters for tile')
   }
-  return { x: x, y: y, zoom: zoom, scheme: scheme }
+  return tile
 }
 
 /**
@@ -43,10 +45,9 @@ const validateTile = ({ x, y, zoom, scheme }) => {
  * @example
  * scheme = 'http://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png'
  * const url = parseUrl(scheme)
- *
  * //= 'http://tile-a.openstreetmap.fr/hot/{zoom}/{x}/{y}.png'
  */
-export const parseSwitch = (url) => {
+export const parseSwitch = (url:string) => {
   const pattern = /{switch:([a-z,\d]*)}/i
   const found = url.match(pattern)
   if (found) {
@@ -57,6 +58,8 @@ export const parseSwitch = (url) => {
 }
 
 /**
+ * Substitutes the given tile information (x,y,zoom) to the URL tile scheme.
+ * 
  * @name paserUrl
  * @param {String} scheme - Slippy map URL scheme
  * @param {Number} x - Tile X
