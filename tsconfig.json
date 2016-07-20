@@ -17,6 +17,7 @@
     "files": [
         "typings/index.d.ts",
         "test/globals.ts",
-        "app/utils/Tile.ts"
+        "app/utils/Tile.ts",
+        "app/utils/GeoJSON.ts"
     ]
 }

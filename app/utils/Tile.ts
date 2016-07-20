@@ -3,12 +3,13 @@ import turf = require('turf')
 import { sample } from 'lodash'
 //import { mercator } from './GlobalMercator'
 
-interface tileInterface {
+export interface tileInterface {
   x:number,
   y:number,
   zoom:number,
   quadkey?:string,
-  scheme?:string
+  scheme?:string,
+  id?:string
 }
 
 /**
@@ -83,6 +84,12 @@ export const parseUrl = (tile:tileInterface) => {
   return url
 }
 
+/**
+ * Tile contains all the essentials for an individual Google/ArcGIS/Bing Tile
+ * 
+ * @export
+ * @class Tile
+ */
 export default class Tile {
   public name:string = 'Tile'
   public x:number
@@ -92,8 +99,10 @@ export default class Tile {
   public quadkey:string
   public url:string
   public id:string
+  public bbox:number[]
+  public geometry:{ type:string, coordinates:number[][][] }
 
-  constructor(public tile:tileInterface) {
+  constructor(tile:tileInterface) {
     // User Input
     this.x = tile.x
     this.y = tile.y
@@ -102,8 +111,8 @@ export default class Tile {
     this.quadkey = tile.quadkey
 
     // Extra Properties
-    //this.bounds = mercator.GoogleLatLonBounds({ x: x, y: y, zoom: zoom })
-    //this.geometry = turf.bboxPolygon(this.bounds).geometry
+    this.bbox = [1,2,3,4] // mercator.GoogleLatLonBounds({ x: x, y: y, zoom: zoom })
+    this.geometry = turf.bboxPolygon(this.bbox).geometry
     //this.quadkey = mercator.GoogleQuadKey({ x: x, y: y, zoom: zoom })
     this.url = parseUrl(tile)
     this.id = uuid.v4()
