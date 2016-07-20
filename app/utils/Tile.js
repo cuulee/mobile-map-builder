@@ -3,16 +3,16 @@
 import uuid from 'node-uuid'
 import turf from 'turf'
 import { sample } from 'lodash'
-import { mercator } from './GlobalMercator'
+//import { mercator } from './GlobalMercator'
 
 /**
  * Validate Tile - Test for common mistakes to validate the TMS/Google tile.
  *
  * @name validateTile
- * @param  {Number} x - Google Tile X
- * @param  {Number} y - Google Tile Y
- * @param  {Number} zoom - Zoom Level
- * @param  {String} scheme (Optional) - Scheme URL
+ * @param {Number} x - Google Tile X
+ * @param {Number} y - Google Tile Y
+ * @param {Number} zoom - Zoom Level
+ * @param {String} scheme (Optional) - Scheme URL
  * @return {Object<Tile>} Returns itself
  * @example
  * validateTile({x: 180, y: 150, zoom: 13})
@@ -25,7 +25,7 @@ const validateTile = ({ x, y, zoom, scheme }) => {
   if (typeof x !== 'number') { throw new Error('[x] Must be a Number') }
   if (typeof y !== 'number') { throw new Error('[y] Must be a Number') }
   if (typeof zoom !== 'number') { throw new Error('[zoom] Must be a Number') }
-  if (typeof scheme !== 'string' && typeof !== 'undefined') { throw new Error('[scheme] (Optional) Must be a String.') }
+  if (typeof scheme !== 'string' && typeof scheme !== 'undefined') { throw new Error('[scheme] (Optional) Must be a String.') }
 
   let tileCountXY = Math.pow(2, zoom)
   if (x >= tileCountXY || y >= tileCountXY) {
@@ -38,7 +38,7 @@ const validateTile = ({ x, y, zoom, scheme }) => {
  * Parse Switch - Replaces {switch:a,b,c} with a random sample.
  *
  * @name parseSwitch
- * @param  {String} url - URL Scheme
+ * @param {String} url - URL Scheme
  * @return {String} Parsed URL with switch replaced
  * @example
  * scheme = 'http://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png'
@@ -57,12 +57,12 @@ export const parseSwitch = (url) => {
 }
 
 /**
- * paserUrl -
- * @param  {String} scheme - Slippy map URL scheme
- * @param  {Number} x - Tile X
- * @param  {Number} y - Tile Y
- * @param  {Number} zoom - Zoom Level
- * @param  {String} quadkey - Microsoft QuadKey
+ * @name paserUrl
+ * @param {String} scheme - Slippy map URL scheme
+ * @param {Number} x - Tile X
+ * @param {Number} y - Tile Y
+ * @param {Number} zoom - Zoom Level
+ * @param {String} quadkey - Microsoft QuadKey
  * @return {String}
  * @example
  * const tile = { x: 2389, y: 2946, zoom: 13, scheme: SCHEME }
@@ -90,7 +90,7 @@ export default class Tile {
     if (typeof y == 'undefined') { throw new Error('[y] required') }
     if (typeof zoom == 'undefined') { throw new Error('[zoom] required') }
     if (typeof scheme == 'undefined') { throw new Error('[scheme] required') }
-    if (typeof quadkey !== 'undefined' && typeof quadkey !== 'string') { throw new Error('[quadkey] must be string') }
+    if (typeof quadkey == 'undefined' && typeof quadkey == 'string') { throw new Error('[quadkey] must be string') }
 
     // User Input
     this.x = x
@@ -100,9 +100,9 @@ export default class Tile {
     this.quadkey = quadkey
 
     // Extra Properties
-    this.bounds = mercator.GoogleLatLonBounds({ x: x, y: y, zoom: zoom })
-    this.geometry = turf.bboxPolygon(this.bounds).geometry
-    this.quadkey = mercator.GoogleQuadKey({ x: x, y: y, zoom: zoom })
+    //this.bounds = mercator.GoogleLatLonBounds({ x: x, y: y, zoom: zoom })
+    //this.geometry = turf.bboxPolygon(this.bounds).geometry
+    //this.quadkey = mercator.GoogleQuadKey({ x: x, y: y, zoom: zoom })
     this.url = parseUrl({ x: x, y: y, zoom: zoom, scheme: scheme, quadkey: this.quadkey })
     this.id = uuid.v4()
 
