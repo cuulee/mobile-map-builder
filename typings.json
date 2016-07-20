@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "lodash": "registry:npm/lodash#4.0.0+20160701205107",
+    "node-uuid": "registry:npm/node-uuid#1.4.7+20160503013124"
+  },
+  "globalDependencies": {
+    "geojson": "registry:dt/geojson#0.0.0+20160619034323",
+    "node": "registry:dt/node#6.0.0+20160720070758",
+    "turf": "registry:dt/turf#2.0.0+20160626221044"
+  }
+}

@@ -1,14 +1,21 @@
 {
     "compilerOptions": {
         "module": "commonjs",
+        "target": "ES6",
         "noImplicitAny": true,
         "removeComments": true,
         "preserveConstEnums": true,
         "outFile": "../../built/local/tsc.js",
-        "sourceMap": true
+        "sourceMap": true,
+        "noEmitOnError": true
     },
+    "compileOnSave": true,
     "exclude": [
         "node_modules",
         "wwwroot"
+    ],
+    "files": [
+        "typings/index.d.ts",
+        "app/utils/Tile.ts"
     ]
 }

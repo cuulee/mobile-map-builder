@@ -1,15 +1,14 @@
-// http://www.maptiler.org/google-maps-coordinates-tile-bounds-projection/
-
-import uuid from 'node-uuid'
-import turf from 'turf'
+import uuid = require('node-uuid')
+import turf = require('turf')
 import { sample } from 'lodash'
 //import { mercator } from './GlobalMercator'
 
-interface tile {
+interface tileInterface {
   x:number,
   y:number,
   zoom:number,
-  scheme:string
+  quadkey?:string,
+  scheme?:string
 }
 
 /**
@@ -28,7 +27,7 @@ interface tile {
  * or
  * //= throw Error(msg)
  */
-const validateTile = (tile: { x:number, y:number, zoom:number, scheme?:string }) => {
+const validateTile = (tile: tileInterface) => {
   let tileCountXY = Math.pow(2, tile.zoom)
   if (tile.x >= tileCountXY || tile.y >= tileCountXY) {
     throw new Error('Illegal parameters for tile')
@@ -72,55 +71,45 @@ export const parseSwitch = (url:string) => {
  * tile.scheme = 'http://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png'
  * const url = parseUrl(tile)
  */
-export const parseUrl = ({ scheme, x, y, zoom, quadkey }) => {
-  let url = scheme
-  url = url.replace(/{zoom}/, zoom)
-  url = url.replace(/{z}/, zoom)
-  url = url.replace(/{x}/, x)
-  url = url.replace(/{y}/, y)
-  url = url.replace(/{quadkey}/, quadkey)
+export const parseUrl = (tile:tileInterface) => {
+  let url = tile.scheme
+  url = url.replace(/{zoom}/, String(tile.zoom))
+  url = url.replace(/{z}/, String(tile.zoom))
+  url = url.replace(/{x}/, String(tile.x))
+  url = url.replace(/{y}/, String(tile.y))
+  url = url.replace(/{quadkey}/, tile.quadkey)
   url = parseSwitch(url)
 
   return url
 }
 
 export default class Tile {
-  name = 'Tile'
+  public name:string = 'Tile'
+  public x:number
+  public y:number
+  public zoom:number
+  public scheme:string
+  public quadkey:string
+  public url:string
+  public id:string
 
-  constructor({ x, y, zoom, scheme, quadkey }) {
-    // Validate Types
-    if (typeof x == 'undefined') { throw new Error('[x] required') }
-    if (typeof y == 'undefined') { throw new Error('[y] required') }
-    if (typeof zoom == 'undefined') { throw new Error('[zoom] required') }
-    if (typeof scheme == 'undefined') { throw new Error('[scheme] required') }
-    if (typeof quadkey == 'undefined' && typeof quadkey == 'string') { throw new Error('[quadkey] must be string') }
-
+  constructor(public tile:tileInterface) {
     // User Input
-    this.x = x
-    this.y = y
-    this.zoom = zoom
-    this.scheme = scheme
-    this.quadkey = quadkey
+    this.x = tile.x
+    this.y = tile.y
+    this.zoom = tile.zoom
+    this.scheme = tile.scheme
+    this.quadkey = tile.quadkey
 
     // Extra Properties
     //this.bounds = mercator.GoogleLatLonBounds({ x: x, y: y, zoom: zoom })
     //this.geometry = turf.bboxPolygon(this.bounds).geometry
     //this.quadkey = mercator.GoogleQuadKey({ x: x, y: y, zoom: zoom })
-    this.url = parseUrl({ x: x, y: y, zoom: zoom, scheme: scheme, quadkey: this.quadkey })
+    this.url = parseUrl(tile)
     this.id = uuid.v4()
 
     // Validation
-    validateTile({ x: x, y: y, zoom: zoom })
-  }
-  map(func) {
-    Object.keys(this).map(key => {
-      const item = {}
-      item[key] = this[key]
-      return func(item)
-    })
-  }
-  forEach(func) {
-    return this.map(func)
+    validateTile(tile)
   }
 }
 
@@ -130,5 +119,5 @@ if (require.main === module) {
   /* istanbul ignore next */
   const tile = new Tile(GOOGLE)
   /* istanbul ignore next */
-  tile.map(i => console.log(i))
+  console.log(tile)
 }
