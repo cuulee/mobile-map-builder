@@ -1,97 +1,185 @@
 import { range } from 'lodash'
 
+export class tile {
+  public x: number
+  public y: number
+  public zoom: number
+  constructor(init: {x:number, y:number, zoom:number}) {
+    const {x, y, zoom} = init
+    this.x = x
+    this.y = y
+    this.zoom = zoom
+  }
+}
 
+export class pixels {
+  public px: number
+  public py: number
+  public zoom: number
+  constructor(init: {px:number, py:number, zoom?:number}) {
+    const {px, py, zoom} = init
+    this.px = px
+    this.py = py
+    this.zoom = zoom
+  }
+}
+
+export class meters {
+  public mx: number
+  public my: number
+  public zoom: number
+  constructor(init: {mx:number, my:number, zoom?:number}) {
+    const {mx, my, zoom} = init
+    this.mx = mx
+    this.my = my
+    this.zoom = zoom
+  }
+}
+
+export class latlng {
+  public lat:number
+  public lng:number
+  public zoom:number
+  constructor(init: {lat:number, lng:number, zoom?:number}) {
+    const {lat, lng, zoom} = init
+    this.lat = lat
+    this.lng = lng
+    this.zoom = zoom
+    if (lat > -90 && lat < 90) { throw new Error('[lat] must be within -90 to 90 degrees')}
+    if (lng > -180 && lng < 180) { throw new Error('[lng] must be within -180 to 180 degrees')}
+  }
+}
+
+/**
+ * Global Mercator
+ * @name GlobalMercator
+ * @example
+ * const mercator = GlobalMercator()
+ * mercator.LatLngToMeters(tile)
+ */
 export default class GlobalMercator {
-  public name: string = 'GlobalMercator'
-  public tileSize: number
-  private initialResolution: number
-  private originShift: number
+  public name:string = 'GlobalMercator'
+  private tileSize:number
+  private initialResolution:number
+  private originShift:number
 
-  constructor(tileSize = 256) {
-    if (instanceof tileSize != 'number') { new Error('[tileSize] Must be a number.') }
-
-    // Initialize the TMS Global Mercator pyramid
+  /**
+   * Initialize the TMS Global Mercator pyramid
+   * @param  {Number} tileSize (default=256)
+   */
+  constructor(tileSize:number = 256) {
     this.tileSize = tileSize
     this.initialResolution = 2 * Math.PI * 6378137 / this.tileSize
     this.originShift = 2 * Math.PI * 6378137 / 2.0
   }
 
-  Resolution(zoom) {
-    // Resolution (meters/pixel) for given zoom level (measured at Equator)
-    if (instanceof zoom != 'number') { new Error('[zoom] Must be a number.') }
-
-    if (typeof zoom == 'undefined') { throw new Error('[zoom] required') }
-
+  /**
+   * Resolution (meters/pixel) for given zoom level (measured at Equator) 
+   * 
+   * @name Resolution
+   * @param {Number} zoom
+   * @returns {Number}
+   */
+  Resolution(zoom:number) {
     return this.initialResolution / Math.pow(2, zoom)
   }
 
-  LatLonToMeters(latlng: { lat: number, lng: number }) {
-    const { lat, lng } = latlng
-    // Converts given lat/lon in WGS84 Datum to XY in Spherical Mercator EPSG:900913
+  /**
+   * Converts given lat/lon in WGS84 Datum to XY in Spherical Mercator EPSG:900913
+   * 
+   * @name LatLonToMeters
+   * @param {Number} lat
+   * @param {Number} lng
+   * @returns {meters}
+   */
+  LatLonToMeters(init:latlng) {
+    const { lat, lng, zoom } = new latlng(init)
 
     let mx: number = lng * this.originShift / 180.0
     let my: number = Math.log(Math.tan((90 + lat) * Math.PI / 360.0 )) / (Math.PI / 180.0)
     my = my * this.originShift / 180.0
 
-    return { mx: mx, my: my }
+    return new meters({ mx: mx, my: my, zoom:zoom })
   }
 
-  MetersToLatLon({ mx, my }) {
-    // Converts XY point from Spherical Mercator EPSG:900913 to lat/lng in WGS84 Datum
-
-    if (typeof mx == 'undefined') { throw new Error('[mx] required') }
-    if (typeof my == 'undefined') { throw new Error('[my] required') }
-
+  /**
+   * Converts XY point from Spherical Mercator EPSG:900913 to lat/lng in WGS84 Datum 
+   * 
+   * @name MetersToLatLong
+   * @param {Number} mx
+   * @param {Number} my
+   * @returns {latlng}
+   */
+  MetersToLatLon(init:meters) {
+    const {mx, my, zoom} = new meters(init)
     let lng = (mx / this.originShift) * 180.0
     let lat = (my / this.originShift) * 180.0
 
     lat = 180 / Math.PI * (2 * Math.atan( Math.exp( lat * Math.PI / 180.0)) - Math.PI / 2.0)
 
-    return { lat: lat, lng: lng }
+    return new latlng({ lat: lat, lng: lng, zoom:zoom })
   }
 
-  MetersToPixels({ mx, my, zoom }) {
-    // Converts EPSG:900913 to pyramid pixel coordinates in given zoom level
+  /**
+   * Converts EPSG:900913 to pyramid pixel coordinates in given zoom level
+   * 
+   * @name MetersToPixels
+   * @param {Number} mx
+   * @param {Number} my
+   * @returns {pixels}
+   */
+  MetersToPixels(init:meters) {
+    const {mx, my, zoom} = new meters(init)
+    const res = this.Resolution(zoom)
+    const px = (mx + this.originShift) / res
+    const py = (my + this.originShift) / res
 
-    if (typeof mx == 'undefined') { throw new Error('[mx] required') }
-    if (typeof my == 'undefined') { throw new Error('[my] required') }
-    if (typeof zoom == 'undefined') { throw new Error('[zoom] required') }
-
-    let res = this.Resolution(zoom)
-    let px = (mx + this.originShift) / res
-    let py = (my + this.originShift) / res
-
-    return { px: px, py: py, zoom: zoom }
+    return new pixels({ px: px, py: py, zoom: zoom })
   }
 
-  MetersToTile({ mx, my, zoom }) {
-    // Returns tile for given mercator coordinates
-
-    if (typeof mx == 'undefined') { throw new Error('[mx] required') }
-    if (typeof my == 'undefined') { throw new Error('[my] required') }
-    if (typeof zoom == 'undefined') { throw new Error('[zoom] required') }
-
-    let pixels = this.MetersToPixels({ mx, my, zoom })
+  /**
+   * Returns tile for given mercator coordinates
+   * 
+   * @name MetersToTile
+   * @param {Number} mx
+   * @param {Number} my
+   * @returns {tile}
+   */
+  MetersToTile(init:meters) {
+    const pixels = this.MetersToPixels(init)
 
     return this.PixelsToTile(pixels)
   }
 
-  PixelsToMeters({ px, py, zoom }) {
-    // Converts pixel coordinates in given zoom level of pyramid to EPSG:900913
+  /**
+   * Converts pixel coordinates in given zoom level of pyramid to EPSG:900913
+   * 
+   * @name PixelsToMeters
+   * @param {Number} px
+   * @param {Number} py
+   * @param {Number} zoom
+   * @returns {meters}
+   */
+  PixelsToMeters(init:pixels) {
+    const {px, py, zoom} = new pixels(init)
+    const res = this.Resolution(zoom)
+    const mx = px * res - this.originShift
+    const my = py * res - this.originShift
 
-    if (typeof px == 'undefined') { throw new Error('[px] required') }
-    if (typeof py == 'undefined') { throw new Error('[py] required') }
-    if (typeof zoom == 'undefined') { throw new Error('[zoom] required') }
-
-    let res = this.Resolution(zoom)
-    let mx = px * res - this.originShift
-    let my = py * res - this.originShift
-
-    return { mx: mx, my: my, zoom: zoom }
+    return new meters({ mx: mx, my: my, zoom: zoom })
   }
 
-  PixelsToTile({ px:number, py:number, zoom:number }) {
-    // Returns a tile covering region in given pixel coordinates
+  /**
+   * Returns a tile covering region in given pixel coordinates
+   * 
+   * @name PixelsToTile
+   * @param {Number} px
+   * @param {Number} py
+   * @param {Number} zoom
+   * @returns {px:number, py:number}
+   */
+  PixelsToTile(init:pixels) {
+    const {px, py, zoom} = new pixels(init)
 
     if (typeof px == 'undefined') { throw new Error('[px] required') }
     if (typeof py == 'undefined') { throw new Error('[py] required') }

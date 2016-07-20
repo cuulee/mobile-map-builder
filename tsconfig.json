@@ -18,6 +18,7 @@
         "typings/index.d.ts",
         "test/globals.ts",
         "app/utils/Tile.ts",
+        "app/utils/GlobalMercator.ts",
         "app/utils/GeoJSON.ts"
     ]
 }

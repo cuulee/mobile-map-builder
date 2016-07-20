@@ -59,7 +59,7 @@ export const parseSwitch = (url:string) => {
 
 /**
  * Substitutes the given tile information (x,y,zoom) to the URL tile scheme.
- * 
+ *
  * @name paserUrl
  * @param {String} scheme - Slippy map URL scheme
  * @param {Number} x - Tile X
@@ -86,7 +86,7 @@ export const parseUrl = (tile:tileInterface) => {
 
 /**
  * Tile contains all the essentials for an individual Google/ArcGIS/Bing Tile
- * 
+ *
  * @export
  * @class Tile
  */
