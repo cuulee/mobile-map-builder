@@ -2,21 +2,22 @@ import { omit } from 'lodash'
 import Tile, { tileInterface } from './Tile'
 
 export default class GeoJSON {
-  public name:string = 'GeoJSON'
-  public type:string = 'Feature'
-  public geometry:any
-  public bounds:any
-  public id:string
-  public properties:{}
+  name:string = 'GeoJSON'
+  type:string = 'Feature'
+  geometry:{type:string, coordinates:number[][][]}
+  bbox:number[]
+  id:string
+  properties:any
 
   constructor(tile:tileInterface) {
     tile = new Tile(tile)
 
+    this.properties = '12'
     this.type = 'Feature'
-    //this.geometry = tile.geometry
-    //this.bounds = tile.bounds
+    this.geometry = tile.geometry
+    this.bbox = tile.bbox
     this.id = tile.id
-    this.properties = omit(tile, ['bounds', 'geometry', 'id'])
+    this.properties = omit(tile, ['bbox', 'geometry', 'id'])
   }
 }
 

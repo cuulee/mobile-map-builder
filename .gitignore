@@ -1,5 +1,6 @@
 typings
 coverage
+built
 .nyc_output
 nohup.out
 node_modules

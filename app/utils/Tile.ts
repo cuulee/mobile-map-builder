@@ -1,7 +1,7 @@
 import uuid = require('node-uuid')
 import turf = require('turf')
 import { sample } from 'lodash'
-//import { mercator } from './GlobalMercator'
+import { mercator } from './GlobalMercator'
 
 export interface tileInterface {
   x:number,
@@ -9,7 +9,9 @@ export interface tileInterface {
   zoom:number,
   quadkey?:string,
   scheme?:string,
-  id?:string
+  id?:string,
+  bbox?:number[],
+  geometry?:{type:string, coordinates:number[][][]}
 }
 
 /**
@@ -28,7 +30,7 @@ export interface tileInterface {
  * or
  * //= throw Error(msg)
  */
-const validateTile = (tile: tileInterface) => {
+export const validateTile = (tile: tileInterface) => {
   let tileCountXY = Math.pow(2, tile.zoom)
   if (tile.x >= tileCountXY || tile.y >= tileCountXY) {
     throw new Error('Illegal parameters for tile')
@@ -91,16 +93,16 @@ export const parseUrl = (tile:tileInterface) => {
  * @class Tile
  */
 export default class Tile {
-  public name:string = 'Tile'
-  public x:number
-  public y:number
-  public zoom:number
-  public scheme:string
-  public quadkey:string
-  public url:string
-  public id:string
-  public bbox:number[]
-  public geometry:{ type:string, coordinates:number[][][] }
+  name:string = 'Tile'
+  x:number
+  y:number
+  zoom:number
+  scheme:string
+  quadkey:string
+  url:string
+  id:string
+  bbox:number[]
+  geometry:{ type:string, coordinates:number[][][] }
 
   constructor(tile:tileInterface) {
     // User Input
@@ -111,9 +113,9 @@ export default class Tile {
     this.quadkey = tile.quadkey
 
     // Extra Properties
-    this.bbox = [1,2,3,4] // mercator.GoogleLatLonBounds({ x: x, y: y, zoom: zoom })
+    this.bbox = mercator.GoogleLatLonBounds({ x: this.x, y: this.y, zoom: this.zoom })
     this.geometry = turf.bboxPolygon(this.bbox).geometry
-    //this.quadkey = mercator.GoogleQuadKey({ x: x, y: y, zoom: zoom })
+    this.quadkey = mercator.GoogleQuadKey({ x: this.x, y: this.y, zoom: this.zoom })
     this.url = parseUrl(tile)
     this.id = uuid.v4()
 

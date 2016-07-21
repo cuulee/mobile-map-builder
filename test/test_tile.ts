@@ -46,20 +46,10 @@ test('Parse Url - QuadKey', t => {
 })
 
 test('Validate Tile', t => {
-  t.true(validateTile(TILE))
+  t.true(!!validateTile(TILE))
 })
 
 test('Throw Error Tile', t => {
   const tile = {x: X, y: Y, zoom: 2, scheme: SCHEME}
   t.throws(() => validateTile(tile), 'Illegal parameters for tile')
-})
-
-test('map', t => {
-  const tile = new Tile(TILE)
-  tile.map(i => t.true(!!i))
-})
-
-test('forEach', t => {
-  const tile = new Tile(TILE)
-  tile.forEach(i => t.true(!!i))
 })

@@ -54,14 +54,14 @@ export class meters {
 }
 
 export class latlng {
-  lat:number
-  lng:number
-  zoom:number
+  lat: number
+  lng: number
+  zoom: number
   constructor(init: {lat:number, lng:number, zoom?:number}) {
     const {lat, lng, zoom} = init
     this.lat = lat
     this.lng = lng
-    this.zoom = zoom
+    if (zoom) { this.zoom = zoom }
     if (lat < -90 || lat > 90) { throw new Error('[lat] must be within -90 to 90 degrees')}
     if (lng < -180 || lng > 180) { throw new Error('[lng] must be within -180 to 180 degrees')}
   }
@@ -111,11 +111,11 @@ export default class GlobalMercator {
    */
   LatLonToMeters(init:latlng) {
     const { lat, lng, zoom } = new latlng(init)
-    let mx: number = lng * this.originShift / 180.0
-    let my: number = Math.log(Math.tan((90 + lat) * Math.PI / 360.0 )) / (Math.PI / 180.0)
+    let mx:number = lng * this.originShift / 180.0
+    let my:number = Math.log(Math.tan((90 + lat) * Math.PI / 360.0 )) / (Math.PI / 180.0)
     my = my * this.originShift / 180.0
 
-    return new meters({ mx: mx, my: my, zoom:zoom })
+    return new meters({ mx: mx, my: my, zoom: zoom })
   }
 
   /**
@@ -127,12 +127,12 @@ export default class GlobalMercator {
    * @returns {latlng}
    */
   MetersToLatLon(init:meters) {
-    const {mx, my, zoom} = new meters(init)
+    const { mx, my, zoom } = new meters(init)
     let lng = (mx / this.originShift) * 180.0
     let lat = (my / this.originShift) * 180.0
     lat = 180 / Math.PI * (2 * Math.atan( Math.exp( lat * Math.PI / 180.0)) - Math.PI / 2.0)
 
-    return new latlng({ lat: lat, lng: lng, zoom:zoom })
+    return new latlng({ lat: lat, lng: lng, zoom: zoom })
   }
 
   /**
@@ -144,7 +144,7 @@ export default class GlobalMercator {
    * @returns {pixels}
    */
   MetersToPixels(init:meters) {
-    const {mx, my, zoom} = new meters(init)
+    const { mx, my, zoom } = new meters(init)
     const res = this.Resolution(zoom)
     const px = (mx + this.originShift) / res
     const py = (my + this.originShift) / res

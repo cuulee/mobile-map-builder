@@ -1,24 +1,26 @@
 {
+    "compileOnSave": true,
     "compilerOptions": {
         "module": "commonjs",
         "target": "ES6",
         "noImplicitAny": true,
-        "removeComments": true,
+        "removeComments": false,
         "preserveConstEnums": true,
-        "outFile": "../../built/local/tsc.js",
+        "outDir": "built/",
         "sourceMap": true,
         "noEmitOnError": true
     },
-    "compileOnSave": true,
     "exclude": [
         "node_modules",
         "wwwroot"
     ],
     "files": [
         "typings/index.d.ts",
-        "test/globals.ts",
         "app/utils/Tile.ts",
         "app/utils/GlobalMercator.ts",
-        "app/utils/GeoJSON.ts"
+        "app/utils/GeoJSON.ts",
+        "test/test_geojson.ts",
+        "test/test_global_mercator.ts",
+        "test/test_tile.ts"
     ]
 }
