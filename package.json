@@ -18,7 +18,6 @@
   "contributors": [
     "Denis Carriere <denis.carriere@lsec.dnd.ca>"
   ],
-  "license": "CC0",
   "bugs": {
     "url": "https://github.com/dlcspm/data-generator/issues"
   },
@@ -27,6 +26,7 @@
     "body-parser": "^1.15.2",
     "express": "^4.14.0",
     "lodash": "^4.13.1",
+    "mongodb": "^2.2.4",
     "mongoose": "^4.5.5",
     "multer": "^1.1.0",
     "node-uuid": "^1.4.7",

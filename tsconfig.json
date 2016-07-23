@@ -25,6 +25,13 @@
         "app/models/sequelize/index.ts",
         "app/models/sequelize/Map.ts",
         "app/models/sequelize/Metadata.ts",
-        "app/models/sequelize/Tiles.ts"
+        "app/models/sequelize/Log.ts",
+        "app/models/sequelize/Tiles.ts",
+        "app/models/mongoose/Images.ts",
+        "app/models/mongoose/index.ts",
+        "app/models/mongoose/Log.ts",
+        "app/models/mongoose/Map.ts",
+        "app/models/mongoose/Metadata.ts",
+        "app/models/mongoose/Tiles.ts"
     ]
 }

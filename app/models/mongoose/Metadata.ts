@@ -1,4 +1,4 @@
-import mongoose, { Schema } from 'mongoose'
+import { model, Schema } from 'mongoose'
 
 const schema = new Schema({
   bounds: Buffer,
@@ -11,4 +11,4 @@ const schema = new Schema({
   description: String
 })
 
-export default mongoose.model('metadata', schema)
+export default model('metadata', schema)

@@ -1,4 +1,4 @@
-import mongoose, { Schema } from 'mongoose'
+import { model, Schema } from 'mongoose'
 
 const schema = new Schema({
   zoom_level: Number,
@@ -7,4 +7,4 @@ const schema = new Schema({
   tile_data: Buffer
 })
 
-export default mongoose.model('tiles', schema)
+export default model('tiles', schema)

@@ -1,4 +1,4 @@
-import mongoose, { Schema } from 'mongoose'
+import { model, Schema } from 'mongoose'
 
 const schema = new Schema({
   zoom_level: Number,
@@ -7,4 +7,4 @@ const schema = new Schema({
   tile_id: String
 })
 
-export default mongoose.model('map', schema)
+export default model('map', schema)

@@ -1,4 +1,4 @@
-import mongoose, { Schema } from 'mongoose'
+import { model, Schema } from 'mongoose'
 
 const schema = new Schema({
   ip: String,
@@ -8,4 +8,4 @@ const schema = new Schema({
   auth: String
 })
 
-export default mongoose.model('log', schema)
+export default model('log', schema)
