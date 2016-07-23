@@ -1,8 +1,14 @@
-export const Images = require('./Images')
-export const Map = require('./Map')
-export const Metadata = require('./Metadata')
-export const Tiles = require('./Tiles')
-export const Log = require('./Log')
+import images from './Images'
+import map from './Map'
+import metadata from './Metadata'
+import tiles from './Tiles'
+import log from './Log'
+
+export const Images = images
+export const Map = map
+export const Metadata = metadata
+export const Tiles = tiles
+export const Log = log
 export default {
   Images: Images,
   Map: Map,
