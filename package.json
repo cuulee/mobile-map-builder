@@ -7,8 +7,9 @@
     "test": "npm run build && npm run ava",
     "build": "./node_modules/.bin/tsc",
     "ava": "./node_modules/.bin/nyc ./node_modules/.bin/ava --verbose",
-    "start": "./node_modules/.bin/nodemon built/app/cluster.js",
-    "autostart": "nohup ./node_modules/.bin/nodemon built/app/cluster.js </dev/null &"
+    "start": "./node_modules/.bin/ts-node app/server.ts",
+    "cluster": "./node_modules/.bin/ts-node app/cluster.ts",
+    "autostart": "nohup ./node_modules/.bin/ts-node app/cluster.ts </dev/null &"
   },
   "repository": {
     "type": "git",

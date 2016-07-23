@@ -1,16 +1,12 @@
-import images from './Images'
-import map from './Map'
-import metadata from './Metadata'
-import tiles from './Tiles'
-import log from './Log'
-
-const models = {
-  Images: images,
-  Map: map,
-  Metadata: metadata,
-  Tiles: tiles,
-  Log: log
+export const Images = require('./Images')
+export const Map = require('./Map')
+export const Metadata = require('./Metadata')
+export const Tiles = require('./Tiles')
+export const Log = require('./Log')
+export default {
+  Images: Images,
+  Map: Map,
+  Metadata: Metadata,
+  Tiles: Tiles,
+  Log: Log
 }
-
-export const { Images, Map, Metadata, Tiles, Log } = models
-export default models
