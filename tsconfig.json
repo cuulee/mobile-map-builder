@@ -32,6 +32,11 @@
         "app/models/mongoose/Log.ts",
         "app/models/mongoose/Map.ts",
         "app/models/mongoose/Metadata.ts",
-        "app/models/mongoose/Tiles.ts"
+        "app/models/mongoose/Tiles.ts",
+        "app/routes/api.ts",
+        "app/routes/index.ts",
+        "app/cluster.ts",
+        "app/config.ts",
+        "app/server.ts"
     ]
 }

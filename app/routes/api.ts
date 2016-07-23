@@ -1,14 +1,14 @@
-import express from 'express'
-import cluster from 'cluster'
+import { Router } from 'express'
+import { worker } from 'cluster'
 
-const router = express.Router()
+const router = Router()
 
 router.route('/')
-  .all((request, response) => {
+  .all((request:any, response:any) => {
     response.json({
       api: 'Data Generator',
       ok: true,
-      cluster: cluster.worker.process.pid,
+      cluster: worker.process.pid,
       status: 200,
       message: 'Demonstrates the Data Generator API, yay!!',
       http: [

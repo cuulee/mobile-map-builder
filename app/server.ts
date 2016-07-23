@@ -1,8 +1,8 @@
-import express from 'express'
-import multer from 'multer'
-import bodyParser from 'body-parser'
+import express = require('express')
+import multer = require('multer')
+import bodyParser = require('body-parser')
 import routes from './routes'
-import { Log } from './models'
+import { Log } from './models/mongoose'
 import { PORT } from './config'
 
 const app = express()
@@ -12,9 +12,9 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.set('trust proxy', true)
 
 // Logging Middleware
-const upload = multer({ dest: 'uploads/' })
-app.use(upload.array(), (request, response, next) => {
-  let log = new Log()
+const upload:any = multer({ dest: 'uploads/' })
+app.use(upload.array(), (request:any, response:any, next:any) => {
+  let log:any = new Log()
   log.ip = request.headers['x-forwarded-for'] || request.connection.remoteAddress
   log.method = request.method
   log.url = request.originalUrl
@@ -25,7 +25,7 @@ app.use(upload.array(), (request, response, next) => {
 })
 
 // CORS Middleware
-app.use((request, response, next) => {
+app.use((request:any, response:any, next:any) => {
   response.header('Access-Control-Allow-Origin', '*')
   response.header('Access-Control-Allow-Headers', 'Content-Type,Authorization,Cache-Control,Accept,Accept-Encoding')
   next()

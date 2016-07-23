@@ -1,5 +1,5 @@
-import os from 'os'
-import uuid from 'node-uuid'
+import os = require('os')
+import uuid = require('node-uuid')
 
 export const PORT = process.env.PORT || 5000
 export const SECRET = process.env.SECRET || uuid.v4()
