@@ -1,11 +1,15 @@
 {
   "dependencies": {
-    "lodash": "registry:npm/lodash#4.0.0+20160701205107",
     "node-uuid": "registry:npm/node-uuid#1.4.7+20160503013124"
   },
   "globalDependencies": {
+    "bluebird": "registry:dt/bluebird#2.0.0+20160701023356",
     "geojson": "registry:dt/geojson#0.0.0+20160619034323",
+    "lodash": "registry:dt/lodash#3.10.0+20160720001309",
     "node": "registry:dt/node#6.0.0+20160720070758",
-    "turf": "registry:dt/turf#2.0.0+20160626221044"
+    "sequelize": "registry:dt/sequelize#3.4.1+20160720065448",
+    "sqlite3": "registry:dt/sqlite3#2.2.3+20160316155526",
+    "turf": "registry:dt/turf#2.0.0+20160626221044",
+    "validator": "registry:dt/validator#4.5.1+20160316155526"
   }
 }

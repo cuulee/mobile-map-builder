@@ -21,6 +21,10 @@
         "app/utils/GeoJSON.ts",
         "test/test_geojson.ts",
         "test/test_global_mercator.ts",
-        "test/test_tile.ts"
+        "app/models/sequelize/Images.ts",
+        "app/models/sequelize/index.ts",
+        "app/models/sequelize/Map.ts",
+        "app/models/sequelize/Metadata.ts",
+        "app/models/sequelize/Tiles.ts"
     ]
 }

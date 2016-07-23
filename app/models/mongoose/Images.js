@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose'
 
-let schema = new Schema({
+const schema = new Schema({
   tile_data: Buffer,
   tile_id: String
 })

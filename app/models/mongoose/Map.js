@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose'
 
-let schema = new Schema({
+const schema = new Schema({
   zoom_level: Number,
   tile_column: Number,
   tile_row: Number,

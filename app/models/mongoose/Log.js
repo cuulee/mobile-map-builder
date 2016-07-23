@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose'
 
-let schema = new Schema({
+const schema = new Schema({
   ip: String,
   url: String,
   method: String,

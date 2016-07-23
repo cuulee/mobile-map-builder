@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose'
 
-let schema = new Schema({
+const schema = new Schema({
   bounds: Buffer,
   minzoom: Number,
   maxzoom: Number,
