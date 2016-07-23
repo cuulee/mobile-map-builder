@@ -1,6 +1,7 @@
 typings
 coverage
 built
+.vscode/
 .nyc_output
 nohup.out
 node_modules

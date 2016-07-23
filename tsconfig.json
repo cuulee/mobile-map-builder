@@ -16,6 +16,7 @@
     ],
     "files": [
         "typings/index.d.ts",
+        "index.ts",
         "app/utils/Tile.ts",
         "app/utils/GlobalMercator.ts",
         "app/utils/GeoJSON.ts",
