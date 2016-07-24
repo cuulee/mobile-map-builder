@@ -19,66 +19,63 @@ test('Global Mercator', t => {
 
 test('LatLonToMeters', t => {
   let meters = mercator.LatLonToMeters(LATLNG)
-  t.true(!!meters)
+  t.deepEqual(meters, METERS)
 })
 
 test('MetersToLatLon', t => {
   let latlng = mercator.MetersToLatLon(METERS)
-  t.true(!!latlng)
+  t.deepEqual(latlng, LATLNG)
 })
 
 test('MetersToPixels', t => {
   let pixels = mercator.MetersToPixels(METERS)
-  t.true(!!pixels)
+  t.deepEqual(pixels, PIXELS)
 })
 
 test('PixelsToTile', t => {
   let tile = mercator.PixelsToTile(PIXELS)
-  t.true(!!tile)
+  t.deepEqual(tile, pick(TILE, ['tx', 'ty', 'zoom']))
 })
 
 test('MetersToTile', t => {
   let tile = mercator.MetersToTile(METERS)
-  t.true(!!tile)
+  t.deepEqual(tile, pick(TILE, ['tx', 'ty', 'zoom']))
 })
 
 test('PixelsToMeters', t => {
   let meters = mercator.PixelsToMeters(PIXELS)
-  t.true(!!meters)
+  t.deepEqual(meters.mx.toPrecision(5), METERS.mx.toPrecision(5))
+  t.deepEqual(meters.my.toPrecision(5), METERS.my.toPrecision(5))
 })
 
 test('TileBounds', t => {
   let bounds = mercator.TileBounds(TILE)
-  t.true(!!bounds)
+  t.deepEqual(bounds, BOUNDS)
 })
 
 test('TileLatLonBounds', t => {
   let bounds = mercator.TileLatLonBounds(TILE)
-  t.true(!!bounds)
+  t.deepEqual(bounds, BOUNDS_LATLNG)
 })
 
 test('GoogleTile', t => {
   let google = mercator.TileGoogle(TILE)
-  t.true(!!google)
+  t.deepEqual(google, pick(GOOGLE, ['x', ,'y', 'zoom']))
 })
 
 test('TileQuadKey', t => {
   let quadkey = mercator.TileQuadKey(TILE)
-  t.true(!!quadkey)
+  t.deepEqual(quadkey, QUADKEY)
 })
 
 test('QuadKeyGoogle', t => {
   let google = mercator.QuadKeyGoogle(QUADKEY)
-  t.true(GOOGLE.x == google.x)
-  t.true(GOOGLE.y == google.y)
-  t.true(GOOGLE.zoom == google.zoom)
+  t.deepEqual(google, pick(GOOGLE, ['x', ,'y', 'zoom']))
 })
 
 test('QuadKeyTile', t => {
   let tile = mercator.QuadKeyTile(QUADKEY)
-  t.true(TILE.tx == tile.tx)
-  t.true(TILE.ty == tile.ty)
-  t.true(TILE.zoom == tile.zoom)
+  t.deepEqual(tile, pick(TILE, ['tx', 'ty', 'zoom']))
 })
 
 test('Throws Error QuadKeyTile', t => {
@@ -87,12 +84,12 @@ test('Throws Error QuadKeyTile', t => {
 
 test('GoogleBounds', t => {
   let bounds = mercator.GoogleBounds(GOOGLE)
-  t.true(!!bounds)
+  t.deepEqual(bounds, BOUNDS)
 })
 
 test('GoogleLatLngBounds', t => {
   let bounds = mercator.GoogleLatLonBounds(GOOGLE)
-  t.true(!!bounds)
+  t.deepEqual(bounds, BOUNDS_LATLNG)
 })
 
 test('GoogleQuadKey', t => {
