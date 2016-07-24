@@ -124,11 +124,9 @@ export default class Tile {
   }
 }
 
+/* istanbul ignore next */
 if (require.main === module) {
-  /* istanbul ignore next */
   const { GOOGLE } = require('../../test/globals')
-  /* istanbul ignore next */
   const tile = new Tile(GOOGLE)
-  /* istanbul ignore next */
   console.log(tile)
 }

@@ -21,11 +21,9 @@ export default class GeoJSON {
   }
 }
 
+/* istanbul ignore next */
 if (require.main === module) {
-  /* istanbul ignore next */
   const { GOOGLE } = require('../../test/globals')
-  /* istanbul ignore next */
   const geojson = new GeoJSON(GOOGLE)
-  /* istanbul ignore next */
   console.log(geojson)
 }

@@ -327,7 +327,7 @@ export default class GlobalMercator {
 
     ty = (Math.pow(2, zoom) - 1) - ty
     range(zoom, 0, -1).map(i => {
-      let digit:string = '0'
+      let digit:any = 0
       let mask = 1 << (i - 1)
       if ((tx & mask) != 0) { digit += 1 }
       if ((ty & mask) != 0) { digit += 2 }
@@ -357,8 +357,8 @@ export default class GlobalMercator {
    * @returns {google}
    */
   QuadKeyGoogle(quadkey:string) {
-    let x = 0
-    let y = 0
+    let x:number = 0
+    let y:number = 0
     const zoom = quadkey.length
 
     range(zoom, 0, -1).map(i => {
@@ -386,41 +386,25 @@ export default class GlobalMercator {
 }
 export const mercator = new GlobalMercator()
 
+/* istanbul ignore next */
 if (require.main === module) {
-  /* istanbul ignore next */
   const { LATLNG, METERS, PIXELS, TILE, GOOGLE, QUADKEY } = require('../../test/globals')
-  /* istanbul ignore next */
   const mercator = new GlobalMercator()
-  /* istanbul ignore next */
+  console.log(mercator.GoogleQuadKey(GOOGLE))
   console.log(mercator.LatLonToMeters(LATLNG))
-  /* istanbul ignore next */
   console.log(mercator.MetersToPixels(METERS))
-  /* istanbul ignore next */
   console.log(mercator.MetersToLatLon(METERS))
-  /* istanbul ignore next */
   console.log(mercator.PixelsToTile(PIXELS))
-  /* istanbul ignore next */
   console.log(mercator.MetersToTile(METERS))
-  /* istanbul ignore next */
   console.log(mercator.PixelsToMeters(PIXELS))
-  /* istanbul ignore next */
   console.log(mercator.TileBounds(TILE))
-  /* istanbul ignore next */
   console.log(mercator.TileQuadKey(TILE))
-  /* istanbul ignore next */
   console.log(mercator.QuadKeyGoogle(QUADKEY))
-  /* istanbul ignore next */
   console.log(mercator.QuadKeyTile(QUADKEY))
-  /* istanbul ignore next */
   console.log(mercator.TileGoogle(TILE))
-  /* istanbul ignore next */
   console.log(mercator.GoogleTile(GOOGLE))
-  /* istanbul ignore next */
   console.log(mercator.GoogleBounds(GOOGLE))
-  /* istanbul ignore next */
   console.log(mercator.GoogleLatLonBounds(GOOGLE))
-  /* istanbul ignore next */
   console.log(mercator.TileLatLonBounds(TILE))
-  /* istanbul ignore next */
   console.log(mercator.GoogleQuadKey(GOOGLE))
 }
