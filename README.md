@@ -93,3 +93,4 @@ Shortest transaction:	        0.00
 - http://www.maptiler.org/google-maps-coordinates-tile-bounds-projection
 - https://msdn.microsoft.com/en-us/library/bb259689.aspx
 - https://github.com/DefinitelyTyped/DefinitelyTyped
+- https://blogs.esri.com/esri/arcgis/2014/05/05/creating-custom-tileservicelayer-android/
