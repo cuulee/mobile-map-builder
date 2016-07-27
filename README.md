@@ -101,3 +101,4 @@ Shortest transaction:	        0.00
 - https://msdn.microsoft.com/en-us/library/bb259689.aspx
 - https://github.com/DefinitelyTyped/DefinitelyTyped
 - https://blogs.esri.com/esri/arcgis/2014/05/05/creating-custom-tileservicelayer-android/
+- http://spatialreference.org/ref/sr-org/7483/
