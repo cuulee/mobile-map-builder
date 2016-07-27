@@ -48,6 +48,16 @@ An application that helps you build data bundles (MBTiles & GeoPackages) from Ti
 | attribution | STRING      | Map data © OpenStreetMap |
 | description | STRING      | Tiles from OSM           |
 
+**`tiles`**
+
+
+| Name        | Type  | Example                          |
+|-------------|-------|----------------------------------|
+| zoom_level  | INT   | 17                               |
+| tile_column | INT   | 156                              |
+| tile_row    | INT   | 85                               |
+| tile_data   | BLOB  | PNG/JPG image                    |
+
 ### Views
 
 **`tiles`**
