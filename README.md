@@ -63,6 +63,13 @@ CREATE VIEW tiles AS
   JOIN images ON images.tile_id = map.tile_id
 ```
 
+### Bounds
+
+Global bounding box extent of Tile (0,0) zoom 0.
+
+- `EPSG:4326 (Degrees)`: (-180,-85.05112877980659,180,85.05112877980659)
+- `EPSG:3857 (Meters)`: (-20037508.342789244,-20037508.342789244,20037508.342789244,20037508.342789244) 
+
 ### Testings
 
 Test server speeds & performance.
