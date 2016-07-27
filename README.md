@@ -58,6 +58,13 @@ An application that helps you build data bundles (MBTiles & GeoPackages) from Ti
 | tile_row    | INT   | 85                               |
 | tile_data   | BLOB  | PNG/JPG image                    |
 
+### Indices
+
+```sql
+CREATE UNIQUE INDEX name on metadata (name)
+CREATE UNIQUE INDEX tile_index on tiles (zoom_level, tile_column, tile_row)
+```
+
 ### Views
 
 **`tiles`**
