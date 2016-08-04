@@ -1,5 +1,5 @@
-import uuid = require('node-uuid')
-import turf = require('turf')
+import * as uuid from 'node-uuid'
+import * as turf from 'turf'
 import { sample } from 'lodash'
 import { mercator } from './GlobalMercator'
 

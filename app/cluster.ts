@@ -1,4 +1,4 @@
-import cluster = require('cluster')
+import * as cluster from 'cluster'
 import { range } from 'lodash'
 import { PORT, SECRET, CORES } from './config'
 

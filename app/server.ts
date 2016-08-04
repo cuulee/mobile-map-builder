@@ -1,6 +1,6 @@
-import express = require('express')
-import multer = require('multer')
-import bodyParser = require('body-parser')
+import * as express from 'express'
+import * as multer from 'multer'
+import * as bodyParser from 'body-parser'
 import routes from './routes'
 import { Log } from './models/mongoose'
 import { PORT } from './config'
