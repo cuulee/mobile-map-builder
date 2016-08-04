@@ -4,12 +4,12 @@
   "description": "An application that helps you build data bundles (MBTiles & GeoPackages) from TileServers.",
   "main": "index.js",
   "scripts": {
-    "postinstall": "./node_modules/.bin/typings install",
+    "postinstall": "./node_modules/typings/dist/bin.js install",
     "test": "npm run build && npm run ava",
-    "build": "./node_modules/.bin/tsc",
-    "ava": "./node_modules/.bin/nyc ./node_modules/.bin/ava --verbose",
-    "start": "./node_modules/.bin/ts-node app/cluster.ts",
-    "autostart": "nohup ./node_modules/.bin/ts-node app/cluster.ts </dev/null &"
+    "build": "./node_modules/typescript/bin/tsc",
+    "ava": "./node_modules/nyc/bin/nyc.js ./node_modules/ava/cli.js --verbose",
+    "start": "./node_modules/ts-node/dist/bin.js app/cluster.ts",
+    "autostart": "nohup ./node_modules/ts-node/dist/bin.js app/cluster.ts </dev/null &"
   },
   "repository": {
     "type": "git",
