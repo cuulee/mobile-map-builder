@@ -15,6 +15,10 @@ An application that helps you build data bundles (MBTiles & GeoPackages) from Ti
 
 ![image](https://cloud.githubusercontent.com/assets/550895/16849211/77e61188-49c7-11e6-9a05-e42bc30d2fea.png)
 
+- [Mobile Atlas Creator (MOBAC)](http://mobac.sourceforge.net/) - Prepare online maps for your mobile device
+
+![image](https://cloud.githubusercontent.com/assets/550895/17449077/2204efb2-5b26-11e6-9d8e-dedfa0bbeafa.png)
+
 ## MBTile Table Schema
 
 ### Tables
