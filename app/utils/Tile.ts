@@ -1,5 +1,7 @@
 import * as uuid from 'node-uuid'
 import * as turf from 'turf'
+import * as rp from 'request-promise'
+import * as fs from 'fs'
 import { sample } from 'lodash'
 import { mercator } from './GlobalMercator'
 
@@ -86,6 +88,10 @@ export const parseUrl = (tile:tileInterface) => {
   return url
 }
 
+export const downloadTile = (url:string) => {
+  return rp.get(url, { encoding : null })
+}
+
 /**
  * Tile contains all the essentials for an individual Google/ArcGIS/Bing Tile
  *
@@ -122,11 +128,21 @@ export default class Tile {
     // Validation
     validateTile(tile)
   }
+  /**
+   * Download Tile
+   * 
+   * @param {string} url (default=this.url)
+   * @returns Promise => Buffer
+   */
+  download(url:string=this.url) {
+    return downloadTile(url)
+  }
 }
 
 /* istanbul ignore next */
 if (require.main === module) {
   const { GOOGLE } = require('../../test/globals')
   const tile = new Tile(GOOGLE)
-  console.log(tile)
+  tile.download('https://tiles.dlcspm.com/osm-intl/14/4746/5866@2x.png')
+    .then(t => fs.writeFile('image.png', t, 'binary'))
 }
