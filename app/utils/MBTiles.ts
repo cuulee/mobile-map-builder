@@ -1,16 +1,29 @@
 import * as Sequelize from 'sequelize'
 import { Metadata } from '../models/sequelize'
 
+const config = {
+  storage: 'tiles.mbtiles'
+}
+
 export class MBTiles {
-  db:any
+  name:string
+  bounds:string
   constructor(name:string='data.mbtiles') {
-    this.db = new Sequelize(`sqlite://${ name }`)
-    this.db.define('Metadata', Metadata)
+    this.name = name
+    const sequelize = new Sequelize(`sqlite://${ name }`, config)
+    const metadata = sequelize.define('metadata', {name : Sequelize.STRING})
+    metadata.sync()
+      .then(() => {
+        return metadata.create({
+          name: 'Fred'
+        })
+      })
   }
 }
 
 /* istanbul ignore next */
 if (require.main === module) {
   const mbtiles = new MBTiles('tiles.mbtiles')
+  console.log(mbtiles)
   //console.log(mbtiles.db)
 }

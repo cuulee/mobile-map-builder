@@ -2,7 +2,6 @@
   "dependencies": {
     "mongoose": "registry:npm/mongoose#4.3.5+20160628072220",
     "node-uuid": "registry:npm/node-uuid#1.4.7+20160723033700",
-    "sequelize": "registry:npm/sequelize#3.0.0+20160801095441"
   },
   "globalDependencies": {
     "bluebird": "registry:dt/bluebird#2.0.0+20160701023356",

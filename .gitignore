@@ -1,6 +1,7 @@
 typings
 coverage
 built
+*.mbtiles
 .vscode/
 .nyc_output
 nohup.out

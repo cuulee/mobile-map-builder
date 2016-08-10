@@ -1,7 +1,7 @@
-import { STRING, BLOB, NUMBER } from 'sequelize'
+import { STRING, NUMBER, DefineAttributes } from 'sequelize'
 
-const scheme = {
-  bounds: BLOB,
+const scheme:DefineAttributes = {
+  bounds: STRING,
   minzoom: NUMBER,
   maxzoom: NUMBER,
   name: STRING,
