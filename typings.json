@@ -1,19 +1,23 @@
 {
   "dependencies": {
     "mongoose": "registry:npm/mongoose#4.3.5+20160628072220",
-    "node-uuid": "registry:npm/node-uuid#1.4.7+20160723033700"
+    "node-uuid": "registry:npm/node-uuid#1.4.7+20160723033700",
+    "sequelize": "registry:npm/sequelize#3.0.0+20160801095441"
   },
   "globalDependencies": {
     "bluebird": "registry:dt/bluebird#2.0.0+20160701023356",
     "body-parser": "registry:dt/body-parser#0.0.0+20160619023215",
     "express": "registry:dt/express#4.0.0+20160708185218",
     "express-serve-static-core": "registry:dt/express-serve-static-core#4.0.0+20160715232503",
+    "form-data": "registry:dt/form-data#0.0.0+20160724024111",
     "geojson": "registry:dt/geojson#0.0.0+20160619034323",
     "lodash": "registry:dt/lodash#4.14.0+20160802150749",
     "mime": "registry:dt/mime#0.0.0+20160316155526",
     "mongodb": "registry:dt/mongodb#2.1.0+20160602142941",
     "multer": "registry:dt/multer#0.0.0+20160726135055",
-    "node": "registry:dt/node#6.0.0+20160802155038",
+    "node": "registry:dt/node#6.0.0+20160807145350",
+    "request": "registry:dt/request#0.0.0+20160726020908",
+    "request-promise": "registry:dt/request-promise#3.0.0+20160628092802",
     "sequelize": "registry:dt/sequelize#3.4.1+20160802154903",
     "serve-static": "registry:dt/serve-static#0.0.0+20160606155157",
     "sqlite3": "registry:dt/sqlite3#2.2.3+20160724070935",

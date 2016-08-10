@@ -23,7 +23,7 @@
         "app/utils/Tile.ts",
         "app/utils/GlobalMercator.ts",
         "app/utils/GeoJSON.ts",
-        "app/utils/SQLite.ts",
+        "app/utils/MBTiles.ts",
         "app/utils/index.ts",
         "app/models/index.ts",
         "app/models/sequelize/Images.ts",
