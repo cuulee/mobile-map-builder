@@ -1,9 +1,9 @@
-import { STRING, NUMBER, DefineAttributes } from 'sequelize'
+import { STRING, INTEGER, DOUBLE, DefineAttributes } from 'sequelize'
 
 const scheme:DefineAttributes = {
   bounds: STRING,
-  minzoom: NUMBER,
-  maxzoom: NUMBER,
+  minzoom: INTEGER,
+  maxzoom: DOUBLE,
   name: STRING,
   version: STRING,
   center: STRING,
