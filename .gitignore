@@ -1,6 +1,7 @@
-typings
-coverage
-built
+typings/
+coverage/
+built/
+dist/
 *.png
 *.jpg
 *.mbtiles

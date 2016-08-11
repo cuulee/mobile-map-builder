@@ -6,7 +6,7 @@
         "noImplicitAny": true,
         "removeComments": false,
         "preserveConstEnums": true,
-        "outDir": "built/",
+        "outDir": "dist/",
         "sourceMap": true,
         "noEmitOnError": true
     },

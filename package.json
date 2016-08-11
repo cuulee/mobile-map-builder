@@ -42,12 +42,13 @@
     "coveralls": "^2.11.11",
     "eslint": "^3.0.1",
     "nyc": "^7.0.0",
+    "ts-node": "^1.2.2",
     "typescript": "^1.8.10",
     "typings": "^1.3.2"
   },
   "ava": {
     "files": [
-      "built/test/*.test.js"
+      "dist/test/*.test.js"
     ],
     "babel": "inherit",
     "concurrency": 5,
