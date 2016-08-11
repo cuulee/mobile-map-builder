@@ -95,7 +95,6 @@ export const downloadTile = (url:string) => {
 /**
  * Tile contains all the essentials for an individual Google/ArcGIS/Bing Tile
  *
- * @export
  * @class Tile
  */
 export default class Tile {
@@ -131,8 +130,8 @@ export default class Tile {
   /**
    * Download Tile
    * 
-   * @param {string} url (default=this.url)
-   * @returns Promise => Buffer
+   * @param {String} url (default=this.url)
+   * @returns {Promise} => {Buffer}
    */
   download(url:string=this.url) {
     return downloadTile(url)
