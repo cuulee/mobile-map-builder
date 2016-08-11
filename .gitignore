@@ -1,6 +1,8 @@
 typings
 coverage
 built
+*.png
+*.jpg
 *.mbtiles
 .vscode/
 .nyc_output
