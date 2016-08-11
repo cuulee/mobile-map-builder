@@ -16,9 +16,10 @@
     ],
     "files": [
         "typings/index.d.ts",
-        "test/geojson.test.ts",
-        "test/global_mercator.test.ts",
-        "test/tile.test.ts",
+        "test/utils.GeoJSON.test.ts",
+        "test/utils.GlobalMercator.test.ts",
+        "test/utils.Tile.test.ts",
+        "test/utils.MBTiles.test.ts",
         "test/globals.ts",
         "app/utils/Tile.ts",
         "app/utils/GlobalMercator.ts",

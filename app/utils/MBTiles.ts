@@ -62,7 +62,7 @@ export const parseBounds = (bounds:number[]) => {
  * @example
  * const mbtiles = new MBTiles('tiles.mbtiles')
  */
-export class MBTiles {
+export default class MBTiles {
   db:string
   name:string
   author:string
@@ -129,7 +129,7 @@ export class MBTiles {
     // Save Metadata to SQL
     const sequelize = this.connect()
     const metadata = sequelize.define('metadata', Metadata)
-    metadata.sync({ force:true })
+    return metadata.sync({ force:true })
       .then(() => {
         metadata.create({ name: 'name', value: this.name })
         metadata.create({ name: 'version', value: this.version })
