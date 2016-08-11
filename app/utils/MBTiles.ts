@@ -10,6 +10,7 @@ export interface metadataInterface {
   center:number[]
   bounds:number[]
   name?:string
+  scheme?:string
   author?:string
   attribution?:string
   description?:string
@@ -71,6 +72,7 @@ export default class MBTiles {
   version:string
   attribution:string
   description:string
+  scheme:string
   center:number[]
   bounds:number[]
   sequelize:Sequelize.Sequelize
@@ -102,12 +104,13 @@ export default class MBTiles {
    * @name metadata
    * @param {Number[x,y]} center (Required)
    * @param {Number[x1,y1,x2,y2]} bounds (Required)
-   * @param {Number} minzoom (Required)
-   * @param {Number} maxzoom (Required)
+   * @param {Number} minzoom (Optional)
+   * @param {Number} maxzoom (Optional)
    * @param {String} name (Optional)
    * @param {String} attribution (Optional)
    * @param {String} description (Optional)
    * @param {String} version (Optional)
+   * @param {String} scheme (Optional)
    * @example
    * mbtiles.metadata({
    *   center: [-18.7, 65, 7],
@@ -123,6 +126,7 @@ export default class MBTiles {
     this.center = init.center ? init.center : this.center
     this.minzoom = init.minzoom ? init.minzoom : this.minzoom
     this.maxzoom = init.maxzoom ? init.maxzoom : this.maxzoom
+    this.scheme = init.scheme ? init.scheme : this.scheme
     this.attribution = init.attribution ? init.attribution : this.attribution
     this.description = init.description ? init.description : this.description
 
@@ -133,13 +137,14 @@ export default class MBTiles {
       .then(() => {
         metadata.create({ name: 'name', value: this.name })
         metadata.create({ name: 'version', value: this.version })
-        metadata.create({ name: 'author', value: this.author })
         metadata.create({ name: 'attribution', value: this.attribution })
         metadata.create({ name: 'description', value: this.description })
         metadata.create({ name: 'bounds', value: parseBounds(this.bounds) })
         metadata.create({ name: 'center', value: parseCenter(this.center) })
         metadata.create({ name: 'minzoom', value: String(this.minzoom) })
-        metadata.create({ name: 'maxzoom', value: String(this.maxzoom) }) 
+        metadata.create({ name: 'maxzoom', value: String(this.maxzoom) })
+        if (this.author) metadata.create({ name: 'author', value: this.author })
+        if (this.scheme) metadata.create({ name: 'scheme', value: this.scheme })
       })
   }
 }

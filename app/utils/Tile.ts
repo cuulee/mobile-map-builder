@@ -142,6 +142,7 @@ export default class Tile {
 if (require.main === module) {
   const { GOOGLE } = require('../../test/globals')
   const tile = new Tile(GOOGLE)
-  tile.download('https://tiles.dlcspm.com/osm-intl/14/4746/5866@2x.png')
+  tile.download()
     .then(t => fs.writeFile('image.png', t, 'binary'))
+  console.log(tile)
 }
