@@ -11,38 +11,10 @@
         "noEmitOnError": true
     },
     "exclude": [
-        "node_modules",
-        "wwwroot"
+        "node_modules"
     ],
-    "files": [
-        "typings/index.d.ts",
-        "test/utils.GeoJSON.test.ts",
-        "test/utils.GlobalMercator.test.ts",
-        "test/utils.Tile.test.ts",
-        "test/utils.MBTiles.test.ts",
-        "test/globals.ts",
-        "app/utils/Tile.ts",
-        "app/utils/GlobalMercator.ts",
-        "app/utils/GeoJSON.ts",
-        "app/utils/MBTiles.ts",
-        "app/utils/index.ts",
-        "app/models/index.ts",
-        "app/models/sequelize/Images.ts",
-        "app/models/sequelize/index.ts",
-        "app/models/sequelize/Map.ts",
-        "app/models/sequelize/Metadata.ts",
-        "app/models/sequelize/Log.ts",
-        "app/models/sequelize/Tiles.ts",
-        "app/models/mongoose/Images.ts",
-        "app/models/mongoose/index.ts",
-        "app/models/mongoose/Log.ts",
-        "app/models/mongoose/Map.ts",
-        "app/models/mongoose/Metadata.ts",
-        "app/models/mongoose/Tiles.ts",
-        "app/routes/api.ts",
-        "app/routes/index.ts",
-        "app/cluster.ts",
-        "app/config.ts",
-        "app/server.ts"
+    "filesGlob": [
+        "./**/*.ts",
+        "typings/index.d.ts"
     ]
 }
