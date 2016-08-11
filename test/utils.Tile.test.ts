@@ -1,10 +1,11 @@
 import test from 'ava'
-import Tile, { validateTile, parseSwitch, parseUrl } from '../app/utils/Tile'
+import Tile, { validateTile, parseSwitch, parseUrl, downloadTile } from '../app/utils/Tile'
 
 const X = 655
 const Y = 854
 const ZOOM = 15
 const SWITCH = 'abc'
+const URL = 'http://tile-a.openstreetmap.fr/hot/13/2389/2946.png'
 const SCHEME_NO_SWITCH = 'http://tile.openstreetmap.fr/hot/{zoom}/{x}/{y}.png'
 const SCHEME = 'http://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png'
 const SCHEME_QUADKEY = 'http://tile.openstreetmap.fr/hot/{quadkey}.png'
@@ -52,4 +53,15 @@ test('Validate Tile', t => {
 test('Throw Error Tile', t => {
   const tile = {x: X, y: Y, zoom: 2, scheme: SCHEME}
   t.throws(() => validateTile(tile), 'Illegal parameters for tile')
+})
+
+test('Download Tile from Tile Class', t => {
+  const tile = new Tile(TILE)
+  tile.download()
+    .then(buffer => t.pass())
+})
+
+test('Download Tile from Method', t => {
+  downloadTile(URL)
+    .then(buffer => t.pass())
 })

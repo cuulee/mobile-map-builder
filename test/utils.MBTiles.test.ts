@@ -1,18 +1,45 @@
 import test from 'ava'
-import MBTiles from '../app/utils/MBTiles'
+import MBTiles, { parseCenter, parseBounds } from '../app/utils/MBTiles'
 
-test('MBTiles', t => {
-  const mbtiles = new MBTiles('test.mbtiles')
+const DB = 'tiles.mbtiles'
+const NAME = 'OpenStreetMap'
+const ATTRIBUTION = 'Map data © OpenStreetMap'
+const DESCRIPTION = 'Tiles from OSM'
+const SCHEME = 'http://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png'
+const BOUNDS = [-27, 62, -11, 67.5]
+const BOUNDS_STRING = '-27,62,-11,67.5'
+const CENTER = [-18.7, 65, 7]
+const CENTER_STRING = '-18.7,65,7'
+const MINZOOM = 1
+const MAXZOOM = 18
+const METADATA = {
+  name: NAME,
+  attribution: ATTRIBUTION,
+  description: DESCRIPTION,
+  scheme: SCHEME,
+  center: CENTER,
+  bounds: BOUNDS ,
+  minzoom: MINZOOM,
+  maxzoom: MAXZOOM 
+}
+
+test('MBTiles',  t => {
+  const mbtiles = new MBTiles(DB)
   t.pass()
 })
 
-test('MBTiles', t => {
-  const mbtiles = new MBTiles('tiles.mbtiles')
-  mbtiles.metadata({
-    center: [-18.7, 65, 7],
-    bounds: [-27, 62, -11, 67.5],
-    minzoom: 1,
-    maxzoom: 18
-  })
-  t.pass()
+test('Update Metadata', t => {
+  const mbtiles = new MBTiles(DB)
+  mbtiles.metadata(METADATA)
+    .then(status => t.true(status.ok))
+})
+
+test('parseCenter', t => {
+  const center = parseCenter(CENTER)
+  t.deepEqual(center, CENTER_STRING)
+})
+
+test('parseBounds', t => {
+  const bounds = parseBounds(BOUNDS)
+  t.deepEqual(bounds, BOUNDS_STRING)
 })

@@ -147,7 +147,7 @@ export default class MBTiles {
     if (this.author) await metadata.create({ name: 'author', value: this.author })
     if (this.scheme) await metadata.create({ name: 'scheme', value: this.scheme })
 
-    return { status: 'OK', message: 'Metadata updated' }
+    return { ok: true, status: 'OK', message: 'Metadata updated' }
   }
 }
 
