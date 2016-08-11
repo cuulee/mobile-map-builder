@@ -119,9 +119,9 @@ export default class MBTiles {
    *   bounds: [-27, 62, -11, 67.5],
    *   minzoom: 1,
    *   maxzoom: 18
-   * })
+   * }).then(status => console.log(status))
    */
-  metadata(init:metadataInterface) {
+  async metadata(init:metadataInterface) {
     // Define Metadata attributes
     this.name = init.name ? init.name : this.name
     this.bounds = init.bounds ? init.bounds : this.bounds
@@ -135,19 +135,19 @@ export default class MBTiles {
     // Save Metadata to SQL
     const sequelize = this.connect()
     const metadata = sequelize.define('metadata', Metadata)
-    return metadata.sync({ force:true })
-      .then(() => {
-        metadata.create({ name: 'name', value: this.name })
-        metadata.create({ name: 'version', value: this.version })
-        metadata.create({ name: 'attribution', value: this.attribution })
-        metadata.create({ name: 'description', value: this.description })
-        metadata.create({ name: 'bounds', value: parseBounds(this.bounds) })
-        metadata.create({ name: 'center', value: parseCenter(this.center) })
-        metadata.create({ name: 'minzoom', value: String(this.minzoom) })
-        metadata.create({ name: 'maxzoom', value: String(this.maxzoom) })
-        if (this.author) metadata.create({ name: 'author', value: this.author })
-        if (this.scheme) metadata.create({ name: 'scheme', value: this.scheme })
-      })
+    await metadata.sync({ force:true })
+    await metadata.create({ name: 'name', value: this.name })
+    await metadata.create({ name: 'version', value: this.version })
+    await metadata.create({ name: 'attribution', value: this.attribution })
+    await metadata.create({ name: 'description', value: this.description })
+    await metadata.create({ name: 'bounds', value: parseBounds(this.bounds) })
+    await metadata.create({ name: 'center', value: parseCenter(this.center) })
+    await metadata.create({ name: 'minzoom', value: String(this.minzoom) })
+    await metadata.create({ name: 'maxzoom', value: String(this.maxzoom) })
+    if (this.author) await metadata.create({ name: 'author', value: this.author })
+    if (this.scheme) await metadata.create({ name: 'scheme', value: this.scheme })
+
+    return { status: 'OK', message: 'Metadata updated' }
   }
 }
 
@@ -165,5 +165,5 @@ if (require.main === module) {
   }
   const mbtiles = new MBTiles('tiles.mbtiles')
   mbtiles.metadata(METADATA)
-  console.log(mbtiles)
+    .then(status => console.log(status))
 }
