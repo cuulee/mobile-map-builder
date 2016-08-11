@@ -9,14 +9,13 @@ import { get } from 'lodash'
 export interface metadataInterface {
   center:number[]
   bounds:number[]
+  minzoom:number
+  maxzoom:number
   name?:string
-  scheme?:string
-  author?:string
   attribution?:string
   description?:string
-  version?:string
-  minzoom?:number
-  maxzoom?:number
+  scheme?:string
+  author?:string
 }
 
 /**
@@ -86,8 +85,7 @@ export default class MBTiles {
    */
   constructor(db:string) {
     this.db = db
-    this.name = 'Data Generator'
-    this.author = 'DLCSPM 4 (Geo)'
+    this.name = 'OpenStreetMap'
     this.version = '1.1.0'
     this.attribution = 'Map data © OpenStreetMap'
     this.description = 'Tiles from OSM'
@@ -104,15 +102,19 @@ export default class MBTiles {
    * @name metadata
    * @param {Number[x,y]} center (Required)
    * @param {Number[x1,y1,x2,y2]} bounds (Required)
-   * @param {Number} minzoom (Optional)
-   * @param {Number} maxzoom (Optional)
+   * @param {Number} minzoom (Required)
+   * @param {Number} maxzoom (Required)
    * @param {String} name (Optional)
    * @param {String} attribution (Optional)
    * @param {String} description (Optional)
-   * @param {String} version (Optional)
+   * @param {String} author (Optional)
    * @param {String} scheme (Optional)
    * @example
    * mbtiles.metadata({
+   *   name: 'OpenStreetMap',
+   *   attribution: 'Map data © OpenStreetMap',
+   *   description: 'Tiles from OSM',
+   *   scheme: 'http://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png',
    *   center: [-18.7, 65, 7],
    *   bounds: [-27, 62, -11, 67.5],
    *   minzoom: 1,
@@ -151,12 +153,17 @@ export default class MBTiles {
 
 /* istanbul ignore next */
 if (require.main === module) {
-  const mbtiles = new MBTiles('tiles.mbtiles')
-  mbtiles.metadata({
+  const METADATA = {
+    name: 'OpenStreetMap',
+    attribution: 'Map data © OpenStreetMap',
+    description: 'Tiles from OSM',
+    scheme: 'http://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png',
     center: [-18.7, 65, 7],
     bounds: [-27, 62, -11, 67.5],
     minzoom: 1,
     maxzoom: 18
-  })
+  }
+  const mbtiles = new MBTiles('tiles.mbtiles')
+  mbtiles.metadata(METADATA)
   console.log(mbtiles)
 }
