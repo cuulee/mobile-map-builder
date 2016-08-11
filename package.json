@@ -38,7 +38,7 @@
     "turf": "^3.0.14"
   },
   "devDependencies": {
-    "ava": "^0.15.2",
+    "ava": "^0.16.0",
     "coveralls": "^2.11.11",
     "eslint": "^3.0.1",
     "nyc": "^7.0.0",
@@ -50,7 +50,6 @@
     "files": [
       "dist/test/*.test.js"
     ],
-    "babel": "inherit",
     "concurrency": 5,
     "failFast": true,
     "tap": true

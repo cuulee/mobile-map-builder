@@ -23,15 +23,15 @@ const METADATA = {
   maxzoom: MAXZOOM 
 }
 
-test('MBTiles',  t => {
+test('MBTiles', async (t) => {
   const mbtiles = new MBTiles(DB)
   t.pass()
 })
 
-test('Update Metadata', t => {
+test('Update Metadata', async (t) => {
   const mbtiles = new MBTiles(DB)
-  mbtiles.metadata(METADATA)
-    .then(status => t.true(status.ok))
+  const status = await mbtiles.metadata(METADATA)
+  t.true(status.ok)
 })
 
 test('parseCenter', t => {
