@@ -3,6 +3,9 @@ import { INTEGER, STRING } from 'sequelize'
 import { Metadata } from '../models/sequelize'
 import { get } from 'lodash'
 
+/**
+ * Metadata Interface for MBTiles.metadata
+ */
 export interface metadataInterface {
   center:number[]
   bounds:number[]
@@ -51,6 +54,14 @@ export const parseBounds = (bounds:number[]) => {
   return bounds.join(',')
 }
 
+/**
+ * Class implementation of Mabpox's MBTile v1.1 specification'
+ * 
+ * @class MBTiles
+ * @param {String} db
+ * @example
+ * const mbtiles = new MBTiles('tiles.mbtiles')
+ */
 export class MBTiles {
   db:string
   name:string
@@ -128,8 +139,7 @@ export class MBTiles {
         metadata.create({ name: 'bounds', value: parseBounds(this.bounds) })
         metadata.create({ name: 'center', value: parseCenter(this.center) })
         metadata.create({ name: 'minzoom', value: String(this.minzoom) })
-        metadata.create({ name: 'maxzoom', value: String(this.maxzoom) })
-        
+        metadata.create({ name: 'maxzoom', value: String(this.maxzoom) }) 
       })
   }
 }
