@@ -1,4 +1,5 @@
 import test from 'ava'
+import * as fs from 'fs'
 import MBTiles, { parseCenter, parseBounds } from '../app/utils/MBTiles'
 
 const DB = 'tiles.mbtiles'
@@ -31,12 +32,14 @@ const TILE = {
 
 test('MBTiles', async (t) => {
   const mbtiles = new MBTiles(DB)
+  fs.unlinkSync(DB)
   t.pass()
 })
 
 test('Update Metadata', async (t) => {
-  const mbtiles = new MBTiles(DB)
+  const mbtiles = new MBTiles('metadata.mbtiles')
   const status = await mbtiles.metadata(METADATA)
+  fs.unlinkSync('metadata.mbtiles')
   t.true(status.ok)
 })
 
@@ -53,5 +56,7 @@ test('parseBounds', t => {
 test('Save Tile', async (t) => {
   const mbtiles = new MBTiles(DB)
   const status = await mbtiles.save(TILE)
+  await mbtiles.save(TILE) // Save Duplicate Tile
+  fs.unlinkSync(DB)
   t.true(status.ok)
 })

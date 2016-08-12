@@ -19,6 +19,24 @@ export interface metadataInterface {
 }
 
 /**
+ * Map Interface for MBTiles SQL Model
+ */
+export interface mapSQLInterface {
+  zoom_level?:number
+  tile_row?:number
+  tile_column?:number
+  tile_id?:string
+}
+
+/**
+ * Images Interface for MBTiles SQL Model
+ */
+export interface imagesSQLInterface {
+  tile_data?:any
+  tile_id?:string
+}
+
+/**
  * Converts & validates bounds coordinates [x1,y1,x2,y2] into proper SQL string
  *
  * @name parseBounds
@@ -112,6 +130,7 @@ export default class MBTiles {
    * @param {String} description (Optional)
    * @param {String} author (Optional)
    * @param {String} scheme (Optional)
+   * @returns {Object} Status message
    * @example
    * mbtiles.metadata({
    *   name: 'OpenStreetMap',
@@ -154,33 +173,91 @@ export default class MBTiles {
 
     return { ok: true, status: 'OK', message: 'Metadata updated' }
   }
+
   /**
-   * Saves tile to MBTile database
+   * Saves map tile data to MBTile database
    * 
-   * @name save
+   * @name map
+   * @returns {Object} Tile Class
    * @example
    */
-  async save(init:tileInterface) {
+  async map(init:tileInterface) {
+    // Create SQL connection
+    const sequelize = this.connect()
+    const mapSQL = sequelize.define('map', models.Map)
+    await mapSQL.sync()
+
+    // Build tile
+    const tile = new Tile(init)
+
+    // Retrieve existing ID if exists
+    const findOne:mapSQLInterface = await mapSQL.findOne({
+      where: {
+        zoom_level: init.zoom,
+        tile_column: init.x,
+        tile_row: init.y
+      }
+    })
+    // Append existing Tile with new ID
+    if (findOne) tile.id = findOne.tile_id
+    
+    // Add Tile to MBTiles SQL db
+    // Not async/await since <tile_id> is alredy in Tile Class
+    else mapSQL.create({
+      zoom_level: tile.zoom,
+      tile_id: tile.id,
+      tile_row: tile.y,
+      tile_column: tile.x
+    })
+    return tile
+  }
+
+  /**
+   * Download and saves tile buffer to MBTiles SQL db
+   * 
+   * @name download
+   * @returns {Object} Tile Class
+   * @example
+   */
+  async download(tile:Tile) {
     // Create SQL connection
     const sequelize = this.connect()
     const imagesSQL = sequelize.define('images', models.Images)
-    const mapSQL = sequelize.define('map', models.Map)
-    await mapSQL.sync({ force: true })
     await imagesSQL.sync()
 
-    // Download Tile
-    const tile = new Tile(init)
-    const buffer = await tile.download()
-
-    // Save Tile to SQL
-    await imagesSQL.create({ tile_id: tile.id, tile_data: buffer})
-    await mapSQL.create({
-      tile_id: tile.id,
-      zoom_level: tile.zoom,
-      tile_column: tile.x,
-      tile_row: tile.y
+    // Retrieve existing ID if exists
+    const findOne:imagesSQLInterface = await imagesSQL.findOne({
+      where: {
+        tile_id: tile.id
+      }
     })
-    return { ok: true, status: 'OK', message: 'Tile saved' }
+
+    if (findOne) { console.log(`Skipped Download: ${ tile.id }`) }
+    else {
+      // Download Tile from default settings
+      const buffer = await tile.download()
+
+      // Save Tile to SQL
+      await imagesSQL.create({
+        tile_id: tile.id,
+        tile_data: buffer
+      })
+    }
+
+    return tile
+  }
+
+  /**
+   * Saves tile to MBTile SQL db
+   * 
+   * @name save
+   * @returns {Object} Status message
+   * @example
+   */
+  async save(init:tileInterface) {
+    const tile = await this.map(init)
+    await this.download(tile)
+    return { ok: true, status: 'OK', message: 'Tile saved', id: tile.id }
   }
 }
 
