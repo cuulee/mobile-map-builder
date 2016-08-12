@@ -22,6 +22,12 @@ const METADATA = {
   minzoom: MINZOOM,
   maxzoom: MAXZOOM 
 }
+const TILE = {
+  x: 2389,
+  y: 2946,
+  zoom: 13,
+  scheme: 'http://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png'
+}
 
 test('MBTiles', async (t) => {
   const mbtiles = new MBTiles(DB)
@@ -42,4 +48,10 @@ test('parseCenter', t => {
 test('parseBounds', t => {
   const bounds = parseBounds(BOUNDS)
   t.deepEqual(bounds, BOUNDS_STRING)
+})
+
+test('Save Tile', async (t) => {
+  const mbtiles = new MBTiles(DB)
+  const status = await mbtiles.save(TILE)
+  t.true(status.ok)
 })

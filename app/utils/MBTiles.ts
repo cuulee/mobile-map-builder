@@ -1,7 +1,7 @@
 import * as Sequelize from 'sequelize'
 import { INTEGER, STRING } from 'sequelize'
-import { Metadata } from '../models/sequelize'
-import { get } from 'lodash'
+import models from '../models'
+import Tile, { tileInterface } from './Tile'
 
 /**
  * Metadata Interface for MBTiles.metadata
@@ -92,7 +92,10 @@ export default class MBTiles {
   }
 
   connect() {
-    const options = { define: { timestamps: false } }
+    const options = {
+      define: { timestamps: false, freezeTableName: true },
+      pool: { max: 5, min: 0, idle: 10000 }
+    }
     return new Sequelize(`sqlite://${ this.db }`, options)
   }
 
@@ -132,27 +135,58 @@ export default class MBTiles {
     this.attribution = init.attribution ? init.attribution : this.attribution
     this.description = init.description ? init.description : this.description
 
-    // Save Metadata to SQL
+    // Create SQL connection
     const sequelize = this.connect()
-    const metadata = sequelize.define('metadata', Metadata)
-    await metadata.sync({ force:true })
-    await metadata.create({ name: 'name', value: this.name })
-    await metadata.create({ name: 'version', value: this.version })
-    await metadata.create({ name: 'attribution', value: this.attribution })
-    await metadata.create({ name: 'description', value: this.description })
-    await metadata.create({ name: 'bounds', value: parseBounds(this.bounds) })
-    await metadata.create({ name: 'center', value: parseCenter(this.center) })
-    await metadata.create({ name: 'minzoom', value: String(this.minzoom) })
-    await metadata.create({ name: 'maxzoom', value: String(this.maxzoom) })
-    if (this.author) await metadata.create({ name: 'author', value: this.author })
-    if (this.scheme) await metadata.create({ name: 'scheme', value: this.scheme })
+    const metadataSQL = sequelize.define('metadata', models.Metadata)
+    await metadataSQL.sync({ force:true })
+
+    // Save Metadata to SQL
+    await metadataSQL.create({ name: 'name', value: this.name })
+    await metadataSQL.create({ name: 'version', value: this.version })
+    await metadataSQL.create({ name: 'attribution', value: this.attribution })
+    await metadataSQL.create({ name: 'description', value: this.description })
+    await metadataSQL.create({ name: 'bounds', value: parseBounds(this.bounds) })
+    await metadataSQL.create({ name: 'center', value: parseCenter(this.center) })
+    await metadataSQL.create({ name: 'minzoom', value: String(this.minzoom) })
+    await metadataSQL.create({ name: 'maxzoom', value: String(this.maxzoom) })
+    if (this.author) await metadataSQL.create({ name: 'author', value: this.author })
+    if (this.scheme) await metadataSQL.create({ name: 'scheme', value: this.scheme })
 
     return { ok: true, status: 'OK', message: 'Metadata updated' }
+  }
+  /**
+   * Saves tile to MBTile database
+   * 
+   * @name save
+   * @example
+   */
+  async save(init:tileInterface) {
+    // Create SQL connection
+    const sequelize = this.connect()
+    const imagesSQL = sequelize.define('images', models.Images)
+    const mapSQL = sequelize.define('map', models.Map)
+    await mapSQL.sync({ force: true })
+    await imagesSQL.sync()
+
+    // Download Tile
+    const tile = new Tile(init)
+    const buffer = await tile.download()
+
+    // Save Tile to SQL
+    await imagesSQL.create({ tile_id: tile.id, tile_data: buffer})
+    await mapSQL.create({
+      tile_id: tile.id,
+      zoom_level: tile.zoom,
+      tile_column: tile.x,
+      tile_row: tile.y
+    })
+    return { ok: true, status: 'OK', message: 'Tile saved' }
   }
 }
 
 /* istanbul ignore next */
 if (require.main === module) {
+  // Save Metadata
   const METADATA = {
     name: 'OpenStreetMap',
     attribution: 'Map data © OpenStreetMap',
@@ -165,5 +199,15 @@ if (require.main === module) {
   }
   const mbtiles = new MBTiles('tiles.mbtiles')
   mbtiles.metadata(METADATA)
+    .then(status => console.log(status))
+
+  // Save Tile
+  const TILE = {
+    x: 2389,
+    y: 2946,
+    zoom: 13,
+    scheme: 'http://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png'
+  }
+  mbtiles.save(TILE)
     .then(status => console.log(status))
 }

@@ -1,6 +1,6 @@
-import { STRING, JSON } from 'sequelize'
+import { STRING, JSON, DefineAttributes } from 'sequelize'
 
-const scheme = {
+const scheme:DefineAttributes = {
   ip: STRING,
   url: STRING,
   method: STRING,

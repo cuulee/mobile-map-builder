@@ -140,13 +140,13 @@ export default class Tile {
 
 /* istanbul ignore next */
 if (require.main === module) {
-  const GOOGLE = {
+  const TILE = {
     x: 2389,
     y: 2946,
     zoom: 13,
     scheme: 'http://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png'
   }
-  const tile = new Tile(GOOGLE)
+  const tile = new Tile(TILE)
   tile.download()
     .then(t => fs.writeFile('image.png', t, 'binary'))
   console.log(tile)

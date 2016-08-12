@@ -2,7 +2,7 @@ import * as express from 'express'
 import * as multer from 'multer'
 import * as bodyParser from 'body-parser'
 import routes from './routes'
-import { Log } from './models/mongoose'
+import { Log } from './models'
 import { PORT } from './config'
 
 const app = express()
@@ -14,12 +14,13 @@ app.set('trust proxy', true)
 // Logging Middleware
 const upload:any = multer({ dest: 'uploads/' })
 app.use(upload.array(), (request:any, response:any, next:any) => {
-  let log:any = new Log()
-  log.ip = request.headers['x-forwarded-for'] || request.connection.remoteAddress
-  log.method = request.method
-  log.url = request.originalUrl
-  log.body = request.body
-  log.auth = request.headers.authorization
+  const log = {
+    ip: request.headers['x-forwarded-for'] || request.connection.remoteAddress,
+    method: request.method,
+    url: request.originalUrl,
+    body: request.body,
+    auth: request.headers.authorization
+  }
   console.log(log)
   next()
 })
