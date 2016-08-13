@@ -38,9 +38,9 @@ test('MBTiles', async (t) => {
 
 test('Update Metadata', async (t) => {
   const mbtiles = new MBTiles('UpdateMetadata.mbtiles')
-  mbtiles.metadata(METADATA)
-    .then(status => t.true(status.ok))
+  const status = await mbtiles.metadata(METADATA)
   await del('UpdateMetadata.mbtiles')
+  t.true(status.ok)
 })
 
 test('parseCenter', t => {
