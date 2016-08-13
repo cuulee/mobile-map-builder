@@ -1,11 +1,11 @@
 import { TEXT, JSON, DefineAttributes } from 'sequelize'
 
-const scheme:DefineAttributes = {
-  ip: TEXT,
-  url: TEXT,
-  method: TEXT,
+const scheme: DefineAttributes = {
+  auth: TEXT,
   body: JSON,
-  auth: TEXT
+  ip: TEXT,
+  method: TEXT,
+  url: TEXT,
 }
 
 export default scheme

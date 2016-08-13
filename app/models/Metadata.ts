@@ -1,8 +1,8 @@
 import { TEXT, DefineAttributes } from 'sequelize'
 
-const scheme:DefineAttributes = {
-  name: { type: TEXT, unique: true, primaryKey: true },
-  value: { type: TEXT, allowNull: false }
+const scheme: DefineAttributes = {
+  name: { primaryKey: true, type: TEXT, unique: true },
+  value: { allowNull: false, type: TEXT },
 }
 
 export default scheme

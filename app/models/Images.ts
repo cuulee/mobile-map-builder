@@ -1,8 +1,8 @@
 import { TEXT, BLOB, DefineAttributes } from 'sequelize'
 
-const scheme:DefineAttributes = {
+const scheme: DefineAttributes = {
   tile_data: { type: BLOB },
-  tile_id: { type: TEXT, unique: true, primaryKey: true }
+  tile_id: { primaryKey: true, type: TEXT, unique: true }
 }
 
 export default scheme

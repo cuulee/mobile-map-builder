@@ -1,15 +1,16 @@
+import debug from './debug'
 import { omit } from 'lodash'
-import Tile, { tileInterface } from './Tile'
+import Tile, { InterfaceTile } from './Tile'
 
 export default class GeoJSON {
-  name:string = 'GeoJSON'
-  type:string = 'Feature'
-  geometry:{type:string, coordinates:number[][][]}
-  bbox:number[]
-  id:string
-  properties:any
+  public name: string = 'GeoJSON'
+  public type: string = 'Feature'
+  public geometry: {type: string, coordinates: number[][][]}
+  public bbox: number[]
+  public id: string
+  public properties: any
 
-  constructor(tile:tileInterface) {
+  constructor(tile: InterfaceTile) {
     tile = new Tile(tile)
 
     this.properties = '12'
@@ -22,8 +23,13 @@ export default class GeoJSON {
 }
 
 /* istanbul ignore next */
-if (require.main === module) {
+async function main() {
   const { GOOGLE } = require('../../test/globals')
   const geojson = new GeoJSON(GOOGLE)
-  console.log(geojson)
+  debug.log(geojson)
+}
+
+/* istanbul ignore next */
+if (require.main === module) {
+  main()
 }

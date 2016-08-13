@@ -1,10 +1,10 @@
 import { TEXT, INTEGER, DefineAttributes } from 'sequelize'
 
-const scheme:DefineAttributes = {
-  zoom_level: { type: INTEGER },
+const scheme: DefineAttributes = {
   tile_column: { type: INTEGER },
+  tile_id: { primaryKey: true, type: TEXT, unique: true },
   tile_row: { type: INTEGER },
-  tile_id: { type: TEXT, unique: true, primaryKey: true }
+  zoom_level: { type: INTEGER },
 }
 
 export default scheme

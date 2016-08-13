@@ -4,19 +4,19 @@ import * as rp from 'request-promise'
 import * as fs from 'fs'
 import { sample } from 'lodash'
 import { mercator } from './GlobalMercator'
+import debug from './debug'
 
-
-export interface tileInterface {
-  x:number,
-  y:number,
-  zoom:number,
-  tile_row?:number,
-  tile_column?:number,
-  quadkey?:string,
-  scheme?:string,
-  id?:string,
-  bbox?:number[],
-  geometry?:{type:string, coordinates:number[][][]}
+export interface InterfaceTile {
+  x: number,
+  y: number,
+  zoom: number,
+  tile_row?: number,
+  tile_column?: number,
+  quadkey?: string,
+  scheme?: string,
+  id?: string,
+  bbox?: number[],
+  geometry?: {type: string, coordinates: number[][][]}
 }
 
 /**
@@ -35,7 +35,7 @@ export interface tileInterface {
  * or
  * //= throw Error(msg)
  */
-export const validateTile = (tile: tileInterface) => {
+export const validateTile = (tile: InterfaceTile) => {
   let tileCountXY = Math.pow(2, tile.zoom)
   if (tile.x >= tileCountXY || tile.y >= tileCountXY) {
     throw new Error('Illegal parameters for tile')
@@ -54,7 +54,7 @@ export const validateTile = (tile: tileInterface) => {
  * const url = parseUrl(scheme)
  * //= 'http://tile-a.openstreetmap.fr/hot/{zoom}/{x}/{y}.png'
  */
-export const parseSwitch = (url:string) => {
+export const parseSwitch = (url: string) => {
   const pattern = /{switch:([a-z,\d]*)}/i
   const found = url.match(pattern)
   if (found) {
@@ -79,7 +79,7 @@ export const parseSwitch = (url:string) => {
  * tile.scheme = 'http://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png'
  * const url = parseUrl(tile)
  */
-export const parseUrl = (tile:tileInterface) => {
+export const parseUrl = (tile: InterfaceTile) => {
   let url = tile.scheme
   url = url.replace(/{zoom}/, String(tile.zoom))
   url = url.replace(/{z}/, String(tile.zoom))
@@ -91,7 +91,7 @@ export const parseUrl = (tile:tileInterface) => {
   return url
 }
 
-export const downloadTile = (url:string) => {
+export const downloadTile = (url: string) => {
   return rp.get(url, { encoding : 'binary' })
     .then(data => new Buffer(data, 'binary'))
 }
@@ -102,20 +102,20 @@ export const downloadTile = (url:string) => {
  * @class Tile
  */
 export default class Tile {
-  name:string = 'Tile'
-  x:number
-  y:number
-  tile_row:number
-  tile_column:number
-  zoom:number
-  scheme:string
-  quadkey:string
-  url:string
-  id:string
-  bbox:number[]
-  geometry:{ type:string, coordinates:number[][][] }
+  public name: string = 'Tile'
+  public x: number
+  public y: number
+  public tileRow: number
+  public tileColumn: number
+  public zoom: number
+  public scheme: string
+  public quadkey: string
+  public url: string
+  public id: string
+  public bbox: number[]
+  public geometry: { type: string, coordinates: number[][][] }
 
-  constructor(tile:tileInterface) {
+  constructor(tile: InterfaceTile) {
     // User Input
     this.x = tile.x
     this.y = tile.y
@@ -132,8 +132,8 @@ export default class Tile {
 
     // TMS Tiles Scheme
     const tms = mercator.GoogleTile(tile)
-    this.tile_row = tms.ty
-    this.tile_column = tms.tx
+    this.tileRow = tms.ty
+    this.tileColumn = tms.tx
 
     // Validation
     validateTile(tile)
@@ -144,7 +144,7 @@ export default class Tile {
    * @param {String} url (default=this.url)
    * @returns {Promise} => {Buffer}
    */
-  download(url:string=this.url) {
+  public download(url: string = this.url) {
     return downloadTile(url)
   }
 }
@@ -152,15 +152,15 @@ export default class Tile {
 /* istanbul ignore next */
 if (require.main === module) {
   const TILE = {
+    scheme: 'http://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png',
     x: 2375,
     y: 2925,
     zoom: 13,
-    scheme: 'http://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png'
   }
   const tile = new Tile(TILE)
-  console.log(mercator.GoogleTile(tile))
-  console.log(tile)
+  debug.log(mercator.GoogleTile(tile))
+  debug.log(tile)
   tile.download()
-    //.then(data => console.log(data))
+    // .then(data => debug.log(data))
     .then(data => fs.writeFile('image.png', data, 'binary'))
 }
