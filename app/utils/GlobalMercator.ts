@@ -1,15 +1,16 @@
+import debug from './debug'
 import { range } from 'lodash'
 
-export const bounds = (init:number[]) => {
+export const bounds = (init: number[]) => {
   if (init.length !== 4) { throw new Error('[bounds] Must be an array with 4x Numbers.')}
   return [...init]
 }
 
-export class google {
-  x: number
-  y: number
-  zoom: number
-  constructor(init: {x:number, y:number, zoom:number}) {
+export class Google {
+  public x: number
+  public y: number
+  public zoom: number
+  constructor(init: {x: number, y: number, zoom: number}) {
     const {x, y, zoom} = init
     this.x = x
     this.y = y
@@ -17,11 +18,11 @@ export class google {
   }
 }
 
-export class tile {
-  tx: number
-  ty: number
-  zoom: number
-  constructor(init: {tx:number, ty:number, zoom:number}) {
+export class Tile {
+  public tx: number
+  public ty: number
+  public zoom: number
+  constructor(init: {tx: number, ty: number, zoom: number}) {
     const {tx, ty, zoom} = init
     this.tx = tx
     this.ty = ty
@@ -29,11 +30,11 @@ export class tile {
   }
 }
 
-export class pixels {
-  px: number
-  py: number
-  zoom: number
-  constructor(init: {px:number, py:number, zoom?:number}) {
+export class Pixels {
+  public px: number
+  public py: number
+  public zoom: number
+  constructor(init: {px: number, py: number, zoom?: number}) {
     const {px, py, zoom} = init
     this.px = px
     this.py = py
@@ -41,11 +42,11 @@ export class pixels {
   }
 }
 
-export class meters {
-  mx: number
-  my: number
-  zoom: number
-  constructor(init: {mx:number, my:number, zoom?:number}) {
+export class Meters {
+  public mx: number
+  public my: number
+  public zoom: number
+  constructor(init: {mx: number, my: number, zoom?: number}) {
     const {mx, my, zoom} = init
     this.mx = mx
     this.my = my
@@ -53,11 +54,11 @@ export class meters {
   }
 }
 
-export class latlng {
-  lat: number
-  lng: number
-  zoom: number
-  constructor(init: {lat:number, lng:number, zoom?:number}) {
+export class LatLng {
+  public lat: number
+  public lng: number
+  public zoom: number
+  constructor(init: {lat: number, lng: number, zoom?: number}) {
     const {lat, lng, zoom} = init
     this.lat = lat
     this.lng = lng
@@ -72,32 +73,32 @@ export class latlng {
  * @name GlobalMercator
  * @example
  * const mercator = GlobalMercator()
- * mercator.LatLngToMeters(tile)
+ * mercator.LatLngToMeters(Tile)
  */
 export default class GlobalMercator {
-  public name:string = 'GlobalMercator'
-  private tileSize:number
-  private initialResolution:number
-  private originShift:number
+  public name: string = 'GlobalMercator'
+  private TileSize: number
+  private initialResolution: number
+  private originShift: number
 
   /**
    * Initialize the TMS Global Mercator pyramid
-   * @param  {Number} tileSize (default=256)
+   * @param  {Number} TileSize (default=256)
    */
-  constructor(tileSize:number = 256) {
-    this.tileSize = tileSize
-    this.initialResolution = 2 * Math.PI * 6378137 / this.tileSize
+  constructor(TileSize: number = 256) {
+    this.TileSize = TileSize
+    this.initialResolution = 2 * Math.PI * 6378137 / this.TileSize
     this.originShift = 2 * Math.PI * 6378137 / 2.0
   }
 
   /**
-   * Resolution (meters/pixel) for given zoom level (measured at Equator) 
+   * Resolution (Meters/pixel) for given zoom level (measured at Equator) 
    * 
    * @name Resolution
    * @param {Number} zoom
    * @returns {Number}
    */
-  Resolution(zoom:number) {
+  public Resolution(zoom: number) {
     return this.initialResolution / Math.pow(2, zoom)
   }
 
@@ -107,15 +108,15 @@ export default class GlobalMercator {
    * @name LatLonToMeters
    * @param {Number} lat
    * @param {Number} lng
-   * @returns {meters}
+   * @returns {Meters}
    */
-  LatLonToMeters(init:latlng) {
-    const { lat, lng, zoom } = new latlng(init)
-    let mx:number = lng * this.originShift / 180.0
-    let my:number = Math.log(Math.tan((90 + lat) * Math.PI / 360.0 )) / (Math.PI / 180.0)
+  public LatLonToMeters(init: LatLng) {
+    const { lat, lng, zoom } = new LatLng(init)
+    let mx: number = lng * this.originShift / 180.0
+    let my: number = Math.log(Math.tan((90 + lat) * Math.PI / 360.0 )) / (Math.PI / 180.0)
     my = my * this.originShift / 180.0
 
-    return new meters({ mx: mx, my: my, zoom: zoom })
+    return new Meters({ mx: mx, my: my, zoom: zoom })
   }
 
   /**
@@ -124,15 +125,15 @@ export default class GlobalMercator {
    * @name MetersToLatLong
    * @param {Number} mx
    * @param {Number} my
-   * @returns {latlng}
+   * @returns {LatLng}
    */
-  MetersToLatLon(init:meters) {
-    const { mx, my, zoom } = new meters(init)
+  public MetersToLatLon(init: Meters) {
+    const { mx, my, zoom } = new Meters(init)
     let lng = (mx / this.originShift) * 180.0
     let lat = (my / this.originShift) * 180.0
     lat = 180 / Math.PI * (2 * Math.atan( Math.exp( lat * Math.PI / 180.0)) - Math.PI / 2.0)
 
-    return new latlng({ lat: lat, lng: lng, zoom: zoom })
+    return new LatLng({ lat: lat, lng: lng, zoom: zoom })
   }
 
   /**
@@ -141,29 +142,29 @@ export default class GlobalMercator {
    * @name MetersToPixels
    * @param {Number} mx
    * @param {Number} my
-   * @returns {pixels}
+   * @returns {Pixels}
    */
-  MetersToPixels(init:meters) {
-    const { mx, my, zoom } = new meters(init)
+  public MetersToPixels(init: Meters) {
+    const { mx, my, zoom } = new Meters(init)
     const res = this.Resolution(zoom)
     const px = (mx + this.originShift) / res
     const py = (my + this.originShift) / res
 
-    return new pixels({ px: px, py: py, zoom: zoom })
+    return new Pixels({ px: px, py: py, zoom: zoom })
   }
 
   /**
-   * Returns tile for given mercator coordinates
+   * Returns Tile for given mercator coordinates
    * 
    * @name MetersToTile
    * @param {Number} mx
    * @param {Number} my
-   * @returns {tile}
+   * @returns {Tile}
    */
-  MetersToTile(init:meters) {
-    const pixels = this.MetersToPixels(new meters(init))
+  public MetersToTile(init: Meters) {
+    const Pixels = this.MetersToPixels(new Meters(init))
 
-    return this.PixelsToTile(pixels)
+    return this.PixelsToTile(Pixels)
   }
 
   /**
@@ -173,36 +174,36 @@ export default class GlobalMercator {
    * @param {Number} px
    * @param {Number} py
    * @param {Number} zoom
-   * @returns {meters}
+   * @returns {Meters}
    */
-  PixelsToMeters(init:pixels) {
-    const {px, py, zoom} = new pixels(init)
+  public PixelsToMeters(init: Pixels) {
+    const {px, py, zoom} = new Pixels(init)
     const res = this.Resolution(zoom)
     const mx = px * res - this.originShift
     const my = py * res - this.originShift
 
-    return new meters({ mx: mx, my: my, zoom: zoom })
+    return new Meters({ mx: mx, my: my, zoom: zoom })
   }
 
   /**
-   * Returns a tile covering region in given pixel coordinates
+   * Returns a Tile covering region in given pixel coordinates
    * 
    * @name PixelsToTile
    * @param {Number} px
    * @param {Number} py
    * @param {Number} zoom
-   * @returns {tile}
+   * @returns {Tile}
    */
-  PixelsToTile(init:pixels) {
-    const {px, py, zoom} = new pixels(init)
-    const tx = Math.ceil(px / this.tileSize) - 1
-    const ty = Math.ceil(py / this.tileSize) - 1
+  public PixelsToTile(init: Pixels) {
+    const {px, py, zoom} = new Pixels(init)
+    const tx = Math.ceil(px / this.TileSize) - 1
+    const ty = Math.ceil(py / this.TileSize) - 1
 
-    return new tile({ tx: tx, ty: ty, zoom: zoom })
+    return new Tile({ tx: tx, ty: ty, zoom: zoom })
   }
 
   /**
-   * Returns bounds of the given tile in EPSG:900913 coordinates
+   * Returns bounds of the given Tile in EPSG:900913 coordinates
    * 
    * @name TileBounds
    * @param {Number} tx
@@ -210,16 +211,16 @@ export default class GlobalMercator {
    * @param {Number} zoom
    * @returns {bounds}
    */
-  TileBounds(init:tile) {
-    const {tx, ty, zoom} = new tile(init)
-    let min = this.PixelsToMeters({ px: tx * this.tileSize, py: ty * this.tileSize, zoom: zoom })
-    let max = this.PixelsToMeters({ px: (tx + 1) * this.tileSize, py: (ty + 1) * this.tileSize, zoom: zoom })
+  public TileBounds(init: Tile) {
+    const {tx, ty, zoom} = new Tile(init)
+    let min = this.PixelsToMeters({ px: tx * this.TileSize, py: ty * this.TileSize, zoom: zoom })
+    let max = this.PixelsToMeters({ px: (tx + 1) * this.TileSize, py: (ty + 1) * this.TileSize, zoom: zoom })
 
     return bounds([ min.mx, min.my, max.mx, max.my ])
   }
 
   /**
-   * Returns bounds of the given tile in EPSG:900913 coordinates
+   * Returns bounds of the given Tile in EPSG:900913 coordinates
    * 
    * @name TileLatLonBounds
    * @param {Number} tx
@@ -227,17 +228,17 @@ export default class GlobalMercator {
    * @param {Number} zoom
    * @returns {bounds}
    */
-  TileLatLonBounds(init:tile) {
-    const {tx, ty, zoom} = new tile(init)
-    const [mx1, my1, mx2, my2] = this.TileBounds({ tx: tx, ty: ty, zoom:zoom })
-    const min = this.MetersToLatLon({ mx: mx1, my: my1, zoom:zoom })
-    const max = this.MetersToLatLon({ mx: mx2, my: my2, zoom:zoom })
-    
+  public TileLatLonBounds(init: Tile) {
+    const {tx, ty, zoom} = new Tile(init)
+    const [mx1, my1, mx2, my2] = this.TileBounds({ tx: tx, ty: ty, zoom: zoom })
+    const min = this.MetersToLatLon({ mx: mx1, my: my1, zoom: zoom })
+    const max = this.MetersToLatLon({ mx: mx2, my: my2, zoom: zoom })
+
     return bounds([ min.lng, min.lat, max.lng, max.lat ])
   }
 
   /**
-   * Converts Google tile system in Mercator bounds (meters)
+   * Converts Google Tile system in Mercator bounds (Meters)
    * 
    * @name GoogleBounds
    * @param {Number} x
@@ -245,13 +246,13 @@ export default class GlobalMercator {
    * @param {Number} zoom
    * @returns {bounds}
    */
-  GoogleBounds(init:google) {
-    const tile = this.GoogleTile(init)
-    return this.TileBounds(tile)
+  public GoogleBounds(init: Google) {
+    const Tile = this.GoogleTile(init)
+    return this.TileBounds(Tile)
   }
 
   /**
-   * Converts Google tile system in LatLng bounds (degrees)
+   * Converts Google Tile system in LatLng bounds (degrees)
    * 
    * @name GoogleLatLonBounds
    * @param {Number} x
@@ -259,13 +260,13 @@ export default class GlobalMercator {
    * @param {Number} zoom
    * @returns {bounds}
    */
-  GoogleLatLonBounds(init:google) {
-    const tile = this.GoogleTile(init)
-    return this.TileLatLonBounds(tile)
+  public GoogleLatLonBounds(init: Google) {
+    const Tile = this.GoogleTile(init)
+    return this.TileLatLonBounds(Tile)
   }
 
   /**
-   * Converts TMS tile coordinates to Google Tile coordinates
+   * Converts TMS Tile coordinates to Google Tile coordinates
    * 
    * @name TileGoogle
    * @param {Number} tx
@@ -273,29 +274,29 @@ export default class GlobalMercator {
    * @param {Number} zoom
    * @returns {bounds}
    */
-  TileGoogle(init:tile) {
-    const { tx, ty, zoom } = new tile(init)
+  public TileGoogle(init: Tile) {
+    const { tx, ty, zoom } = new Tile(init)
     const x = tx
     const y = (Math.pow(2, zoom) - 1) - ty
 
-    return new google({ x: x, y: y, zoom: zoom })
+    return new Google({ x: x, y: y, zoom: zoom })
   }
 
   /**
-   * Converts Google Tile coordinates to TMS tile coordinates
+   * Converts Google Tile coordinates to TMS Tile coordinates
    * 
    * @name GoogleTile
    * @param {Number} x
    * @param {Number} y
    * @param {Number} zoom
-   * @returns {tile}
+   * @returns {Tile}
    */
-  GoogleTile(init:google) {
-    const { x, y, zoom } = new google(init)
+  public GoogleTile(init: Google) {
+    const { x, y, zoom } = new Google(init)
     const tx = x
     const ty = Math.pow(2, zoom) - y - 1
-  
-    return new tile({ tx: tx, ty: ty, zoom: zoom })
+
+    return new Tile({ tx: tx, ty: ty, zoom: zoom })
   }
 
   /**
@@ -307,13 +308,13 @@ export default class GlobalMercator {
    * @param {Number} zoom
    * @returns {quadkey}
    */
-  GoogleQuadKey(init:google) {
-    const tile = this.GoogleTile(init)
-    return this.TileQuadKey(tile)
+  public GoogleQuadKey(init: Google) {
+    const Tile = this.GoogleTile(init)
+    return this.TileQuadKey(Tile)
   }
 
   /**
-   * Converts TMS tile coordinates to Microsoft QuadKey
+   * Converts TMS Tile coordinates to Microsoft QuadKey
    * 
    * @name TileQuadKey
    * @param {Number} tx
@@ -321,16 +322,16 @@ export default class GlobalMercator {
    * @param {Number} zoom
    * @returns {quadkey}
    */
-  TileQuadKey(init:tile) {
-    let { tx, ty, zoom } = new tile(init)
+  public TileQuadKey(init: Tile) {
+    let { tx, ty, zoom } = new Tile(init)
     let quadkey = ''
 
     ty = (Math.pow(2, zoom) - 1) - ty
     range(zoom, 0, -1).map(i => {
       let digit:any = 0
       let mask = 1 << (i - 1)
-      if ((tx & mask) != 0) { digit += 1 }
-      if ((ty & mask) != 0) { digit += 2 }
+      if ((tx & mask) !== 0) { digit += 1 }
+      if ((ty & mask) !== 0) { digit += 2 }
       quadkey = quadkey.concat(digit)
     })
 
@@ -338,25 +339,25 @@ export default class GlobalMercator {
   }
 
   /**
-   * Converts QuadKey to TMS tile coordinates
+   * Converts QuadKey to TMS Tile coordinates
    * 
    * @name QuadKeyTile
    * @param {String} quadkey
-   * @returns {tile}
+   * @returns {Tile}
    */
-  QuadKeyTile(quadkey:string) {
-    const google = this.QuadKeyGoogle(quadkey)
-    return this.GoogleTile(google)
+  public QuadKeyTile(quadkey: string) {
+    const Google = this.QuadKeyGoogle(quadkey)
+    return this.GoogleTile(Google)
   }
 
   /**
-   * Converts QuadKey to Google tile
+   * Converts QuadKey to Google Tile
    * 
    * @name QuadKeyGoogle
    * @param {String} quadkey
-   * @returns {google}
+   * @returns {Google}
    */
-  QuadKeyGoogle(quadkey:string) {
+  public QuadKeyGoogle(quadkey: string) {
     let x:number = 0
     let y:number = 0
     const zoom = quadkey.length
@@ -381,30 +382,34 @@ export default class GlobalMercator {
         throw new Error('Invalid QuadKey digit sequence')
       }
     })
-    return new google({ x: x, y: y, zoom: zoom })
+    return new Google({ x: x, y: y, zoom: zoom })
   }
 }
 export const mercator = new GlobalMercator()
 
 /* istanbul ignore next */
+async function main() {
+  const { LatLng, Meters, Pixels, Tile, Google, QUADKEY } = require('../../test/globals')
+  debug.log(mercator.GoogleQuadKey(Google))
+  debug.log(mercator.LatLonToMeters(LatLng))
+  debug.log(mercator.MetersToPixels(Meters))
+  debug.log(mercator.MetersToLatLon(Meters))
+  debug.log(mercator.PixelsToTile(Pixels))
+  debug.log(mercator.MetersToTile(Meters))
+  debug.log(mercator.PixelsToMeters(Pixels))
+  debug.log(mercator.TileBounds(Tile))
+  debug.log(mercator.TileQuadKey(Tile))
+  debug.log(mercator.QuadKeyGoogle(QUADKEY))
+  debug.log(mercator.QuadKeyTile(QUADKEY))
+  debug.log(mercator.TileGoogle(Tile))
+  debug.log(mercator.GoogleTile(Google))
+  debug.log(mercator.GoogleBounds(Google))
+  debug.log(mercator.GoogleLatLonBounds(Google))
+  debug.log(mercator.TileLatLonBounds(Tile))
+  debug.log(mercator.GoogleQuadKey(Google))
+}
+
+/* istanbul ignore next */
 if (require.main === module) {
-  const { LATLNG, METERS, PIXELS, TILE, GOOGLE, QUADKEY } = require('../../test/globals')
-  const mercator = new GlobalMercator()
-  console.log(mercator.GoogleQuadKey(GOOGLE))
-  console.log(mercator.LatLonToMeters(LATLNG))
-  console.log(mercator.MetersToPixels(METERS))
-  console.log(mercator.MetersToLatLon(METERS))
-  console.log(mercator.PixelsToTile(PIXELS))
-  console.log(mercator.MetersToTile(METERS))
-  console.log(mercator.PixelsToMeters(PIXELS))
-  console.log(mercator.TileBounds(TILE))
-  console.log(mercator.TileQuadKey(TILE))
-  console.log(mercator.QuadKeyGoogle(QUADKEY))
-  console.log(mercator.QuadKeyTile(QUADKEY))
-  console.log(mercator.TileGoogle(TILE))
-  console.log(mercator.GoogleTile(GOOGLE))
-  console.log(mercator.GoogleBounds(GOOGLE))
-  console.log(mercator.GoogleLatLonBounds(GOOGLE))
-  console.log(mercator.TileLatLonBounds(TILE))
-  console.log(mercator.GoogleQuadKey(GOOGLE))
+  main()
 }

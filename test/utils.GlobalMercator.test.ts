@@ -1,10 +1,9 @@
 import test from 'ava'
 import { pick } from 'lodash'
-import { mercator, bounds, latlng } from '../app/utils/GlobalMercator'
+import { mercator, bounds, LatLng } from '../app/utils/GlobalMercator'
 import {
   LATLNG,
   METERS,
-  METERS_OFFSET,
   PIXELS,
   TILE,
   BOUNDS,
@@ -60,7 +59,7 @@ test('TileLatLonBounds', t => {
 
 test('GoogleTile', t => {
   let google = mercator.TileGoogle(TILE)
-  t.deepEqual(google, pick(GOOGLE, ['x', ,'y', 'zoom']))
+  t.deepEqual(google, pick(GOOGLE, ['x', 'y', 'zoom']))
 })
 
 test('TileQuadKey', t => {
@@ -70,7 +69,7 @@ test('TileQuadKey', t => {
 
 test('QuadKeyGoogle', t => {
   let google = mercator.QuadKeyGoogle(QUADKEY)
-  t.deepEqual(google, pick(GOOGLE, ['x', ,'y', 'zoom']))
+  t.deepEqual(google, pick(GOOGLE, ['x', 'y', 'zoom']))
 })
 
 test('QuadKeyTile', t => {
@@ -99,14 +98,14 @@ test('GoogleQuadKey', t => {
 
 test('Throws Error Bad Bounds', t => {
   t.throws(() => bounds([1]), '[bounds] Must be an array with 4x Numbers.')
-  t.throws(() => bounds([1,2]), '[bounds] Must be an array with 4x Numbers.')
-  t.throws(() => bounds([1,2,3]), '[bounds] Must be an array with 4x Numbers.')
-  t.throws(() => bounds([1,2,3,4,5]), '[bounds] Must be an array with 4x Numbers.')
+  t.throws(() => bounds([1, 2]), '[bounds] Must be an array with 4x Numbers.')
+  t.throws(() => bounds([1, 2, 3]), '[bounds] Must be an array with 4x Numbers.')
+  t.throws(() => bounds([1, 2, 3, 4, 5]), '[bounds] Must be an array with 4x Numbers.')
 })
 
 test('Throws Error Bad LatLng', t => {
-  t.throws(() => new latlng({ lat:-220, lng:120 }), '[lat] must be within -90 to 90 degrees')
-  t.throws(() => new latlng({ lat:220, lng:120 }), '[lat] must be within -90 to 90 degrees')
-  t.throws(() => new latlng({ lat:45, lng:-220 }), '[lng] must be within -180 to 180 degrees')
-  t.throws(() => new latlng({ lat:45, lng:220 }), '[lng] must be within -180 to 180 degrees')
+  t.throws(() => new LatLng({ lat: -220, lng: 120 }), '[lat] must be within -90 to 90 degrees')
+  t.throws(() => new LatLng({ lat: 220, lng: 120 }), '[lat] must be within -90 to 90 degrees')
+  t.throws(() => new LatLng({ lat: 45, lng: -220 }), '[lng] must be within -180 to 180 degrees')
+  t.throws(() => new LatLng({ lat: 45, lng: 220 }), '[lng] must be within -180 to 180 degrees')
 })
