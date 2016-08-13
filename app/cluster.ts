@@ -13,4 +13,8 @@ if (cluster.isMaster) {
   debug.log(`JWT [SECRET]: ${ SECRET }`)
   debug.log(`CPU [CORES]: ${ CORES }`)
 
-} else { require('./server') }
+} else { server() }
+
+function server() {
+  require('./server')
+}

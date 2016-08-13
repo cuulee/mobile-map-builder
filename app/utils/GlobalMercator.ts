@@ -328,7 +328,7 @@ export default class GlobalMercator {
 
     ty = (Math.pow(2, zoom) - 1) - ty
     range(zoom, 0, -1).map(i => {
-      let digit:any = 0
+      let digit: any = 0
       let mask = 1 << (i - 1)
       if ((tx & mask) !== 0) { digit += 1 }
       if ((ty & mask) !== 0) { digit += 2 }
@@ -365,7 +365,7 @@ export default class GlobalMercator {
     range(zoom, 0, -1).map(i => {
       let mask = 1 << (i - 1)
 
-      switch(parseInt(quadkey[zoom - i])) {
+      switch (parseInt(quadkey[zoom - i], 0)) {
       case 0:
         break
       case 1:

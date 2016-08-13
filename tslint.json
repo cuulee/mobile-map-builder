@@ -13,7 +13,8 @@
     "semicolon": [true, "never"],
     "no-constructor-vars": true,
     "quotemark": [true, "single"],
-    "ordered-imports": false
+    "ordered-imports": false,
+    "no-bitwise": false
   },
   "rulesDirectory": [
     /*

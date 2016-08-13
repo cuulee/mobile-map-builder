@@ -9,6 +9,7 @@
     "build": "./node_modules/typescript/bin/tsc",
     "ava": "./node_modules/nyc/bin/nyc.js ./node_modules/ava/cli.js --verbose",
     "start": "./node_modules/ts-node/dist/bin.js app/cluster.ts",
+    "lint": "./node_modules/tslint/bin/tslint ./app/**/*.ts ./test/**/*.ts",
     "autostart": "nohup ./node_modules/ts-node/dist/bin.js app/cluster.ts </dev/null &"
   },
   "repository": {

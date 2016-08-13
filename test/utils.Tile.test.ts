@@ -9,7 +9,7 @@ const URL = 'http://tile-a.openstreetmap.fr/hot/13/2389/2946.png'
 const SCHEME_NO_SWITCH = 'http://tile.openstreetmap.fr/hot/{zoom}/{x}/{y}.png'
 const SCHEME = 'http://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png'
 const SCHEME_QUADKEY = 'http://tile.openstreetmap.fr/hot/{quadkey}.png'
-const TILE = { x: X, y: Y, zoom: ZOOM, quadkey: '012123', scheme: SCHEME }
+const TILE = { quadkey: '012123', scheme: SCHEME, x: X, y: Y, zoom: ZOOM }
 
 test('Tile', t => {
   const tile = new Tile(TILE)
@@ -51,7 +51,7 @@ test('Validate Tile', t => {
 })
 
 test('Throw Error Tile', t => {
-  const tile = {x: X, y: Y, zoom: 2, scheme: SCHEME}
+  const tile = { scheme: SCHEME, x: X, y: Y, zoom: 2 }
   t.throws(() => validateTile(tile), 'Illegal parameters for tile')
 })
 

@@ -2,7 +2,6 @@ import test from 'ava'
 import * as del from 'del'
 import MBTiles, { parseCenter, parseBounds } from '../app/utils/MBTiles'
 
-const DB = 'tiles.mbtiles'
 const NAME = 'OpenStreetMap'
 const ATTRIBUTION = 'Map data © OpenStreetMap'
 const DESCRIPTION = 'Tiles from OSM'
@@ -14,27 +13,21 @@ const CENTER_STRING = '-18.7,65,7'
 const MINZOOM = 1
 const MAXZOOM = 18
 const METADATA = {
-  name: NAME,
   attribution: ATTRIBUTION,
-  description: DESCRIPTION,
-  scheme: SCHEME,
+  bounds: BOUNDS,
   center: CENTER,
-  bounds: BOUNDS ,
+  description: DESCRIPTION,
+  maxzoom: MAXZOOM,
   minzoom: MINZOOM,
-  maxzoom: MAXZOOM 
+  name: NAME,
+  scheme: SCHEME,
 }
 const TILE = {
+  scheme: 'http://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png',
   x: 2389,
   y: 2946,
   zoom: 13,
-  scheme: 'http://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png'
 }
-
-test('MBTiles', async (t) => {
-  const mbtiles = new MBTiles(DB)
-  await del([DB])
-  t.pass()
-})
 
 test('Update Metadata', async (t) => {
   const mbtiles = new MBTiles('UpdateMetadata.mbtiles')
