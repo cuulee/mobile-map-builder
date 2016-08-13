@@ -164,6 +164,7 @@ export default class MBTiles {
   public connect() {
     const options = {
       define: { freezeTableName: true, timestamps: false },
+      logging: false,
       pool: { idle: 10000, max: 5, min: 0 },
     }
     return new Sequelize(`sqlite://${ this.db }`, options)
@@ -256,7 +257,8 @@ export default class MBTiles {
     })
 
     // Append existing Tile with new ID
-    if (findOne) { tile.id = findOne.tile_id
+    if (findOne) {
+      tile.id = findOne.tile_id
     } else {
       // Add Tile to MBTiles SQL db
       // Not async/await since <tile_id> is alredy in Tile Class
@@ -293,11 +295,11 @@ export default class MBTiles {
     })
 
     if (findOne) {
-      debug.log(`Skipped Download: ${ tile.id }`)
+      debug.skipped(tile.id)
     } else {
       // Download Tile from default settings
       const data = await tile.download()
-
+      debug.download(tile.url)
       // Save Tile to SQL
       await this.imagesSQL.create({
         tile_data: data,
