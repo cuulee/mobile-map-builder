@@ -118,13 +118,15 @@ export default class MBTiles {
   }
 
   /**
-   * Creates Indexes for MBTiles SQL db
+   * Builds Indexes for MBTiles SQL db
    * 
    * @name index
    * @returns {Object} Status message
    * @example
    */
   public async index() {
+    // Connect SQL
+    debug.index('building')
     const sequelize = this.connect()
 
     // Build tables
@@ -151,6 +153,7 @@ export default class MBTiles {
   FROM map
   JOIN images ON images.tile_id = map.tile_id`)
 
+    debug.index('created')
     return { message: 'Indexes created', ok: true, status: 'OK' }
   }
 
@@ -171,7 +174,7 @@ export default class MBTiles {
   }
 
   /**
-   * Generates metadata to MBTile database
+   * Builds metadata to MBTile database
    * 
    * @name metadata
    * @param {Number[x,y]} center (Required)
@@ -198,6 +201,7 @@ export default class MBTiles {
    */
   public async metadata(init: InterfaceMetadata) {
     // Connect SQL
+    debug.metadata('building')
     const sequelize = this.connect()
     const metadataSQL = await sequelize.define('metadata', models.Metadata)
     await metadataSQL.sync({ force: true })
@@ -226,7 +230,8 @@ export default class MBTiles {
     if (this.author) { await metadataSQL.create({ name: 'author', value: this.author }) }
     if (this.scheme) { await metadataSQL.create({ name: 'scheme', value: this.scheme }) }
 
-    return { message: 'Metadata updated', ok: true, status: 'OK' }
+    debug.metadata('created')
+    return { message: 'Metadata created', ok: true, status: 'OK' }
   }
 
   /**
@@ -326,7 +331,7 @@ export default class MBTiles {
 /* istanbul ignore next */
 async function main() {
   // Initialize
-  const mbtiles = new MBTiles('tiles.mbtiles')
+  const mbtiles = new MBTiles(':memory:')
 
   // Save Metadata
   // const SCHEME = 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{zoom}/{y}/{x}'
@@ -348,34 +353,29 @@ async function main() {
     name: 'OpenStreetMap',
     scheme: SCHEME,
   }
-  mbtiles.metadata(METADATA)
-    .then(status => debug.log(status))
+  await mbtiles.metadata(METADATA)
+  await mbtiles.index()
 
   // Save Multiple Tiles
-  range(2350, 2375).map(x => {
-    range(2900, 2925).map(y => {
-      const TILE = {
-        scheme: SCHEME,
-        x: x,
-        y: y,
-        zoom: 13,
-      }
-      mbtiles.save(TILE)
-    })
-  })
+  // range(2350, 2375).map(x => {
+  //   range(2900, 2925).map(y => {
+  //     const TILE = {
+  //       scheme: SCHEME,
+  //       x: x,
+  //       y: y,
+  //       zoom: 13,
+  //     }
+  //     mbtiles.save(TILE)
+  //   })
+  // })
   // Save single Tile
-  /*
   const TILE = {
+    scheme: SCHEME,
     x: 56,
     y: 34,
     zoom: 7,
-    scheme: SCHEME
   }
-  mbtiles.save(TILE)
-  */
-
-  // Build indexes
-  mbtiles.index()
+  await mbtiles.save(TILE)
 }
 
 /* istanbul ignore next */
