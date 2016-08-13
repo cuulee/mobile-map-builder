@@ -1,8 +1,8 @@
-import { STRING, INTEGER, DOUBLE, DefineAttributes } from 'sequelize'
+import { TEXT, DefineAttributes } from 'sequelize'
 
 const scheme:DefineAttributes = {
-  name: { type: STRING, unique: true, primaryKey: true },
-  value: { type: INTEGER, allowNull: false }
+  name: { type: TEXT, unique: true, primaryKey: true },
+  value: { type: TEXT, allowNull: false }
 }
 
 export default scheme

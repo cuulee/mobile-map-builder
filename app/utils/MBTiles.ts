@@ -1,7 +1,12 @@
 import * as Sequelize from 'sequelize'
 import { INTEGER, STRING } from 'sequelize'
+import { range } from 'lodash'
 import models from '../models'
 import Tile, { tileInterface } from './Tile'
+
+interface SequelizeModel extends Sequelize.Model<{}, {}> {
+  
+}
 
 /**
  * Metadata Interface for MBTiles.metadata
@@ -12,6 +17,7 @@ export interface metadataInterface {
   minzoom:number
   maxzoom:number
   name?:string
+  format?:string
   attribution?:string
   description?:string
   scheme?:string
@@ -90,9 +96,13 @@ export default class MBTiles {
   attribution:string
   description:string
   scheme:string
+  format:string
   center:number[]
   bounds:number[]
   sequelize:Sequelize.Sequelize
+  mapSQL:SequelizeModel
+  imagesSQL:SequelizeModel
+  metadataSQL:SequelizeModel
 
   /**
    * Creates an instance of MBTiles.
@@ -104,11 +114,55 @@ export default class MBTiles {
   constructor(db:string) {
     this.db = db
     this.name = 'OpenStreetMap'
-    this.version = '1.1.0'
+    this.version = '1.0.0'
     this.attribution = 'Map data © OpenStreetMap'
     this.description = 'Tiles from OSM'
   }
 
+  /**
+   * Creates Indexes for MBTiles SQL db
+   * 
+   * @name index
+   * @returns {Object} Status message
+   * @example
+   */
+  async index() {
+    const sequelize = this.connect()
+
+    // Build tables
+    const metadataSQL = await sequelize.define('metadata', models.Metadata)
+    const mapSQL = await sequelize.define('map', models.Map)
+    const imagesSQL = await sequelize.define('images', models.Images)
+    await metadataSQL.sync()
+    await mapSQL.sync()
+    await imagesSQL.sync()
+
+    // Build Index
+    await sequelize.query('CREATE UNIQUE INDEX IF NOT EXISTS metadata_name on metadata (name)')
+    await sequelize.query('CREATE UNIQUE INDEX IF NOT EXISTS map_tile_id on map (tile_id)')
+    await sequelize.query('CREATE UNIQUE INDEX IF NOT EXISTS map_tile on map (tile_row, tile_column, zoom_level)')
+    await sequelize.query('CREATE UNIQUE INDEX IF NOT EXISTS images_tile_id on images (tile_id)')
+    
+    // Build View
+    await sequelize.query(`CREATE VIEW IF NOT EXISTS tiles AS
+  SELECT
+    map.zoom_level AS zoom_level,
+    map.tile_column AS tile_column,
+    map.tile_row AS tile_row,
+    images.tile_data AS tile_data
+  FROM map
+  JOIN images ON images.tile_id = map.tile_id`)
+
+    return { ok: true, status: 'OK', message: 'Indexes created' }
+  }
+
+  /**
+   * Connect to MBTiles SQL db
+   * 
+   * @name connect
+   * @returns {Object} Sequelize connection Class
+   * @example
+   */
   connect() {
     const options = {
       define: { timestamps: false, freezeTableName: true },
@@ -144,6 +198,13 @@ export default class MBTiles {
    * }).then(status => console.log(status))
    */
   async metadata(init:metadataInterface) {
+    // Connect SQL
+    if (!this.metadataSQL) {
+      const sequelize = this.connect()
+      this.metadataSQL = await sequelize.define('metadata', models.Metadata)
+      await this.metadataSQL.sync({ force: true })
+    }
+
     // Define Metadata attributes
     this.name = init.name ? init.name : this.name
     this.bounds = init.bounds ? init.bounds : this.bounds
@@ -151,25 +212,22 @@ export default class MBTiles {
     this.minzoom = init.minzoom ? init.minzoom : this.minzoom
     this.maxzoom = init.maxzoom ? init.maxzoom : this.maxzoom
     this.scheme = init.scheme ? init.scheme : this.scheme
+    this.format = init.format ? init.format : this.format
     this.attribution = init.attribution ? init.attribution : this.attribution
     this.description = init.description ? init.description : this.description
-
-    // Create SQL connection
-    const sequelize = this.connect()
-    const metadataSQL = sequelize.define('metadata', models.Metadata)
-    await metadataSQL.sync({ force:true })
-
+    
     // Save Metadata to SQL
-    await metadataSQL.create({ name: 'name', value: this.name })
-    await metadataSQL.create({ name: 'version', value: this.version })
-    await metadataSQL.create({ name: 'attribution', value: this.attribution })
-    await metadataSQL.create({ name: 'description', value: this.description })
-    await metadataSQL.create({ name: 'bounds', value: parseBounds(this.bounds) })
-    await metadataSQL.create({ name: 'center', value: parseCenter(this.center) })
-    await metadataSQL.create({ name: 'minzoom', value: String(this.minzoom) })
-    await metadataSQL.create({ name: 'maxzoom', value: String(this.maxzoom) })
-    if (this.author) await metadataSQL.create({ name: 'author', value: this.author })
-    if (this.scheme) await metadataSQL.create({ name: 'scheme', value: this.scheme })
+    await this.metadataSQL.create({ name: 'name', value: this.name })
+    await this.metadataSQL.create({ name: 'version', value: this.version })
+    await this.metadataSQL.create({ name: 'attribution', value: this.attribution })
+    await this.metadataSQL.create({ name: 'description', value: this.description })
+    await this.metadataSQL.create({ name: 'bounds', value: parseBounds(this.bounds) })
+    await this.metadataSQL.create({ name: 'center', value: parseCenter(this.center) })
+    await this.metadataSQL.create({ name: 'minzoom', value: String(this.minzoom) })
+    await this.metadataSQL.create({ name: 'maxzoom', value: String(this.maxzoom) })
+    await this.metadataSQL.create({ name: 'format', value: this.format })
+    if (this.author) await this.metadataSQL.create({ name: 'author', value: this.author })
+    if (this.scheme) await this.metadataSQL.create({ name: 'scheme', value: this.scheme })
 
     return { ok: true, status: 'OK', message: 'Metadata updated' }
   }
@@ -182,20 +240,22 @@ export default class MBTiles {
    * @example
    */
   async map(init:tileInterface) {
-    // Create SQL connection
-    const sequelize = this.connect()
-    const mapSQL = sequelize.define('map', models.Map)
-    await mapSQL.sync()
+    // Connect SQL
+    if (!this.mapSQL) {
+      const sequelize = this.connect()
+      this.mapSQL = sequelize.define('map', models.Map)
+      await this.mapSQL.sync()
+    }
 
     // Build tile
     const tile = new Tile(init)
 
     // Retrieve existing ID if exists
-    const findOne:mapSQLInterface = await mapSQL.findOne({
+    const findOne:mapSQLInterface = await this.mapSQL.findOne({
       where: {
-        zoom_level: init.zoom,
-        tile_column: init.x,
-        tile_row: init.y
+        zoom_level: tile.zoom,
+        tile_column: tile.tile_column,
+        tile_row: tile.tile_row
       }
     })
     // Append existing Tile with new ID
@@ -203,11 +263,11 @@ export default class MBTiles {
     
     // Add Tile to MBTiles SQL db
     // Not async/await since <tile_id> is alredy in Tile Class
-    else mapSQL.create({
+    else this.mapSQL.create({
       zoom_level: tile.zoom,
       tile_id: tile.id,
-      tile_row: tile.y,
-      tile_column: tile.x
+      tile_row: tile.tile_row,
+      tile_column: tile.tile_column
     })
     return tile
   }
@@ -220,13 +280,15 @@ export default class MBTiles {
    * @example
    */
   async download(tile:Tile) {
-    // Create SQL connection
-    const sequelize = this.connect()
-    const imagesSQL = sequelize.define('images', models.Images)
-    await imagesSQL.sync()
-
+    // Connect SQL
+    if (!this.imagesSQL) {
+      const sequelize = this.connect()
+      this.imagesSQL = sequelize.define('images', models.Images)
+      await this.imagesSQL.sync()
+    }
+  
     // Retrieve existing ID if exists
-    const findOne:imagesSQLInterface = await imagesSQL.findOne({
+    const findOne:imagesSQLInterface = await this.imagesSQL.findOne({
       where: {
         tile_id: tile.id
       }
@@ -235,15 +297,14 @@ export default class MBTiles {
     if (findOne) { console.log(`Skipped Download: ${ tile.id }`) }
     else {
       // Download Tile from default settings
-      const buffer = await tile.download()
-
+      const data = await tile.download()
+      console.log(data)
       // Save Tile to SQL
-      await imagesSQL.create({
+      await this.imagesSQL.create({
         tile_id: tile.id,
-        tile_data: buffer
+        tile_data: data
       })
     }
-
     return tile
   }
 
@@ -262,29 +323,59 @@ export default class MBTiles {
 }
 
 /* istanbul ignore next */
-if (require.main === module) {
+async function main() {
+  // Initialize
+  const mbtiles = new MBTiles('tiles.mbtiles')
+  
   // Save Metadata
+  //const SCHEME = 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{zoom}/{y}/{x}'
+  const SCHEME = 'https://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png'
+  //const SCHEME = 'https://maps.wikimedia.org/osm-intl/{zoom}/{x}/{y}.png'
   const METADATA = {
     name: 'OpenStreetMap',
     attribution: 'Map data © OpenStreetMap',
     description: 'Tiles from OSM',
-    scheme: 'http://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png',
-    center: [-18.7, 65, 7],
-    bounds: [-27, 62, -11, 67.5],
-    minzoom: 1,
-    maxzoom: 18
+    scheme: SCHEME,
+    center: [-75.975252,46.379730],
+    bounds: [
+     -76.72851562499999,
+    45.644768217751924,
+    -75.58593749999999,
+    46.437856895024204],
+    minzoom: 13,
+    maxzoom: 13
   }
-  const mbtiles = new MBTiles('tiles.mbtiles')
   mbtiles.metadata(METADATA)
     .then(status => console.log(status))
 
-  // Save Tile
+  // Save Multiple Tiles
+  range(2350, 2375).map(x => {
+    range(2900, 2925).map(y => {
+      const TILE = {
+        x: x,
+        y: y,
+        zoom: 13,
+        scheme: SCHEME
+      }
+      mbtiles.save(TILE)
+    })
+  })
+  // Save single Tile
+  /*
   const TILE = {
-    x: 2389,
-    y: 2946,
-    zoom: 13,
-    scheme: 'http://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png'
+    x: 56,
+    y: 34,
+    zoom: 7,
+    scheme: SCHEME
   }
   mbtiles.save(TILE)
-    .then(status => console.log(status))
+  */
+
+  // Build indexes
+  mbtiles.index()
+}
+
+/* istanbul ignore next */
+if (require.main === module) {
+  main()
 }

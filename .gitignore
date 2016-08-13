@@ -4,6 +4,7 @@ built/
 dist/
 *.png
 *.jpg
+*.tif
 *.mbtiles
 .vscode/
 .nyc_output

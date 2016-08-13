@@ -5,10 +5,13 @@ import * as fs from 'fs'
 import { sample } from 'lodash'
 import { mercator } from './GlobalMercator'
 
+
 export interface tileInterface {
   x:number,
   y:number,
   zoom:number,
+  tile_row?:number,
+  tile_column?:number,
   quadkey?:string,
   scheme?:string,
   id?:string,
@@ -89,7 +92,8 @@ export const parseUrl = (tile:tileInterface) => {
 }
 
 export const downloadTile = (url:string) => {
-  return rp.get(url, { encoding : null })
+  return rp.get(url, { encoding : 'binary' })
+    .then(data => new Buffer(data, 'binary'))
 }
 
 /**
@@ -101,6 +105,8 @@ export default class Tile {
   name:string = 'Tile'
   x:number
   y:number
+  tile_row:number
+  tile_column:number
   zoom:number
   scheme:string
   quadkey:string
@@ -124,6 +130,11 @@ export default class Tile {
     this.url = parseUrl(tile)
     this.id = uuid.v4()
 
+    // TMS Tiles Scheme
+    const tms = mercator.GoogleTile(tile)
+    this.tile_row = tms.ty
+    this.tile_column = tms.tx
+
     // Validation
     validateTile(tile)
   }
@@ -141,13 +152,15 @@ export default class Tile {
 /* istanbul ignore next */
 if (require.main === module) {
   const TILE = {
-    x: 2389,
-    y: 2946,
+    x: 2375,
+    y: 2925,
     zoom: 13,
     scheme: 'http://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png'
   }
   const tile = new Tile(TILE)
-  tile.download()
-    .then(t => fs.writeFile('image.png', t, 'binary'))
+  console.log(mercator.GoogleTile(tile))
   console.log(tile)
+  tile.download()
+    //.then(data => console.log(data))
+    .then(data => fs.writeFile('image.png', data, 'binary'))
 }
