@@ -1,6 +1,7 @@
 import * as express from 'express'
 import * as multer from 'multer'
 import * as bodyParser from 'body-parser'
+import debug from './utils/debug'
 import routes from './routes'
 import { PORT } from './config'
 
@@ -20,7 +21,7 @@ app.use(upload.array(), (request: any, response: any, next: any) => {
     method: request.method,
     url: request.originalUrl,
   }
-  console.log(log)
+  debug.log(log)
   next()
 })
 
@@ -36,4 +37,4 @@ app.use('/', routes.api)
 
 // Start Listening
 app.listen(PORT)
-console.log(`Listening on PORT ${ PORT }`)
+debug.log(`Listening on PORT ${ PORT }`)

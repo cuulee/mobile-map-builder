@@ -9,9 +9,9 @@ router.route('/')
       api: 'Data Generator',
       cluster: worker.process.pid,
       http: [
-        { method: 'GET', url: '/product'},
-        { method: 'GET', url: '/token'},
-        { method: 'GET', url: '/user'}
+        { method: 'GET', url: '/product' },
+        { method: 'GET', url: '/token' },
+        { method: 'GET', url: '/user' },
       ],
       message: 'Demonstrates the Data Generator API, yay!!',
       ok: true,
