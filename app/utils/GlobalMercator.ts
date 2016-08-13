@@ -358,8 +358,8 @@ export default class GlobalMercator {
    * @returns {Google}
    */
   public QuadKeyGoogle(quadkey: string) {
-    let x:number = 0
-    let y:number = 0
+    let x: number = 0
+    let y: number = 0
     const zoom = quadkey.length
 
     range(zoom, 0, -1).map(i => {
