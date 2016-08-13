@@ -199,12 +199,10 @@ export default class MBTiles {
    */
   async metadata(init:metadataInterface) {
     // Connect SQL
-    if (!this.metadataSQL) {
-      const sequelize = this.connect()
-      this.metadataSQL = await sequelize.define('metadata', models.Metadata)
-      await this.metadataSQL.sync({ force: true })
-    }
-
+    const sequelize = this.connect()
+    const metadataSQL = await sequelize.define('metadata', models.Metadata)
+    await metadataSQL.sync({ force: true })
+    
     // Define Metadata attributes
     this.name = init.name ? init.name : this.name
     this.bounds = init.bounds ? init.bounds : this.bounds
@@ -217,17 +215,17 @@ export default class MBTiles {
     this.description = init.description ? init.description : this.description
     
     // Save Metadata to SQL
-    await this.metadataSQL.create({ name: 'name', value: this.name })
-    await this.metadataSQL.create({ name: 'version', value: this.version })
-    await this.metadataSQL.create({ name: 'attribution', value: this.attribution })
-    await this.metadataSQL.create({ name: 'description', value: this.description })
-    await this.metadataSQL.create({ name: 'bounds', value: parseBounds(this.bounds) })
-    await this.metadataSQL.create({ name: 'center', value: parseCenter(this.center) })
-    await this.metadataSQL.create({ name: 'minzoom', value: String(this.minzoom) })
-    await this.metadataSQL.create({ name: 'maxzoom', value: String(this.maxzoom) })
-    await this.metadataSQL.create({ name: 'format', value: this.format })
-    if (this.author) await this.metadataSQL.create({ name: 'author', value: this.author })
-    if (this.scheme) await this.metadataSQL.create({ name: 'scheme', value: this.scheme })
+    await metadataSQL.create({ name: 'name', value: this.name })
+    await metadataSQL.create({ name: 'version', value: this.version })
+    await metadataSQL.create({ name: 'attribution', value: this.attribution })
+    await metadataSQL.create({ name: 'description', value: this.description })
+    await metadataSQL.create({ name: 'bounds', value: parseBounds(this.bounds) })
+    await metadataSQL.create({ name: 'center', value: parseCenter(this.center) })
+    await metadataSQL.create({ name: 'minzoom', value: String(this.minzoom) })
+    await metadataSQL.create({ name: 'maxzoom', value: String(this.maxzoom) })
+    if (this.format) await metadataSQL.create({ name: 'format', value: this.format })
+    if (this.author) await metadataSQL.create({ name: 'author', value: this.author })
+    if (this.scheme) await metadataSQL.create({ name: 'scheme', value: this.scheme })
 
     return { ok: true, status: 'OK', message: 'Metadata updated' }
   }
@@ -335,6 +333,7 @@ async function main() {
     name: 'OpenStreetMap',
     attribution: 'Map data © OpenStreetMap',
     description: 'Tiles from OSM',
+    format: 'png',
     scheme: SCHEME,
     center: [-75.975252,46.379730],
     bounds: [

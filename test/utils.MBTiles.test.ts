@@ -37,11 +37,10 @@ test('MBTiles', async (t) => {
 })
 
 test('Update Metadata', async (t) => {
-  t.pass()
-  // const mbtiles = new MBTiles('metadata.mbtiles')
-  // const status = await mbtiles.metadata(METADATA)
-  // await del(['metadata.mbtiles'])
-  // t.true(status.ok)
+  const mbtiles = new MBTiles('UpdateMetadata.mbtiles')
+  mbtiles.metadata(METADATA)
+    .then(status => t.true(status.ok))
+  await del('UpdateMetadata.mbtiles')
 })
 
 test('parseCenter', t => {
