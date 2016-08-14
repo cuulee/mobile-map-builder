@@ -9,6 +9,7 @@
     "del": "registry:dt/del#2.2.0+20160317120654",
     "express": "registry:dt/express#4.0.0+20160708185218",
     "express-serve-static-core": "registry:dt/express-serve-static-core#4.0.0+20160805091045",
+    "filesize": "registry:dt/filesize#3.2.1+20160412140448",
     "form-data": "registry:dt/form-data#0.0.0+20160724024111",
     "geojson": "registry:dt/geojson#0.0.0+20160619034323",
     "glob": "registry:dt/glob#5.0.10+20160317120654",

@@ -1,5 +1,6 @@
 import debug from './debug'
 import models from '../models'
+import * as filesize from 'filesize'
 import { range } from 'lodash'
 import * as Sequelize from 'sequelize'
 import Tile, { InterfaceTile } from './Tile'
@@ -38,7 +39,7 @@ export interface InterfaceMapSQL {
  * Images Interface for MBTiles SQL Model
  */
 export interface InterfaceImagesSQL {
-  tile_data?: any
+  tile_data?: Buffer
   tile_id?: string
 }
 
@@ -76,6 +77,20 @@ export const parseBounds = (bounds: number[]) => {
   parseCenter([x1, y1])
   parseCenter([x2, y2])
   return bounds.join(',')
+}
+
+/**
+ * Gets File size in Unix mode
+ *
+ * @name getFileSize
+ * @param {Buffer} data
+ * @return {String}
+ * @example
+ * const size = getFileSize(<buffer>)
+ * //= '12.6K'
+ */
+export const getFileSize = (data: Buffer) => {
+  return filesize(data.length, { unix: true })
 }
 
 /**
@@ -300,11 +315,11 @@ export default class MBTiles {
     })
 
     if (findOne) {
-      debug.skipped(tile.id)
+      debug.skipped(`${ tile.id } (${ getFileSize(findOne.tile_data) })`)
     } else {
       // Download Tile from default settings
       const data = await tile.download()
-      debug.download(tile.url)
+      debug.download(`${ tile.url } (${ getFileSize(data) })`)
       // Save Tile to SQL
       await this.imagesSQL.create({
         tile_data: data,
@@ -331,11 +346,11 @@ export default class MBTiles {
 /* istanbul ignore next */
 async function main() {
   // Initialize
-  const mbtiles = new MBTiles(':memory:')
+  const mbtiles = new MBTiles('tiles.mbtiles')
 
   // Save Metadata
-  // const SCHEME = 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{zoom}/{y}/{x}'
-  const SCHEME = 'https://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png'
+  const SCHEME = 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{zoom}/{y}/{x}'
+  // const SCHEME = 'https://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png'
   // const SCHEME = 'https://maps.wikimedia.org/osm-intl/{zoom}/{x}/{y}.png'
   const METADATA = {
     attribution: 'Map data © OpenStreetMap',
@@ -357,25 +372,25 @@ async function main() {
   await mbtiles.index()
 
   // Save Multiple Tiles
-  // range(2350, 2375).map(x => {
-  //   range(2900, 2925).map(y => {
-  //     const TILE = {
-  //       scheme: SCHEME,
-  //       x: x,
-  //       y: y,
-  //       zoom: 13,
-  //     }
-  //     mbtiles.save(TILE)
-  //   })
-  // })
+  range(2350, 2375).map(x => {
+    range(2900, 2925).map(y => {
+      const TILE = {
+        scheme: SCHEME,
+        x: x,
+        y: y,
+        zoom: 13,
+      }
+      mbtiles.save(TILE)
+    })
+  })
   // Save single Tile
-  const TILE = {
-    scheme: SCHEME,
-    x: 56,
-    y: 34,
-    zoom: 7,
-  }
-  await mbtiles.save(TILE)
+  // const TILE = {
+  //   scheme: SCHEME,
+  //   x: 56,
+  //   y: 34,
+  //   zoom: 7,
+  // }
+  // await mbtiles.save(TILE)
 }
 
 /* istanbul ignore next */
