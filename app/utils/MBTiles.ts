@@ -13,16 +13,17 @@ interface InterferfaceSequelizeModel extends Sequelize.Model<{}, {}> {
  * Metadata Interface for MBTiles.metadata
  */
 export interface InterfaceMetadata {
-  center: number[]
+  name: string
   bounds: number[]
-  minzoom: number
-  maxzoom: number
-  name?: string
-  format?: string
-  attribution?: string
-  description?: string
-  scheme?: string
+  type: string
+  description: string
+  format: string
+  minzoom?: number
+  maxzoom?: number
   author?: string
+  attribution?: string
+  center?: number[]
+  scheme?: string
 }
 
 /**
@@ -102,18 +103,19 @@ export const getFileSize = (data: Buffer) => {
  * const mbtiles = new MBTiles('tiles.mbtiles')
  */
 export default class MBTiles {
+  public attribution: string
+  public author: string
+  public bounds: number[]
+  public center: number[]
+  public description: string
   public db: string
   public name: string
-  public author: string
   public minzoom: number
   public maxzoom: number
   public version: string
-  public attribution: string
-  public description: string
   public scheme: string
   public format: string
-  public center: number[]
-  public bounds: number[]
+  public type: string
   private mapSQL: InterferfaceSequelizeModel
   private imagesSQL: InterferfaceSequelizeModel
 
@@ -124,10 +126,11 @@ export default class MBTiles {
    * @example
    * const mbtiles = new MBTiles('tiles.mbtiles')
    */
-  constructor(db: string) {
+  constructor(db: string = 'tiles.mbtiles') {
     this.db = db
     this.name = 'OpenStreetMap'
-    this.version = '1.0.0'
+    this.version = '1.1.0'
+    this.type = 'baselayer'
     this.attribution = 'Map data © OpenStreetMap'
     this.description = 'Tiles from OSM'
   }
@@ -196,7 +199,9 @@ export default class MBTiles {
    * @param {Number[x1,y1,x2,y2]} bounds (Required)
    * @param {Number} minzoom (Required)
    * @param {Number} maxzoom (Required)
-   * @param {String} name (Optional)
+   * @param {String} name (Required)
+   * @param {String} type (Required)
+   * @param {String} format (Required)
    * @param {String} attribution (Optional)
    * @param {String} description (Optional)
    * @param {String} author (Optional)
@@ -205,6 +210,8 @@ export default class MBTiles {
    * @example
    * mbtiles.metadata({
    *   name: 'OpenStreetMap',
+   *   format: 'png',
+   *   type: 'baselayer',
    *   attribution: 'Map data © OpenStreetMap',
    *   description: 'Tiles from OSM',
    *   scheme: 'http://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png',
@@ -231,6 +238,49 @@ export default class MBTiles {
     this.format = init.format ? init.format : this.format
     this.attribution = init.attribution ? init.attribution : this.attribution
     this.description = init.description ? init.description : this.description
+    this.type = init.type ? init.type : this.type
+
+    // Metadata required key/values
+    /* istanbul ignore next */
+    if (!this.name) {
+      const message = 'metadata <mbtiles.name> is required'
+      debug.error(message)
+      throw new Error(message)
+    /* istanbul ignore next */
+    } else if (!this.type) {
+      const message = 'metadata <mbtiles.type> is required'
+      debug.error(message)
+      throw new Error(message)
+    /* istanbul ignore next */
+    } else if (!this.version) {
+      const message = 'metadata <mbtiles.version> is required'
+      debug.error(message)
+      throw new Error(message)
+    /* istanbul ignore next */
+    } else if (!this.description) {
+      const message = 'metadata <mbtiles.description> is required'
+      debug.error(message)
+      throw new Error(message)
+    /* istanbul ignore next */
+    } else if (!this.format) {
+      const message = 'metadata <mbtiles.format> is required'
+      debug.error(message)
+      throw new Error(message)
+    /* istanbul ignore next */
+    } else if (!this.bounds) {
+      const message = 'metadata <mbtiles.bounds> is required'
+      debug.error(message)
+      throw new Error(message) }
+
+    // Metadata Validation
+    if (!['overlay', 'baselayer'].find(item => item === this.type)) {
+      const message = 'metadata <mbtiles.type> must be [overlay or baselayer]'
+      debug.error(message)
+      throw new Error(message)
+    }  else if (!['png', 'jpg'].find(item => item === this.format)) {
+      const message = 'metadata <mbtiles.format> must be [png or jpg]'
+      debug.error(message)
+      throw new Error(message)}
 
     // Save Metadata to SQL
     await metadataSQL.create({ name: 'name', value: this.name })
@@ -314,6 +364,7 @@ export default class MBTiles {
       },
     })
 
+    // Skip download if tile exist in <images.tile_data>
     if (findOne) {
       debug.skipped(`${ tile.id } (${ getFileSize(findOne.tile_data) })`)
     } else {
@@ -367,6 +418,7 @@ async function main() {
     minzoom: 13,
     name: 'OpenStreetMap',
     scheme: SCHEME,
+    type: 'baselayer',
   }
   await mbtiles.metadata(METADATA)
   await mbtiles.index()

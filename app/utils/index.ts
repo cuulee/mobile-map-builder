@@ -17,5 +17,5 @@ export default {
   Grid: Grid,
   MBTiles: MBTiles,
   Tile: Tile,
-  debug: _debug
+  debug: _debug,
 }

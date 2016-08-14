@@ -145,6 +145,15 @@ Longest transaction:	        0.25
 Shortest transaction:	        0.00
 ```
 
+### GDAL
+
+Once the MBTiles are created, they can be converted into GeoTIFF using the highest
+resolution zoom level using `gdal_translate`.
+
+```bash
+$ gdal_translate -of GTiff -b 1 -b 2 -b 3 -co "TILED=YES" -co COMPRESS=JPEG tiles.mbtiles tiles.tif
+```
+
 ### References
 
 - http://www.maptiler.org/google-maps-coordinates-tile-bounds-projection
@@ -152,3 +161,4 @@ Shortest transaction:	        0.00
 - https://github.com/mapbox/mbtiles-spec/blob/master/1.1/spec.md
 - https://blogs.esri.com/esri/arcgis/2014/05/05/creating-custom-tileservicelayer-android/
 - http://spatialreference.org/ref/sr-org/7483/
+- http://www.gdal.org/gdal_translate.html
