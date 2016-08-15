@@ -1,9 +1,9 @@
 import debug from './debug'
 import models from '../models'
-import { range } from 'lodash'
 import * as filesize from 'filesize'
 import * as Sequelize from 'sequelize'
 import Tile, { InterfaceTile } from './Tile'
+import Grid from './Grid'
 
 interface InterferfaceSequelizeModel extends Sequelize.Model<{}, {}> {
   init?: any
@@ -331,8 +331,8 @@ export default class MBTiles {
     // Retrieve existing ID if exists
     const findOne: InterfaceMapSQL = await this.mapSQL.findOne({
       where: {
-        tile_column: tile.tileColumn,
-        tile_row: tile.tileRow,
+        tile_column: tile.tile_column,
+        tile_row: tile.tile_row,
         zoom_level: tile.zoom,
       },
     })
@@ -344,9 +344,9 @@ export default class MBTiles {
       // Add Tile to MBTiles SQL db
       // Not async/await since <tile_id> is alredy in Tile Class
       this.mapSQL.create({
-        tile_column: tile.tileColumn,
+        tile_column: tile.tile_column,
         tile_id: tile.id,
-        tile_row: tile.tileRow,
+        tile_row: tile.tile_row,
         zoom_level: tile.zoom,
       })
     }
@@ -418,15 +418,15 @@ async function main() {
   const METADATA = {
     attribution: 'Map data © OpenStreetMap',
     bounds: [
-      -76.72851562499999,
-      45.644768217751924,
-      -75.58593749999999,
-      46.437856895024204,
+      -75.9375,
+      45.33670190996811,
+      -75.5859375,
+      45.58328975600631,
     ],
     center: [-75.975252, 46.379730],
     description: 'Tiles from OSM',
     format: 'png',
-    maxzoom: 13,
+    maxzoom: 17,
     minzoom: 13,
     name: 'OpenStreetMap',
     scheme: SCHEME,
@@ -436,25 +436,10 @@ async function main() {
   await mbtiles.index()
 
   // Save Multiple Tiles
-  range(2350, 2375).map(x => {
-    range(2900, 2925).map(y => {
-      const TILE = {
-        scheme: SCHEME,
-        x: x,
-        y: y,
-        zoom: 13,
-      }
-      mbtiles.save(TILE)
-    })
+  const grid = new Grid(METADATA)
+  grid.tiles.map(tile => {
+    mbtiles.save(tile)
   })
-  // Save single Tile
-  // const TILE = {
-  //   scheme: SCHEME,
-  //   x: 56,
-  //   y: 34,
-  //   zoom: 7,
-  // }
-  // await mbtiles.save(TILE)
 }
 
 /* istanbul ignore next */

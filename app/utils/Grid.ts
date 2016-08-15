@@ -2,10 +2,18 @@ import { range } from 'lodash'
 import { mercator, LatLngBounds } from './GlobalMercator'
 import debug from './debug'
 
+export interface InterfaceBasicTile {
+  scheme: string
+  x: number
+  y: number
+  zoom: number
+}
+
 export interface InterfaceOptions {
   bounds: number[]
-  minZoom: number
-  maxZoom: number
+  minzoom: number
+  maxzoom: number
+  scheme: string
 }
 
 /**
@@ -13,61 +21,72 @@ export interface InterfaceOptions {
  * 
  * @class Grid
  * @param {Number[x1,y1,x2,y2]} bounds
- * @param {Number} minZoom
- * @param {Number} maxZoom
+ * @param {Number} minzoom
+ * @param {Number} maxzoom
  * @example
  * const grid = new Grid(OPTIONS)
  */
 export default class Grid {
   public bounds: number[]
-  public minZoom: number
-  public maxZoom: number
-  public tiles: {}[]
+  public minzoom: number
+  public maxzoom: number
+  public scheme: string
+  public tiles: InterfaceBasicTile[]
 
   constructor(init: InterfaceOptions) {
     this.bounds = LatLngBounds(init.bounds)
-    this.minZoom = init.minZoom
-    this.maxZoom = init.maxZoom
+    this.minzoom = init.minzoom
+    this.maxzoom = init.maxzoom
+    this.scheme = init.scheme
     this.tiles = []
     this.validate()
     this.build()
   }
 
   public validate() {
-    if (this.minZoom < 0) {
-      const message = 'Grid <minZoom> cannot be less than 0'
+    if (this.minzoom < 0) {
+      const message = 'Grid <minzoom> cannot be less than 0'
       debug.error(message)
       throw new Error(message)
     }
 
-    if (this.maxZoom > 23) {
-      const message = 'Grid <maxZoom> cannot be greater than 23'
+    if (this.maxzoom > 23) {
+      const message = 'Grid <maxzoom> cannot be greater than 23'
       debug.error(message)
       throw new Error(message)
     }
 
-    if (this.minZoom > this.maxZoom) {
-      const message = 'Grid <minZoom> cannot be greater than <maxZoom>'
+    if (this.minzoom > this.maxzoom) {
+      const message = 'Grid <minzoom> cannot be greater than <maxzoom>'
       debug.error(message)
       throw new Error(message)
     }
   }
 
   public build() {
-    range(this.minZoom, this.maxZoom + 1).map(zoom => {
-      const [x1, y1, x2, y2] = this.bounds
-      const t1 = mercator.LatLngToGoogle({lat: y1, lng: x1, zoom: zoom})
-      const t2 = mercator.LatLngToGoogle({lat: y2, lng: x2, zoom: zoom})
-      const minty = Math.min(t1.y, t2.y)
-      const maxty = Math.max(t1.y, t2.y)
-      const mintx = Math.min(t1.x, t2.x)
-      const maxtx = Math.max(t1.x, t2.x)
+    debug.grid(`building`)
+    range(this.minzoom, this.maxzoom + 1).map(zoom => {
+      let [x1, y1, x2, y2] = this.bounds
+      let t1 = mercator.LatLngToGoogle({lat: y1, lng: x1, zoom: zoom})
+      let t2 = mercator.LatLngToGoogle({lat: y2, lng: x2, zoom: zoom})
+      let minty = Math.min(t1.y, t2.y)
+      let maxty = Math.max(t1.y, t2.y)
+      let mintx = Math.min(t1.x, t2.x)
+      let maxtx = Math.max(t1.x, t2.x)
+
+      // this.bounds = [mintx, minty, maxtx, maxty]
+
       range(minty, maxty + 1).map(y => {
         range(mintx, maxtx + 1).map(x => {
-          this.tiles.push({x: x, y: y, zoom: zoom })
+          this.tiles.push({
+            scheme: this.scheme,
+            x: x,
+            y: y,
+            zoom: zoom })
         })
       })
     })
+    debug.grid(`created [${ this.tiles.length } tiles]`)
   }
 }
 
@@ -75,16 +94,18 @@ export default class Grid {
 async function main() {
   const OPTIONS = {
     bounds: [
-      -76.72851562499999,
-      45.644768217751924,
-      -75.58593749999999,
-      46.437856895024204,
+      -75.9375,
+      45.33670190996811,
+      -75.5859375,
+      45.58328975600631,
     ],
-    maxZoom: 0,
-    minZoom: 0,
+    maxzoom: 10,
+    minzoom: 0,
+    scheme: 'http://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png',
   }
   const grid = new Grid(OPTIONS)
-  debug.log(grid.tiles)
+  debug.log(grid.bounds)
+  debug.log(grid.tiles.length)
 }
 
 /* istanbul ignore next */

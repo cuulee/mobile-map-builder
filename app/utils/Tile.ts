@@ -105,8 +105,8 @@ export default class Tile {
   public name: string = 'Tile'
   public x: number
   public y: number
-  public tileRow: number
-  public tileColumn: number
+  public tile_row: number
+  public tile_column: number
   public zoom: number
   public scheme: string
   public quadkey: string
@@ -132,8 +132,8 @@ export default class Tile {
 
     // TMS Tiles Scheme
     const tms = mercator.GoogleTile(tile)
-    this.tileRow = tms.ty
-    this.tileColumn = tms.tx
+    this.tile_row = tms.ty
+    this.tile_column = tms.tx
 
     // Validation
     validateTile(tile)
@@ -153,9 +153,9 @@ export default class Tile {
 if (require.main === module) {
   const TILE = {
     scheme: 'http://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png',
-    x: 2375,
-    y: 2925,
-    zoom: 13,
+    x: 0,
+    y: 0,
+    zoom: 0,
   }
   const tile = new Tile(TILE)
   debug.log(mercator.GoogleTile(tile))

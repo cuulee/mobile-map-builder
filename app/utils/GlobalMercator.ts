@@ -277,6 +277,8 @@ export default class GlobalMercator {
    * @returns {bounds}
    */
   public TileLatLonBounds(init: Tile) {
+    if (init.zoom === 0) { return [ -180, -85.05112877980659, 180, 85.05112877980659 ] }
+
     const {tx, ty, zoom} = new Tile(init)
     const [mx1, my1, mx2, my2] = this.TileBounds({ tx: tx, ty: ty, zoom: zoom })
     const min = this.MetersToLatLon({ mx: mx1, my: my1, zoom: zoom })

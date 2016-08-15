@@ -154,6 +154,12 @@ resolution zoom level using `gdal_translate`.
 $ gdal_translate -of GTiff -b 1 -b 2 -b 3 -co "TILED=YES" -co COMPRESS=JPEG tiles.mbtiles tiles.tif
 ```
 
+Building overviews is essential for large GeoTIFF formats to be rendering fast on the client using `gdaladdo`.
+
+```bash
+$ gdaladdo -r average tiles.tif 2 4 8 16
+```
+
 ### References
 
 - http://www.maptiler.org/google-maps-coordinates-tile-bounds-projection
@@ -162,3 +168,4 @@ $ gdal_translate -of GTiff -b 1 -b 2 -b 3 -co "TILED=YES" -co COMPRESS=JPEG tile
 - https://blogs.esri.com/esri/arcgis/2014/05/05/creating-custom-tileservicelayer-android/
 - http://spatialreference.org/ref/sr-org/7483/
 - http://www.gdal.org/gdal_translate.html
+- http://www.gdal.org/gdaladdo.html

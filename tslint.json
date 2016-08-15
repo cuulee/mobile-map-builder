@@ -14,7 +14,8 @@
     "no-constructor-vars": true,
     "quotemark": [true, "single"],
     "ordered-imports": false,
-    "no-bitwise": false
+    "no-bitwise": false,
+    "variable-name": [false, "check-format"]
   },
   "rulesDirectory": [
     /*
