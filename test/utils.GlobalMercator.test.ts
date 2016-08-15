@@ -104,8 +104,8 @@ test('Throws Error Bad Bounds', t => {
 })
 
 test('Throws Error Bad LatLng', t => {
-  t.throws(() => new LatLng({ lat: -220, lng: 120 }), '[lat] must be within -90 to 90 degrees')
-  t.throws(() => new LatLng({ lat: 220, lng: 120 }), '[lat] must be within -90 to 90 degrees')
-  t.throws(() => new LatLng({ lat: 45, lng: -220 }), '[lng] must be within -180 to 180 degrees')
-  t.throws(() => new LatLng({ lat: 45, lng: 220 }), '[lng] must be within -180 to 180 degrees')
+  t.throws(() => new LatLng({ lat: -220, lng: 120 }), 'LatLng [lat] must be within -90 to 90 degrees')
+  t.throws(() => new LatLng({ lat: 220, lng: 120 }), 'LatLng [lat] must be within -90 to 90 degrees')
+  t.throws(() => new LatLng({ lat: 45, lng: -220 }), 'LatLng [lng] must be within -180 to 180 degrees')
+  t.throws(() => new LatLng({ lat: 45, lng: 220 }), 'LatLng [lng] must be within -180 to 180 degrees')
 })

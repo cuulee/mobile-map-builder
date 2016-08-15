@@ -77,7 +77,7 @@ test('Throws Metadata format error', async (t) => {
   }
   await mbtiles.metadata(METADATA_ERROR_FORMAT).then(
     status => status,
-    error => t.deepEqual(error.message, 'metadata <mbtiles.format> must be [png or jpg]')
+    error => t.deepEqual(error.message, 'MBTiles.metadata <format> must be [png or jpg]')
   )
 })
 
@@ -93,6 +93,6 @@ test('Throws Metadata type error', async (t) => {
   }
   await mbtiles.metadata(METADATA_ERROR_TYPE).then(
     status => status,
-    error => t.deepEqual(error.message, 'metadata <mbtiles.type> must be [overlay or baselayer]')
+    error => t.deepEqual(error.message, 'MBTiles.metadata <type> must be [overlay or baselayer]')
   )
 })

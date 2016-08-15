@@ -1,7 +1,7 @@
 import debug from './debug'
 import models from '../models'
-import * as filesize from 'filesize'
 import { range } from 'lodash'
+import * as filesize from 'filesize'
 import * as Sequelize from 'sequelize'
 import Tile, { InterfaceTile } from './Tile'
 
@@ -57,8 +57,16 @@ export interface InterfaceImagesSQL {
 export const parseCenter = (center: number[]): string => {
   if (center.length < 2 || center.length > 3) { throw new Error('[center] must contain at 2 or 3 numbers')}
   const [x, y] = center
-  if (y < -90 || y > 90) {throw new Error('[y] must be within -90 to 90 degrees')}
-  if (x < -180 || x > 180) { throw new Error('[x] must be within -180 to 180 degrees')}
+  if (y < -90 || y > 90) {
+    const message = 'parseCenter [y] must be within -90 to 90 degrees'
+    debug.error(message)
+    throw new Error(message)
+  }
+  if (x < -180 || x > 180) {
+    const message = 'parseCenter [x] must be within -180 to 180 degrees'
+    debug.error(message)
+    throw new Error(message)
+  }
   return center.join(',')
 }
 
@@ -131,6 +139,7 @@ export default class MBTiles {
     this.name = 'OpenStreetMap'
     this.version = '1.1.0'
     this.type = 'baselayer'
+    this.format = 'png'
     this.attribution = 'Map data © OpenStreetMap'
     this.description = 'Tiles from OSM'
   }
@@ -243,44 +252,46 @@ export default class MBTiles {
     // Metadata required key/values
     /* istanbul ignore next */
     if (!this.name) {
-      const message = 'metadata <mbtiles.name> is required'
+      const message = 'MBTiles.metadata <name> is required'
       debug.error(message)
       throw new Error(message)
     /* istanbul ignore next */
     } else if (!this.type) {
-      const message = 'metadata <mbtiles.type> is required'
+      const message = 'MBTiles.metadata <type> is required'
       debug.error(message)
       throw new Error(message)
     /* istanbul ignore next */
     } else if (!this.version) {
-      const message = 'metadata <mbtiles.version> is required'
+      const message = 'MBTiles.metadata <version> is required'
       debug.error(message)
       throw new Error(message)
     /* istanbul ignore next */
     } else if (!this.description) {
-      const message = 'metadata <mbtiles.description> is required'
+      const message = 'MBTiles.metadata <description> is required'
       debug.error(message)
       throw new Error(message)
     /* istanbul ignore next */
     } else if (!this.format) {
-      const message = 'metadata <mbtiles.format> is required'
+      const message = 'MBTiles.metadata <format> is required'
       debug.error(message)
       throw new Error(message)
     /* istanbul ignore next */
     } else if (!this.bounds) {
-      const message = 'metadata <mbtiles.bounds> is required'
+      const message = 'MBTiles.metadata <bounds> is required'
       debug.error(message)
-      throw new Error(message) }
+      throw new Error(message)
+    }
 
     // Metadata Validation
     if (!['overlay', 'baselayer'].find(item => item === this.type)) {
-      const message = 'metadata <mbtiles.type> must be [overlay or baselayer]'
+      const message = 'MBTiles.metadata <type> must be [overlay or baselayer]'
       debug.error(message)
       throw new Error(message)
     }  else if (!['png', 'jpg'].find(item => item === this.format)) {
-      const message = 'metadata <mbtiles.format> must be [png or jpg]'
+      const message = 'MBTiles.metadata <format> must be [png or jpg]'
       debug.error(message)
-      throw new Error(message)}
+      throw new Error(message)
+    }
 
     // Save Metadata to SQL
     await metadataSQL.create({ name: 'name', value: this.name })
@@ -403,6 +414,7 @@ async function main() {
   const SCHEME = 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{zoom}/{y}/{x}'
   // const SCHEME = 'https://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png'
   // const SCHEME = 'https://maps.wikimedia.org/osm-intl/{zoom}/{x}/{y}.png'
+
   const METADATA = {
     attribution: 'Map data © OpenStreetMap',
     bounds: [

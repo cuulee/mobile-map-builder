@@ -2,8 +2,19 @@ import debug from './debug'
 import { range } from 'lodash'
 
 export const bounds = (init: number[]) => {
-  if (init.length !== 4) { throw new Error('[bounds] Must be an array with 4x Numbers.')}
+  if (init.length !== 4) {
+    const message = '[bounds] Must be an array with 4x Numbers.'
+    debug.error(message)
+    throw new Error(message)
+  }
   return [...init]
+}
+
+export const LatLngBounds = (init: number[]) => {
+  const [x1, y1, x2, y2] = bounds(init)
+  const t1 = new LatLng({lat: y1, lng: x1})
+  const t2 = new LatLng({lat: y2, lng: x2})
+  return [t1.lng, t1.lat, t2.lng, t2.lat]
 }
 
 export class Google {
@@ -63,8 +74,16 @@ export class LatLng {
     this.lat = lat
     this.lng = lng
     if (zoom) { this.zoom = zoom }
-    if (lat < -90 || lat > 90) { throw new Error('[lat] must be within -90 to 90 degrees')}
-    if (lng < -180 || lng > 180) { throw new Error('[lng] must be within -180 to 180 degrees')}
+    if (lat < -90 || lat > 90) {
+      const message = 'LatLng [lat] must be within -90 to 90 degrees'
+      debug.error(message)
+      throw new Error(message)
+    }
+    if (lng < -180 || lng > 180) {
+      const message = 'LatLng [lng] must be within -180 to 180 degrees'
+      debug.error(message)
+      throw new Error(message)
+    }
   }
 }
 
@@ -154,6 +173,33 @@ export default class GlobalMercator {
   }
 
   /**
+   * Returns Tile for given latlng coordinates
+   * 
+   * @name LatLngToTile
+   * @param {Number} lat
+   * @param {Number} lng
+   * @returns {Tile}
+   */
+  public LatLngToTile(init: LatLng) {
+    const Pixels = this.MetersToPixels(this.LatLonToMeters(init))
+    return this.PixelsToTile(Pixels)
+  }
+
+  /**
+   * Returns Google Tile for given latlng coordinates
+   * 
+   * @name LatLngToTile
+   * @param {Number} lat
+   * @param {Number} lng
+   * @returns {Tile}
+   */
+  public LatLngToGoogle(init: LatLng) {
+    if (init.zoom === 0) { return new Google({ x: 0, y: 0, zoom: 0 })}
+    const tile = this.LatLngToTile(init)
+    return this.TileGoogle(tile)
+  }
+
+  /**
    * Returns Tile for given mercator coordinates
    * 
    * @name MetersToTile
@@ -162,8 +208,8 @@ export default class GlobalMercator {
    * @returns {Tile}
    */
   public MetersToTile(init: Meters) {
+    if (init.zoom === 0) { return new Tile({ tx: 0, ty: 0, zoom: 0 })}
     const Pixels = this.MetersToPixels(new Meters(init))
-
     return this.PixelsToTile(Pixels)
   }
 
@@ -195,6 +241,8 @@ export default class GlobalMercator {
    * @returns {Tile}
    */
   public PixelsToTile(init: Pixels) {
+    if (init.zoom === 0) { return new Tile({ tx: 0, ty: 0, zoom: 0 })}
+
     const {px, py, zoom} = new Pixels(init)
     const tx = Math.ceil(px / this.TileSize) - 1
     const ty = Math.ceil(py / this.TileSize) - 1
@@ -275,6 +323,8 @@ export default class GlobalMercator {
    * @returns {bounds}
    */
   public TileGoogle(init: Tile) {
+    if (init.zoom === 0) { return new Google({ x: 0, y: 0, zoom: 0 })}
+
     const { tx, ty, zoom } = new Tile(init)
     const x = tx
     const y = (Math.pow(2, zoom) - 1) - ty
