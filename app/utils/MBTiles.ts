@@ -408,26 +408,26 @@ export default class MBTiles {
 /* istanbul ignore next */
 async function main() {
   // Initialize
-  const mbtiles = new MBTiles('tiles.mbtiles')
+  const mbtiles = new MBTiles('openstreetmap-zoom7-canada.mbtiles')
 
   // Save Metadata
-  const SCHEME = 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{zoom}/{y}/{x}'
+  // const SCHEME = 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{zoom}/{y}/{x}'
   // const SCHEME = 'https://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png'
-  // const SCHEME = 'https://maps.wikimedia.org/osm-intl/{zoom}/{x}/{y}.png'
+  const SCHEME = 'https://maps.wikimedia.org/osm-intl/{zoom}/{x}/{y}.png'
+  // const SCHEME = 'http://ecn.t2.tiles.virtualearth.net/tiles/a3000.jpeg?g=5250'
+  // const SCHEME = 'http://ecn.t{switch:0,1,2,3}.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=1512&n=z'
 
+  const CANADA = [-141.0027499, 41.6765556, -52.323198, 83.3362128]
+  // const SUDBURY = [-81.1507388, 46.3310993, -80.8307388, 46.6510993]
+  // const GREATER_SUDBURY = [-81.90, 45.75, -80.15, 47.25]
   const METADATA = {
     attribution: 'Map data © OpenStreetMap',
-    bounds: [
-      -75.9375,
-      45.33670190996811,
-      -75.5859375,
-      45.58328975600631,
-    ],
-    center: [-75.975252, 46.379730],
+    bounds: CANADA,
+    center: [-80.9907388, 46.4910993],
     description: 'Tiles from OSM',
     format: 'png',
-    maxzoom: 17,
-    minzoom: 13,
+    maxzoom: 7,
+    minzoom: 7,
     name: 'OpenStreetMap',
     scheme: SCHEME,
     type: 'baselayer',

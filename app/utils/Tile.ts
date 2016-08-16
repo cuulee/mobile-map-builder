@@ -1,21 +1,26 @@
 import * as uuid from 'node-uuid'
 import * as turf from 'turf'
 import * as rp from 'request-promise'
-import * as fs from 'fs'
 import { sample } from 'lodash'
 import { mercator } from './GlobalMercator'
 import debug from './debug'
 
+export interface InterfaceTMS {
+    tx: number
+    ty: number
+    zoom: number
+}
+
 export interface InterfaceTile {
-  x: number,
-  y: number,
-  zoom: number,
-  tile_row?: number,
-  tile_column?: number,
-  quadkey?: string,
-  scheme?: string,
-  id?: string,
-  bbox?: number[],
+  x: number
+  y: number
+  zoom: number
+  tile_row?: number
+  tile_column?: number
+  quadkey?: string
+  scheme?: string
+  id?: string
+  bbox?: number[]
   geometry?: {type: string, coordinates: number[][][]}
 }
 
@@ -113,6 +118,7 @@ export default class Tile {
   public url: string
   public id: string
   public bbox: number[]
+  public tms: InterfaceTMS
   public geometry: { type: string, coordinates: number[][][] }
 
   constructor(tile: InterfaceTile) {
@@ -126,14 +132,16 @@ export default class Tile {
     // Extra Properties
     this.bbox = mercator.GoogleLatLonBounds({ x: this.x, y: this.y, zoom: this.zoom })
     this.geometry = turf.bboxPolygon(this.bbox).geometry
-    this.quadkey = mercator.GoogleQuadKey({ x: this.x, y: this.y, zoom: this.zoom })
-    this.url = parseUrl(tile)
-    this.id = uuid.v4()
 
     // TMS Tiles Scheme
-    const tms = mercator.GoogleTile(tile)
-    this.tile_row = tms.ty
-    this.tile_column = tms.tx
+    this.tms = mercator.GoogleTile(tile)
+    this.quadkey = mercator.TileQuadKey(this.tms)
+    this.tile_row = this.tms.ty
+    this.tile_column = this.tms.tx
+
+    // Handle URL
+    this.url = parseUrl(this)
+    this.id = uuid.v4()
 
     // Validation
     validateTile(tile)
@@ -151,16 +159,14 @@ export default class Tile {
 
 /* istanbul ignore next */
 if (require.main === module) {
+  const SCHEME = 'http://ecn.t{switch:0,1,2,3}.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=1512&n=z'
   const TILE = {
-    scheme: 'http://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png',
-    x: 0,
-    y: 0,
-    zoom: 0,
+    scheme: SCHEME,
+    x: 8,
+    y: 8,
+    zoom: 4,
   }
   const tile = new Tile(TILE)
-  debug.log(mercator.GoogleTile(tile))
+  debug.log(tile.quadkey)
   debug.log(tile)
-  tile.download()
-    // .then(data => debug.log(data))
-    .then(data => fs.writeFile('image.png', data, 'binary'))
 }

@@ -375,6 +375,9 @@ export default class GlobalMercator {
    * @returns {quadkey}
    */
   public TileQuadKey(init: Tile) {
+    // Zoom 0 does not exist for QuadKey
+    if (init.zoom === 0) { return '' }
+
     let { tx, ty, zoom } = new Tile(init)
     let quadkey = ''
 
