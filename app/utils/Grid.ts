@@ -65,7 +65,7 @@ export default class Grid {
   }
 
   public build() {
-    debug.grid(`building`)
+    debug.grid('started')
     range(this.minZoom, this.maxZoom + 1).map(zoom => {
       let [x1, y1, x2, y2] = this.bounds
       let t1 = mercator.LatLngToTile({lat: y1, lng: x1, zoom: zoom})
@@ -92,7 +92,7 @@ export default class Grid {
         })
       })
     })
-    debug.grid(`created [${ this.tiles.length } tiles]`)
+    debug.grid(`done [${ this.tiles.length } tiles]`)
   }
 }
 

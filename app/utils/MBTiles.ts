@@ -149,7 +149,7 @@ export default class MBTiles {
    */
   public async index(init: InterfaceMetadata) {
     // Connect SQL
-    debug.index('building')
+    debug.index('started')
     const sequelize = this.connect()
 
     // Build tables
@@ -176,7 +176,7 @@ export default class MBTiles {
   FROM map
   JOIN images ON images.tile_id = map.tile_id`)
 
-    debug.index('created')
+    debug.index('done')
     return { message: 'Indexes created', ok: true, status: 'OK' }
   }
 
@@ -227,7 +227,7 @@ export default class MBTiles {
    * }).then(status => console.log(status))
    */
   public async metadata(init?: InterfaceMetadata) {
-    debug.metadata('building')
+    debug.metadata('started')
 
     // Define Metadata attributes
     if (init) {
@@ -308,7 +308,7 @@ export default class MBTiles {
     if (this.scheme) { saveItems.push({ name: 'scheme', value: this.scheme }) }
 
     metadataSQL.bulkCreate(saveItems)
-    debug.metadata('created')
+    debug.metadata('done')
     return { message: 'Metadata created', ok: true, status: 'OK' }
   }
 
@@ -359,10 +359,10 @@ export default class MBTiles {
     })
 
     // Build SQL tables
+    debug.map('started')
     await this.mapSQL.sync({ force: true })
-    debug.build('removed <map>')
     await this.mapSQL.bulkCreate(grid.tiles)
-    debug.build('created <map>')
+    debug.map('done')
 
     return grid
   }
@@ -409,10 +409,12 @@ export default class MBTiles {
     await this.metadata(init)
     await this.index(init)
     const grid = await this.build(init)
+    debug.build(`started [${ grid.tiles.length }]`)
     for (let i = 0; i < grid.tiles.length; i ++) {
       const tile = new Tile(grid.tiles[i])
       await this.download(tile)
     }
+    debug.build(`done [${ grid.tiles.length }]`)
   }
 }
 
@@ -438,7 +440,7 @@ function main() {
     center: [-111.2082, 52.6037],
     description: 'Tiles from Bing',
     format: 'jpg',
-    maxZoom: 15,
+    maxZoom: 16,
     minZoom: 8,
     name: 'Bing',
     scheme: SCHEME,
