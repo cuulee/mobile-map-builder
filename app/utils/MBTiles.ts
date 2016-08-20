@@ -2,12 +2,11 @@ import debug from './debug'
 import models from '../models'
 import * as filesize from 'filesize'
 import * as Sequelize from 'sequelize'
-import Tile, { InterfaceTile } from './Tile'
-import Grid from './Grid'
-
-interface InterferfaceSequelizeModel extends Sequelize.Model<{}, {}> {
-  init?: any
-}
+import Tile, { downloadTile } from './Tile'
+import Grid, { InterfaceGridOptional } from './Grid'
+import { InterfaceMapAttribute, InterfaceMapInstance, InterfaceMapModel } from '../models/Map'
+import { InterfaceMetadataAttribute, InterfaceMetadataInstance, InterfaceMetadataModel } from '../models/Metadata'
+import { InterfaceImagesAttribute, InterfaceImagesInstance, InterfaceImagesModel } from '../models/Images'
 
 /**
  * Metadata Interface for MBTiles.metadata
@@ -18,22 +17,12 @@ export interface InterfaceMetadata {
   type: string
   description: string
   format: string
-  minzoom?: number
-  maxzoom?: number
+  minZoom?: number
+  maxZoom?: number
   author?: string
   attribution?: string
   center?: number[]
   scheme?: string
-}
-
-/**
- * Map Interface for MBTiles SQL Model
- */
-export interface InterfaceMapSQL {
-  zoom_level?: number
-  tile_row?: number
-  tile_column?: number
-  tile_id?: string
 }
 
 /**
@@ -118,14 +107,15 @@ export default class MBTiles {
   public description: string
   public db: string
   public name: string
-  public minzoom: number
-  public maxzoom: number
+  public minZoom: number
+  public maxZoom: number
   public version: string
   public scheme: string
   public format: string
   public type: string
-  private mapSQL: InterferfaceSequelizeModel
-  private imagesSQL: InterferfaceSequelizeModel
+  private mapSQL: InterfaceMapModel
+  private imagesSQL: InterfaceImagesModel
+  private metadataSQL: InterfaceMetadataModel
 
   /**
    * Creates an instance of MBTiles.
@@ -142,6 +132,12 @@ export default class MBTiles {
     this.format = 'png'
     this.attribution = 'Map data © OpenStreetMap'
     this.description = 'Tiles from OSM'
+
+    // Create SQL connections
+    const sequelize = this.connect()
+    this.mapSQL = sequelize.define<InterfaceMapInstance, InterfaceMapAttribute>('map', models.Map)
+    this.imagesSQL = sequelize.define<InterfaceImagesInstance, InterfaceImagesAttribute>('images', models.Images)
+    this.metadataSQL = sequelize.define<InterfaceMetadataInstance, InterfaceMetadataAttribute>('metadata', models.Metadata)
   }
 
   /**
@@ -151,7 +147,7 @@ export default class MBTiles {
    * @returns {Object} Status message
    * @example
    */
-  public async index() {
+  public async index(init: InterfaceMetadata) {
     // Connect SQL
     debug.index('building')
     const sequelize = this.connect()
@@ -206,8 +202,8 @@ export default class MBTiles {
    * @name metadata
    * @param {Number[x,y]} center (Required)
    * @param {Number[x1,y1,x2,y2]} bounds (Required)
-   * @param {Number} minzoom (Required)
-   * @param {Number} maxzoom (Required)
+   * @param {Number} minZoom (Required)
+   * @param {Number} maxZoom (Required)
    * @param {String} name (Required)
    * @param {String} type (Required)
    * @param {String} format (Required)
@@ -226,28 +222,26 @@ export default class MBTiles {
    *   scheme: 'http://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png',
    *   center: [-18.7, 65, 7],
    *   bounds: [-27, 62, -11, 67.5],
-   *   minzoom: 1,
-   *   maxzoom: 18
+   *   minZoom: 1,
+   *   maxZoom: 18
    * }).then(status => console.log(status))
    */
-  public async metadata(init: InterfaceMetadata) {
-    // Connect SQL
+  public async metadata(init?: InterfaceMetadata) {
     debug.metadata('building')
-    const sequelize = this.connect()
-    const metadataSQL = await sequelize.define('metadata', models.Metadata)
-    await metadataSQL.sync({ force: true })
 
     // Define Metadata attributes
-    this.name = init.name ? init.name : this.name
-    this.bounds = init.bounds ? init.bounds : this.bounds
-    this.center = init.center ? init.center : this.center
-    this.minzoom = init.minzoom ? init.minzoom : this.minzoom
-    this.maxzoom = init.maxzoom ? init.maxzoom : this.maxzoom
-    this.scheme = init.scheme ? init.scheme : this.scheme
-    this.format = init.format ? init.format : this.format
-    this.attribution = init.attribution ? init.attribution : this.attribution
-    this.description = init.description ? init.description : this.description
-    this.type = init.type ? init.type : this.type
+    if (init) {
+      this.name = init.name ? init.name : this.name
+      this.bounds = init.bounds ? init.bounds : this.bounds
+      this.center = init.center ? init.center : this.center
+      this.minZoom = init.minZoom ? init.minZoom : this.minZoom
+      this.maxZoom = init.maxZoom ? init.maxZoom : this.maxZoom
+      this.scheme = init.scheme ? init.scheme : this.scheme
+      this.format = init.format ? init.format : this.format
+      this.attribution = init.attribution ? init.attribution : this.attribution
+      this.description = init.description ? init.description : this.description
+      this.type = init.type ? init.type : this.type
+    }
 
     // Metadata required key/values
     /* istanbul ignore next */
@@ -293,64 +287,84 @@ export default class MBTiles {
       throw new Error(message)
     }
 
-    // Save Metadata to SQL
-    await metadataSQL.create({ name: 'name', value: this.name })
-    await metadataSQL.create({ name: 'version', value: this.version })
-    await metadataSQL.create({ name: 'attribution', value: this.attribution })
-    await metadataSQL.create({ name: 'description', value: this.description })
-    await metadataSQL.create({ name: 'bounds', value: parseBounds(this.bounds) })
-    await metadataSQL.create({ name: 'center', value: parseCenter(this.center) })
-    await metadataSQL.create({ name: 'minzoom', value: String(this.minzoom) })
-    await metadataSQL.create({ name: 'maxzoom', value: String(this.maxzoom) })
-    if (this.format) { await metadataSQL.create({ name: 'format', value: this.format }) }
-    if (this.author) { await metadataSQL.create({ name: 'author', value: this.author }) }
-    if (this.scheme) { await metadataSQL.create({ name: 'scheme', value: this.scheme }) }
+    // Connect SQL
+    const sequelize = this.connect()
+    const metadataSQL = await sequelize.define('metadata', models.Metadata)
+    await metadataSQL.sync({ force: true })
 
+    // Save Metadata to SQL
+    const saveItems = [
+      { name: 'name', value: this.name },
+      { name: 'version', value: this.version },
+      { name: 'attribution', value: this.attribution },
+      { name: 'description', value: this.description },
+      { name: 'bounds', value: parseBounds(this.bounds) },
+      { name: 'center', value: parseCenter(this.center) },
+      { name: 'minZoom', value: String(this.minZoom) },
+      { name: 'maxZoom', value: String(this.maxZoom) },
+    ]
+    if (this.format) { saveItems.push({ name: 'format', value: this.format }) }
+    if (this.author) { saveItems.push({ name: 'author', value: this.author }) }
+    if (this.scheme) { saveItems.push({ name: 'scheme', value: this.scheme }) }
+
+    metadataSQL.bulkCreate(saveItems)
     debug.metadata('created')
     return { message: 'Metadata created', ok: true, status: 'OK' }
   }
 
   /**
-   * Saves map tile data to MBTile database
+   * Builds Grid data to MBTile database
    * 
-   * @name map
-   * @returns {Object} Tile Class
+   * @name build
+   * @returns {Object} Grid
    * @example
    */
-  public async map(init: InterfaceTile) {
-    // Connect SQL
-    if (!this.mapSQL) {
-      const sequelize = this.connect()
-      this.mapSQL = sequelize.define('map', models.Map)
-      await this.mapSQL.sync()
+  public async build(init?: InterfaceGridOptional) {
+    // Define Grid attributes
+    if (init) {
+      this.bounds = init.bounds ? init.bounds : this.bounds
+      this.minZoom = init.minZoom ? init.minZoom : this.minZoom
+      this.maxZoom = init.maxZoom ? init.maxZoom : this.maxZoom
+      this.scheme = init.scheme ? init.scheme : this.scheme
     }
 
-    // Build tile
-    const tile = new Tile(init)
+    /* istanbul ignore next */
+    if (!this.bounds) {
+      const message = 'MBTiles.grid <bounds> is required'
+      debug.error(message)
+      throw new Error(message)
+    /* istanbul ignore next */
+    } else if (!this.minZoom) {
+      const message = 'MBTiles.grid <minZoom> is required'
+      debug.error(message)
+      throw new Error(message)
+    /* istanbul ignore next */
+    } else if (!this.maxZoom) {
+      const message = 'MBTiles.grid <maxZoom> is required'
+      debug.error(message)
+      throw new Error(message)
+    /* istanbul ignore next */
+    } else if (!this.scheme) {
+      const message = 'MBTiles.grid <scheme> is required'
+      debug.error(message)
+      throw new Error(message)
+    }
 
-    // Retrieve existing ID if exists
-    const findOne: InterfaceMapSQL = await this.mapSQL.findOne({
-      where: {
-        tile_column: tile.tile_column,
-        tile_row: tile.tile_row,
-        zoom_level: tile.zoom,
-      },
+    // Create Grid
+    const grid = new Grid({
+      bounds: this.bounds,
+      maxZoom: this.maxZoom,
+      minZoom: this.minZoom,
+      scheme: this.scheme,
     })
 
-    // Append existing Tile with new ID
-    if (findOne) {
-      tile.id = findOne.tile_id
-    } else {
-      // Add Tile to MBTiles SQL db
-      // Not async/await since <tile_id> is alredy in Tile Class
-      this.mapSQL.create({
-        tile_column: tile.tile_column,
-        tile_id: tile.id,
-        tile_row: tile.tile_row,
-        zoom_level: tile.zoom,
-      })
-    }
-    return tile
+    // Build SQL tables
+    await this.mapSQL.sync({ force: true })
+    debug.build('removed <map>')
+    await this.mapSQL.bulkCreate(grid.tiles)
+    debug.build('created <map>')
+
+    return grid
   }
 
   /**
@@ -361,34 +375,27 @@ export default class MBTiles {
    * @example
    */
   public async download(tile: Tile) {
-    // Connect SQL
-    if (!this.imagesSQL) {
-      const sequelize = this.connect()
-      this.imagesSQL = sequelize.define('images', models.Images)
-      await this.imagesSQL.sync()
-    }
-
     // Retrieve existing ID if exists
     const findOne: InterfaceImagesSQL = await this.imagesSQL.findOne({
-      where: {
-        tile_id: tile.id,
-      },
+      where: { tile_id: tile.id },
     })
 
     // Skip download if tile exist in <images.tile_data>
     if (findOne) {
-      debug.skipped(`${ tile.id } (${ getFileSize(findOne.tile_data) })`)
+      debug.skipped(`${ tile.zoom }/${ tile.x }/${ tile.y } [${ getFileSize(findOne.tile_data) }]`)
     } else {
       // Download Tile from default settings
-      const data = await tile.download()
+      let data = await downloadTile(tile.url)
       debug.download(`${ tile.url } (${ getFileSize(data) })`)
       // Save Tile to SQL
       await this.imagesSQL.create({
         tile_data: data,
         tile_id: tile.id,
       })
+      data = null
     }
     return tile
+
   }
 
   /**
@@ -398,48 +405,46 @@ export default class MBTiles {
    * @returns {Object} Status message
    * @example
    */
-  public async save(init: InterfaceTile) {
-    const tile = await this.map(init)
-    await this.download(tile)
-    return { id: tile.id, message: 'Tile saved', ok: true, status: 'OK' }
+  public async save(init: InterfaceMetadata) {
+    await this.metadata(init)
+    await this.index(init)
+    const grid = await this.build(init)
+    for (let i = 0; i < grid.tiles.length; i ++) {
+      const tile = new Tile(grid.tiles[i])
+      await this.download(tile)
+    }
   }
 }
 
 /* istanbul ignore next */
-async function main() {
+function main() {
   // Initialize
-  const mbtiles = new MBTiles('openstreetmap-zoom7-canada.mbtiles')
+  const mbtiles = new MBTiles('cfb-wainwright.mbtiles')
 
   // Save Metadata
   // const SCHEME = 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{zoom}/{y}/{x}'
   // const SCHEME = 'https://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png'
-  const SCHEME = 'https://maps.wikimedia.org/osm-intl/{zoom}/{x}/{y}.png'
-  // const SCHEME = 'http://ecn.t2.tiles.virtualearth.net/tiles/a3000.jpeg?g=5250'
+  // const SCHEME = 'https://maps.wikimedia.org/osm-intl/{zoom}/{x}/{y}.png'
+  const SCHEME = 'http://ecn.t{switch:0,1,2,3}.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=5250'
   // const SCHEME = 'http://ecn.t{switch:0,1,2,3}.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=1512&n=z'
 
-  const CANADA = [-141.0027499, 41.6765556, -52.323198, 83.3362128]
+  // const CANADA = [-141.0027499, 41.6765556, -52.323198, 83.3362128]
   // const SUDBURY = [-81.1507388, 46.3310993, -80.8307388, 46.6510993]
   // const GREATER_SUDBURY = [-81.90, 45.75, -80.15, 47.25]
+  const GAGETOWN = [-111.2082, 52.6037, -110.5503, 52.8544]
   const METADATA = {
-    attribution: 'Map data © OpenStreetMap',
-    bounds: CANADA,
-    center: [-80.9907388, 46.4910993],
-    description: 'Tiles from OSM',
-    format: 'png',
-    maxzoom: 7,
-    minzoom: 7,
-    name: 'OpenStreetMap',
+    attribution: 'Map data © Bing',
+    bounds: GAGETOWN,
+    center: [-111.2082, 52.6037],
+    description: 'Tiles from Bing',
+    format: 'jpg',
+    maxZoom: 15,
+    minZoom: 8,
+    name: 'Bing',
     scheme: SCHEME,
     type: 'baselayer',
   }
-  await mbtiles.metadata(METADATA)
-  await mbtiles.index()
-
-  // Save Multiple Tiles
-  const grid = new Grid(METADATA)
-  grid.tiles.map(tile => {
-    mbtiles.save(tile)
-  })
+  mbtiles.save(METADATA)
 }
 
 /* istanbul ignore next */

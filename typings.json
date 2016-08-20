@@ -14,6 +14,7 @@
     "form-data": "registry:dt/form-data#0.0.0+20160724024111",
     "geojson": "registry:dt/geojson#0.0.0+20160619034323",
     "glob": "registry:dt/glob#5.0.10+20160317120654",
+    "js-base64": "registry:dt/js-base64#2.1.9+20160804180956",
     "lodash": "registry:dt/lodash#4.14.0+20160802150749",
     "mime": "registry:dt/mime#0.0.0+20160316155526",
     "minimatch": "registry:dt/minimatch#2.0.8+20160317120654",

@@ -1,9 +1,16 @@
-import * as uuid from 'node-uuid'
 import * as turf from 'turf'
 import * as rp from 'request-promise'
+import { Base64 } from 'js-base64'
 import { sample } from 'lodash'
 import { mercator } from './GlobalMercator'
 import debug from './debug'
+
+export interface InterfaceEncodeId {
+  zoom_level: number
+  tile_row: number
+  tile_column: number
+  scheme: string
+}
 
 export interface InterfaceTMS {
     tx: number
@@ -11,14 +18,30 @@ export interface InterfaceTMS {
     zoom: number
 }
 
-export interface InterfaceTile {
+export interface InterfaceTileSQL {
+  id: string
   x: number
   y: number
   zoom: number
+}
+
+export interface InterfaceTileTMS {
+  scheme: string
+  tile_column: number
+  tile_row: number
+  zoom_level: number
+  tile_id?: string
+}
+
+export interface InterfaceTile {
+  x?: number
+  y?: number
+  zoom?: number
+  scheme?: string
   tile_row?: number
   tile_column?: number
+  zoom_level?: number
   quadkey?: string
-  scheme?: string
   id?: string
   bbox?: number[]
   geometry?: {type: string, coordinates: number[][][]}
@@ -96,9 +119,70 @@ export const parseUrl = (tile: InterfaceTile) => {
   return url
 }
 
+/**
+ * Downloads the Tile
+ *
+ * @name downloadTile
+ * @param {String} url
+ * @return {Buffer}
+ */
 export const downloadTile = (url: string) => {
   return rp.get(url, { encoding : 'binary' })
     .then(data => new Buffer(data, 'binary'))
+}
+
+/**
+ * Creates Base64 encoded ID from Tile
+ *
+ * @name encodeId
+ * @param {String} scheme - Slippy map URL scheme
+ * @param {Number} x - Tile X
+ * @param {Number} y - Tile Y
+ * @param {Number} zoom - Zoom Level
+ * @return {String} id
+ */
+export const encodeId = (init: InterfaceEncodeId) => {
+  /* istanbul ignore next */
+  if (!init.tile_column) {
+    const message = 'encodeId <tile_column> is required'
+    debug.error(message)
+    throw new Error(message)
+  /* istanbul ignore next */
+  } else if (!init.tile_row) {
+    const message = 'encodeId <tile_row> is required'
+    debug.error(message)
+    throw new Error(message)
+  /* istanbul ignore next */
+  } else if (!init.scheme) {
+    const message = 'encodeId <scheme> is required'
+    debug.error(message)
+    throw new Error(message)
+  /* istanbul ignore next */
+  } else if (!init.zoom_level) {
+    const message = 'encodeId <zoom_level> is required'
+    debug.error(message)
+    throw new Error(message)
+  }
+  return Base64.encode(
+    `zoom_level=${ init.zoom_level };tile_column=${ init.tile_column };tile_row=${ init.tile_row };scheme=${ init.scheme }`)
+}
+
+/**
+ * Decodes Tile ID string
+ *
+ * @name decodeId
+ * @param {String} id
+ * @return {Object} Tile
+ */
+export const decodeId = (id: string) : InterfaceTile => {
+  const tile: any  = {}
+  const decoded = Base64.decode(id)
+  decoded.split(';').map(item => {
+    const pattern = /([a-z]*)=(.*)/
+    const [, key, value] = item.match(pattern)
+    tile[key] = value
+  })
+  return tile
 }
 
 /**
@@ -113,6 +197,7 @@ export default class Tile {
   public tile_row: number
   public tile_column: number
   public zoom: number
+  public zoom_level: number
   public scheme: string
   public quadkey: string
   public url: string
@@ -121,30 +206,59 @@ export default class Tile {
   public tms: InterfaceTMS
   public geometry: { type: string, coordinates: number[][][] }
 
-  constructor(tile: InterfaceTile) {
-    // User Input
-    this.x = tile.x
-    this.y = tile.y
-    this.zoom = tile.zoom
-    this.scheme = tile.scheme
-    this.quadkey = tile.quadkey
+  constructor(init: InterfaceTile) {
+    // Define Tile attributes
+    if (init) {
+      this.x = init.x
+      this.y = init.y
+      this.zoom = init.zoom ? init.zoom : init.zoom_level
+      this.scheme = init.scheme
+      this.quadkey = init.quadkey
+      this.tile_row = init.tile_row
+      this.tile_column = init.tile_column
+    }
+    // Add missing attributes
+    if (!this.x || !this.y) {
+      const google = mercator.TileGoogle({
+        tx: this.tile_column,
+        ty: this.tile_row,
+        zoom: this.zoom,
+      })
+      this.x = google.x
+      this.y = google.y
+    }
+    if (!this.tile_column || !this.tile_row) {
+      const tms = mercator.GoogleTile({
+        x: this.x,
+        y: this.y,
+        zoom: this.zoom,
+      })
+      this.tile_column = tms.tx
+      this.tile_row = tms.ty
+    }
+    if (!this.quadkey) {
+      this.quadkey = mercator.TileQuadKey({
+        tx: this.tile_column,
+        ty: this.tile_row,
+        zoom: this.zoom,
+      })
+    }
 
     // Extra Properties
     this.bbox = mercator.GoogleLatLonBounds({ x: this.x, y: this.y, zoom: this.zoom })
     this.geometry = turf.bboxPolygon(this.bbox).geometry
 
-    // TMS Tiles Scheme
-    this.tms = mercator.GoogleTile(tile)
-    this.quadkey = mercator.TileQuadKey(this.tms)
-    this.tile_row = this.tms.ty
-    this.tile_column = this.tms.tx
-
     // Handle URL
     this.url = parseUrl(this)
-    this.id = uuid.v4()
+    this.id = encodeId({
+      scheme: this.scheme,
+      tile_column: this.tile_column,
+      tile_row: this.tile_row,
+      zoom_level: this.zoom,
+    })
 
     // Validation
-    validateTile(tile)
+    validateTile(init)
   }
   /**
    * Download Tile
@@ -152,21 +266,35 @@ export default class Tile {
    * @param {String} url (default=this.url)
    * @returns {Promise} => {Buffer}
    */
-  public download(url: string = this.url) {
-    return downloadTile(url)
+  public async download(url: string = this.url) {
+    const buffer = await downloadTile(url)
+    return buffer
   }
 }
 
 /* istanbul ignore next */
-if (require.main === module) {
+async function main() {
   const SCHEME = 'http://ecn.t{switch:0,1,2,3}.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=1512&n=z'
-  const TILE = {
+  // const TILE = {
+  //   scheme: SCHEME,
+  //   tile_column: 8,
+  //   tile_row: 8,
+  //   zoom: 4,
+  // }
+  const GOOGLE_TILE = {
     scheme: SCHEME,
     x: 8,
     y: 8,
     zoom: 4,
   }
-  const tile = new Tile(TILE)
-  debug.log(tile.quadkey)
-  debug.log(tile)
+  const tile = new Tile(GOOGLE_TILE)
+  while (true) {
+    debug.log('start')
+    debug.log(tile.url)
+    debug.log(await downloadTile(tile.url))
+    debug.log('end')
+  }
+}
+if (require.main === module) {
+  main()
 }

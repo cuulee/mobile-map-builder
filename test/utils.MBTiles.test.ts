@@ -26,12 +26,6 @@ const METADATA = {
   scheme: SCHEME,
   type: TYPE,
 }
-const TILE = {
-  scheme: 'http://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png',
-  x: 2389,
-  y: 2946,
-  zoom: 13,
-}
 
 test('Update Metadata', async (t) => {
   const mbtiles = new MBTiles('UpdateMetadata.mbtiles')
@@ -50,23 +44,8 @@ test('parseBounds', t => {
   t.deepEqual(bounds, BOUNDS_STRING)
 })
 
-test('Save Tile', async (t) => {
-  const mbtiles = new MBTiles('SaveTile.mbtiles')
-  const status = await mbtiles.save(TILE)
-  await mbtiles.save(TILE) // Save Duplicate Tile
-  await del('SaveTile.mbtiles')
-  t.true(status.ok)
-})
-
-test('Create Index', async (t) => {
-  const mbtiles = new MBTiles('CreateIndex.mbtiles')
-  const status = await mbtiles.index()
-  await del('CreateIndex.mbtiles')
-  t.true(status.ok)
-})
-
 test('Throws Metadata format error', async (t) => {
-  const DB = 'MetadataError.mbtiles'
+  const DB = 'MetadataFormatError.mbtiles'
   const mbtiles = new MBTiles(DB)
   const METADATA_ERROR_FORMAT = {
     bounds: BOUNDS,
@@ -82,7 +61,7 @@ test('Throws Metadata format error', async (t) => {
 })
 
 test('Throws Metadata type error', async (t) => {
-  const DB = 'MetadataError.mbtiles'
+  const DB = 'MetadataTypeError.mbtiles'
   const mbtiles = new MBTiles(DB)
   const METADATA_ERROR_TYPE = {
     bounds: BOUNDS,
