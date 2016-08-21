@@ -22,7 +22,7 @@
     "multer": "registry:dt/multer#0.0.0+20160818200730",
     "node": "registry:dt/node#6.0.0+20160818175514",
     "request": "registry:dt/request#0.0.0+20160726020908",
-    "request-promise": "registry:dt/request-promise#3.0.0+20160628092802",
+    "request-promise": "registry:dt/request-promise#3.0.0+20160811111312",
     "sequelize": "registry:dt/sequelize#3.4.1+20160815132916",
     "serve-static": "registry:dt/serve-static#0.0.0+20160606155157",
     "sqlite3": "registry:dt/sqlite3#2.2.3+20160724070935",
