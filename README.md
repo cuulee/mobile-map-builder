@@ -151,7 +151,8 @@ Once the MBTiles are created, they can be converted into GeoTIFF using the highe
 resolution zoom level using `gdal_translate`.
 
 ```bash
-$ gdal_translate -of GTiff -b 1 -b 2 -b 3 -mask 4 -co "TILED=YES" -co COMPRESS=JPEG tiles.mbtiles tiles.tif
+$ gdal_translate -of GTiff -b 1 -b 2 -b 3 -b mask -co "TILED=YES" \
+  -co JPEG_QUALITY=100 -co COMPRESS=JPEG tiles.mbtiles tiles.tif
 ```
 
 Building overviews is essential for large GeoTIFF formats to be rendering fast on the client using `gdaladdo`.
@@ -160,10 +161,10 @@ Building overviews is essential for large GeoTIFF formats to be rendering fast o
 $ gdaladdo -r average tiles.tif 2 4 8 16
 ```
 
-Reproject Data to a different projection use `gdalwarp`.
+Reproject Data to a different projection using `gdalwarp`.
 
 ```bash
-$ gdalwarp -t_srs EPSG:32617 tiles.mbtiles tiles-UTM17N.tif
+$ gdalwarp -t_srs EPSG:32617 -srcnodata 0 -dstnodata 0 tiles.mbtiles tiles-UTM17N.tif
 ```
 
 ### References

@@ -1,6 +1,6 @@
 import test from 'ava'
 import { pick } from 'lodash'
-import { mercator, bounds, LatLng } from '../app/utils/GlobalMercator'
+import { mercator, bounds, LatLng, LatLngBounds } from '../app/utils/GlobalMercator'
 import {
   LATLNG,
   METERS,
@@ -88,6 +88,16 @@ test('GoogleBounds', t => {
 
 test('GoogleLatLngBounds', t => {
   let bounds = mercator.GoogleLatLonBounds(GOOGLE)
+  t.deepEqual(bounds, BOUNDS_LATLNG)
+})
+
+test('LatLngToGoogle', t => {
+  let google = mercator.LatLngToGoogle(LATLNG)
+  t.deepEqual(google, pick(GOOGLE, ['x', 'y', 'zoom']))
+})
+
+test('LatLngBounds', t => {
+  let bounds = LatLngBounds(BOUNDS_LATLNG)
   t.deepEqual(bounds, BOUNDS_LATLNG)
 })
 

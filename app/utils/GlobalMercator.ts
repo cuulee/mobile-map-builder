@@ -10,6 +10,13 @@ export const bounds = (init: number[]) => {
   return [...init]
 }
 
+/**
+ * Validates LatLng bounds
+ * @name LatLngBounds
+ * @example
+ * const bounds = LatLngBounds([ -75, 44, -74, 45 ])
+ * //= [ -75, 44, -74, 45 ]
+ */
 export const LatLngBounds = (init: number[]) => {
   const [x1, y1, x2, y2] = bounds(init)
   const t1 = new LatLng({lat: y1, lng: x1})
@@ -191,7 +198,7 @@ export default class GlobalMercator {
    * @name LatLngToTile
    * @param {Number} lat
    * @param {Number} lng
-   * @returns {Tile}
+   * @returns {Google} Google Tile
    */
   public LatLngToGoogle(init: LatLng) {
     if (init.zoom === 0) { return new Google({ x: 0, y: 0, zoom: 0 })}

@@ -409,12 +409,12 @@ export default class MBTiles {
     await this.metadata(init)
     await this.index(init)
     const grid = await this.build(init)
-    debug.build(`started [${ grid.tiles.length }]`)
+    debug.build(`started [${ grid.tiles.length } tiles]`)
     for (let i = 0; i < grid.tiles.length; i ++) {
       const tile = new Tile(grid.tiles[i])
       await this.download(tile)
     }
-    debug.build(`done [${ grid.tiles.length }]`)
+    debug.build(`done [${ grid.tiles.length } tiles]`)
   }
 }
 
