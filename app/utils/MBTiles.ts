@@ -381,8 +381,7 @@ export default class MBTiles {
     })
 
     // Skip download if tile exist in <images.tile_data>
-    if (findOne) {
-      debug.skipped(`${ tile.zoom }/${ tile.x }/${ tile.y } [${ getFileSize(findOne.tile_data) }]`)
+    if (findOne) { debug.skipped(`${ tile.zoom }/${ tile.x }/${ tile.y } [${ getFileSize(findOne.tile_data) }]`)
     } else {
       // Download Tile from default settings
       let data = await downloadTile(tile.url)

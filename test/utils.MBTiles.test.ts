@@ -37,21 +37,21 @@ test('Update Metadata', async (t) => {
 })
 
 test('Save', async (t) => {
-  let DB_SAVE = `${ uuid.v4() }.mbtiles`
-  const mbtiles = new MBTiles(DB_SAVE)
-  const status = await mbtiles.save({
+  const DB_SAVE = `${ uuid.v4() }.mbtiles`
+  const DB_METADATA = {
     attribution: 'Map data © Bing',
-    bounds: [-111.2082, 52.6037, -110.5503, 52.8544],
+    bounds: BOUNDS,
     center: [-111.2082, 52.6037],
     description: 'Tiles from Bing',
     format: 'jpg',
-    maxZoom: 5,
-    minZoom: 5,
-    name: 'Bing',
+    maxZoom: 3,
+    minZoom: 3,
+    name: 'Test',
     scheme: SCHEME,
     type: 'baselayer',
-  })
-  await del(DB_SAVE)
+  }
+  const mbtiles = new MBTiles(DB_SAVE)
+  const status = await mbtiles.save(DB_METADATA)
   t.true(status.ok)
 })
 
@@ -60,9 +60,19 @@ test('parseCenter', t => {
   t.deepEqual(center, CENTER_STRING)
 })
 
+test('Throws Error parseCenter', t => {
+  t.throws(() => parseCenter([0, 110]), 'parseCenter [y] must be within -90 to 90 degrees')
+  t.throws(() => parseCenter([-190, 0]), 'parseCenter [x] must be within -180 to 180 degrees')
+})
+
 test('parseBounds', t => {
   const bounds = parseBounds(BOUNDS)
   t.deepEqual(bounds, BOUNDS_STRING)
+})
+
+test('Throws Error parseBounds', t => {
+  t.throws(() => parseBounds([1, 2, 3]), '[bounds] must have 4 numbers')
+  t.throws(() => parseBounds([1, 2, 3, 4, 5]), '[bounds] must have 4 numbers')
 })
 
 test('Throws Metadata format error', async (t) => {
