@@ -289,6 +289,4 @@ async function main() {
   const tile = new Tile(GOOGLE_TILE)
   debug.log(tile)
 }
-if (require.main === module) {
-  main()
-}
+if (require.main === module) { main() }

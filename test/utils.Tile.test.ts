@@ -1,5 +1,12 @@
 import test from 'ava'
-import Tile, { validateTile, parseSwitch, parseUrl, downloadTile } from '../app/utils/Tile'
+import debug from '../app/utils/debug'
+import Tile, {
+  encodeId,
+  decodeId,
+  validateTile,
+  parseSwitch,
+  parseUrl,
+  downloadTile } from '../app/utils/Tile'
 
 const X = 655
 const Y = 854
@@ -8,7 +15,7 @@ const SWITCH = 'abc'
 const URL = 'http://tile-a.openstreetmap.fr/hot/13/2389/2946.png'
 const SCHEME_NO_SWITCH = 'http://tile.openstreetmap.fr/hot/{zoom}/{x}/{y}.png'
 const SCHEME = 'http://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png'
-const SCHEME_QUADKEY = 'http://tile.openstreetmap.fr/hot/{quadkey}.png'
+const SCHEME_QUADKEY = 'http://ecn.t{switch:0,1,2,3}.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=5250'
 const TILE = { quadkey: '012123', scheme: SCHEME, x: X, y: Y, zoom: ZOOM }
 
 test('Tile', t => {
@@ -64,4 +71,56 @@ test('Download Tile from Tile Class', t => {
 test('Download Tile from Method', t => {
   downloadTile(URL)
     .then(buffer => t.pass())
+})
+
+test('Download Tile from Class', async (t) => {
+  const tile = new Tile(TILE)
+  const buffer = await tile.download()
+  t.true(!!buffer)
+})
+
+test('encodeId', t => {
+  const id = encodeId({
+    scheme: SCHEME,
+    tile_column: X,
+    tile_row: Y,
+    zoom_level: ZOOM,
+  })
+  debug.log(id)
+  t.true(!!id)
+})
+
+test('decodeId', t => {
+  const id = decodeId(
+    'em9vbV9sZXZlbD0xNTt0aWxlX2NvbHVtbj02NTU7dGlsZV9yb3c9' +
+    'ODU0O3NjaGVtZT1odHRwOi8vdGlsZS17c3dpdGNoOmEsYixjfS5v' +
+    'cGVuc3RyZWV0bWFwLmZyL2hvdC97em9vbX0ve3h9L3t5fS5wbmc=')
+  t.true(!!id)
+})
+
+test('Throws Error bad encodeId', t => {
+  t.throws(() => encodeId({
+    scheme: SCHEME,
+    tile_column: undefined,
+    tile_row: Y,
+    zoom_level: ZOOM,
+  }), 'encodeId <tile_column> is required')
+  t.throws(() => encodeId({
+    scheme: SCHEME,
+    tile_column: X,
+    tile_row: undefined,
+    zoom_level: ZOOM,
+  }), 'encodeId <tile_row> is required')
+  t.throws(() => encodeId({
+    scheme: undefined,
+    tile_column: X,
+    tile_row: Y,
+    zoom_level: ZOOM,
+  }), 'encodeId <scheme> is required')
+  t.throws(() => encodeId({
+    scheme: SCHEME,
+    tile_column: X,
+    tile_row: Y,
+    zoom_level: undefined,
+  }), 'encodeId <zoom_level> is required')
 })
