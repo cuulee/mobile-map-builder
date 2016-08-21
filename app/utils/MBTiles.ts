@@ -415,11 +415,12 @@ export default class MBTiles {
       await this.download(tile)
     }
     debug.build(`done [${ grid.tiles.length } tiles]`)
+    return { message: 'MBTiles saved', ok: true, status: 'OK' }
   }
 }
 
 /* istanbul ignore next */
-function main() {
+async function main() {
   // Initialize
   const mbtiles = new MBTiles('cfb-wainwright.mbtiles')
 
@@ -440,13 +441,14 @@ function main() {
     center: [-111.2082, 52.6037],
     description: 'Tiles from Bing',
     format: 'jpg',
-    maxZoom: 16,
+    maxZoom: 10,
     minZoom: 8,
     name: 'Bing',
     scheme: SCHEME,
     type: 'baselayer',
   }
-  mbtiles.save(METADATA)
+  const status = await mbtiles.save(METADATA)
+  debug.log(status)
 }
 
 /* istanbul ignore next */

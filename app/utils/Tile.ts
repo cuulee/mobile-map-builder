@@ -1,7 +1,7 @@
 import * as turf from 'turf'
 import * as rp from 'request-promise'
 import { Base64 } from 'js-base64'
-import { sample } from 'lodash'
+import { sample, isUndefined } from 'lodash'
 import { mercator } from './GlobalMercator'
 import debug from './debug'
 
@@ -142,23 +142,22 @@ export const downloadTile = (url: string) => {
  * @return {String} id
  */
 export const encodeId = (init: InterfaceEncodeId) => {
-  /* istanbul ignore next */
-  if (!init.tile_column) {
+  if (isUndefined(init.tile_column)) {
     const message = 'encodeId <tile_column> is required'
     debug.error(message)
     throw new Error(message)
-  /* istanbul ignore next */
-  } else if (!init.tile_row) {
+
+  } else if (isUndefined(init.tile_row)) {
     const message = 'encodeId <tile_row> is required'
     debug.error(message)
     throw new Error(message)
-  /* istanbul ignore next */
-  } else if (!init.scheme) {
+
+  } else if (isUndefined(init.scheme)) {
     const message = 'encodeId <scheme> is required'
     debug.error(message)
     throw new Error(message)
-  /* istanbul ignore next */
-  } else if (!init.zoom_level) {
+
+  } else if (isUndefined(init.zoom_level)) {
     const message = 'encodeId <zoom_level> is required'
     debug.error(message)
     throw new Error(message)
@@ -283,17 +282,12 @@ async function main() {
   // }
   const GOOGLE_TILE = {
     scheme: SCHEME,
-    x: 8,
-    y: 8,
-    zoom: 4,
+    x: 3,
+    y: 3,
+    zoom: 3,
   }
   const tile = new Tile(GOOGLE_TILE)
-  while (true) {
-    debug.log('start')
-    debug.log(tile.url)
-    debug.log(await downloadTile(tile.url))
-    debug.log('end')
-  }
+  debug.log(tile)
 }
 if (require.main === module) {
   main()

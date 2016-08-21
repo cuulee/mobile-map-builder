@@ -1,5 +1,7 @@
 import test from 'ava'
 import * as del from 'del'
+import * as uuid from 'node-uuid'
+// import debug from '../app/utils/debug'
 import MBTiles, { parseCenter, parseBounds } from '../app/utils/MBTiles'
 
 const NAME = 'OpenStreetMap'
@@ -31,6 +33,25 @@ test('Update Metadata', async (t) => {
   const mbtiles = new MBTiles('UpdateMetadata.mbtiles')
   const status = await mbtiles.metadata(METADATA)
   await del('UpdateMetadata.mbtiles')
+  t.true(status.ok)
+})
+
+test('Save', async (t) => {
+  let DB_SAVE = `${ uuid.v4() }.mbtiles`
+  const mbtiles = new MBTiles(DB_SAVE)
+  const status = await mbtiles.save({
+    attribution: 'Map data © Bing',
+    bounds: [-111.2082, 52.6037, -110.5503, 52.8544],
+    center: [-111.2082, 52.6037],
+    description: 'Tiles from Bing',
+    format: 'jpg',
+    maxZoom: 5,
+    minZoom: 5,
+    name: 'Bing',
+    scheme: SCHEME,
+    type: 'baselayer',
+  })
+  await del(DB_SAVE)
   t.true(status.ok)
 })
 
