@@ -6,6 +6,7 @@
   "scripts": {
     "postinstall": "./node_modules/typings/dist/bin.js install",
     "test": "npm run build && npm run ava && npm run lint",
+    "docker-test": "docker build -t data-generator . && docker run --rm -it data-generator npm run test",
     "build": "./node_modules/typescript/bin/tsc",
     "ava": "./node_modules/nyc/bin/nyc.js ./node_modules/ava/cli.js --verbose",
     "start": "./node_modules/ts-node/dist/bin.js app/cluster.ts",

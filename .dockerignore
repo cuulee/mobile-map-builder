@@ -1,0 +1,8 @@
+node_modules
+dist
+*.mbtiles
+*.tif
+.vscode
+.nyc_output
+coverage
+uploads
