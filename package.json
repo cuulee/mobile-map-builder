@@ -27,10 +27,12 @@
   "homepage": "https://github.com/dlcspm/data-generator#readme",
   "dependencies": {
     "body-parser": "^1.15.2",
+    "commander": "^2.9.0",
     "debug": "^2.2.0",
     "express": "^4.14.0",
     "filesize": "^3.3.0",
     "js-base64": "^2.1.9",
+    "js-yaml": "^3.6.1",
     "lodash": "^4.13.1",
     "mongodb": "^2.2.4",
     "mongoose": "^4.5.5",
@@ -40,6 +42,7 @@
     "request-promise": "^4.1.1",
     "sequelize": "^3.24.0",
     "sqlite3": "^3.1.4",
+    "tslint": "^3.15.1",
     "turf": "^3.0.14"
   },
   "devDependencies": {

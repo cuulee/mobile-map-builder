@@ -16,7 +16,8 @@
     "ordered-imports": false,
     "no-bitwise": false,
     "variable-name": [false, "check-format"],
-    "max-line-length": [true, 150]
+    "max-line-length": [true, 150],
+    "no-console": [false]
   },
   "rulesDirectory": [
     /*

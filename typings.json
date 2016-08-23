@@ -6,6 +6,7 @@
   "globalDependencies": {
     "bluebird": "registry:dt/bluebird#3.0.0+20160811111256",
     "body-parser": "registry:dt/body-parser#0.0.0+20160619023215",
+    "commander": "registry:dt/commander#2.3.0+20160317120654",
     "debug": "registry:dt/debug#0.0.0+20160317120654",
     "del": "registry:dt/del#2.2.0+20160317120654",
     "express": "registry:dt/express#4.0.0+20160708185218",
@@ -15,6 +16,7 @@
     "geojson": "registry:dt/geojson#0.0.0+20160619034323",
     "glob": "registry:dt/glob#5.0.10+20160317120654",
     "js-base64": "registry:dt/js-base64#2.1.9+20160804180956",
+    "js-yaml": "registry:dt/js-yaml#3.5.2+20160316171810",
     "lodash": "registry:dt/lodash#4.14.0+20160817155621",
     "mime": "registry:dt/mime#0.0.0+20160316155526",
     "minimatch": "registry:dt/minimatch#2.0.8+20160317120654",

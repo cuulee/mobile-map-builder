@@ -2,6 +2,7 @@ import * as debug from 'debug'
 
 export default {
   build: debug('data-generator:build'),
+  cli: debug('data-generator:cli'),
   download: debug('data-generator:download'),
   error: debug('data-generator:error'),
   grid: debug('data-generator:grid'),
