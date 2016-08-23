@@ -12,10 +12,10 @@ export const MBTiles = _MBTiles
 export const Tile = _Tile
 export const debug = _debug
 export default {
-  GeoJSON: GeoJSON,
-  GlobalMercator: GlobalMercator,
-  Grid: Grid,
-  MBTiles: MBTiles,
-  Tile: Tile,
-  debug: _debug,
+  GeoJSON,
+  GlobalMercator,
+  Grid,
+  MBTiles,
+  Tile,
+  debug,
 }

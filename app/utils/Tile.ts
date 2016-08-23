@@ -86,7 +86,7 @@ export const parseSwitch = (url: string) => {
   const pattern = /{switch:([a-z,\d]*)}/i
   const found = url.match(pattern)
   if (found) {
-    const random = sample(found[1].split(','))
+    const random: any = sample(found[1].split(','))
     return url.replace(pattern, random)
   }
   return url
@@ -261,7 +261,7 @@ export default class Tile {
   }
   /**
    * Download Tile
-   * 
+   *
    * @param {String} url (default=this.url)
    * @returns {Promise} => {Buffer}
    */

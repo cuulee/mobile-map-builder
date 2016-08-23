@@ -142,7 +142,7 @@ export default class GlobalMercator {
     let my: number = Math.log(Math.tan((90 + lat) * Math.PI / 360.0 )) / (Math.PI / 180.0)
     my = my * this.originShift / 180.0
 
-    return new Meters({ mx: mx, my: my, zoom: zoom })
+    return new Meters({ mx, my, zoom })
   }
 
   /**
@@ -159,7 +159,7 @@ export default class GlobalMercator {
     let lat = (my / this.originShift) * 180.0
     lat = 180 / Math.PI * (2 * Math.atan( Math.exp( lat * Math.PI / 180.0)) - Math.PI / 2.0)
 
-    return new LatLng({ lat: lat, lng: lng, zoom: zoom })
+    return new LatLng({ lat, lng, zoom })
   }
 
   /**
@@ -176,7 +176,7 @@ export default class GlobalMercator {
     const px = (mx + this.originShift) / res
     const py = (my + this.originShift) / res
 
-    return new Pixels({ px: px, py: py, zoom: zoom })
+    return new Pixels({ px, py, zoom })
   }
 
   /**
@@ -235,7 +235,7 @@ export default class GlobalMercator {
     const mx = px * res - this.originShift
     const my = py * res - this.originShift
 
-    return new Meters({ mx: mx, my: my, zoom: zoom })
+    return new Meters({ mx, my, zoom })
   }
 
   /**
@@ -254,7 +254,7 @@ export default class GlobalMercator {
     const tx = Math.ceil(px / this.TileSize) - 1
     const ty = Math.ceil(py / this.TileSize) - 1
 
-    return new Tile({ tx: tx, ty: ty, zoom: zoom })
+    return new Tile({ tx, ty, zoom })
   }
 
   /**
@@ -268,8 +268,8 @@ export default class GlobalMercator {
    */
   public TileBounds(init: Tile) {
     const {tx, ty, zoom} = new Tile(init)
-    let min = this.PixelsToMeters({ px: tx * this.TileSize, py: ty * this.TileSize, zoom: zoom })
-    let max = this.PixelsToMeters({ px: (tx + 1) * this.TileSize, py: (ty + 1) * this.TileSize, zoom: zoom })
+    let min = this.PixelsToMeters({ px: tx * this.TileSize, py: ty * this.TileSize, zoom })
+    let max = this.PixelsToMeters({ px: (tx + 1) * this.TileSize, py: (ty + 1) * this.TileSize, zoom })
 
     return bounds([ min.mx, min.my, max.mx, max.my ])
   }
@@ -287,9 +287,9 @@ export default class GlobalMercator {
     if (init.zoom === 0) { return [ -180, -85.05112877980659, 180, 85.05112877980659 ] }
 
     const {tx, ty, zoom} = new Tile(init)
-    const [mx1, my1, mx2, my2] = this.TileBounds({ tx: tx, ty: ty, zoom: zoom })
-    const min = this.MetersToLatLon({ mx: mx1, my: my1, zoom: zoom })
-    const max = this.MetersToLatLon({ mx: mx2, my: my2, zoom: zoom })
+    const [mx1, my1, mx2, my2] = this.TileBounds({ tx, ty, zoom })
+    const min = this.MetersToLatLon({ mx: mx1, my: my1, zoom })
+    const max = this.MetersToLatLon({ mx: mx2, my: my2, zoom })
 
     return bounds([ min.lng, min.lat, max.lng, max.lat ])
   }
@@ -338,7 +338,7 @@ export default class GlobalMercator {
     const x = tx
     const y = (Math.pow(2, zoom) - 1) - ty
 
-    return new Google({ x: x, y: y, zoom: zoom })
+    return new Google({ x, y, zoom })
   }
 
   /**
@@ -355,7 +355,7 @@ export default class GlobalMercator {
     const tx = x
     const ty = Math.pow(2, zoom) - y - 1
 
-    return new Tile({ tx: tx, ty: ty, zoom: zoom })
+    return new Tile({ tx, ty, zoom })
   }
 
   /**
@@ -444,7 +444,7 @@ export default class GlobalMercator {
         throw new Error('Invalid QuadKey digit sequence')
       }
     })
-    return new Google({ x: x, y: y, zoom: zoom })
+    return new Google({ x, y, zoom })
   }
 }
 export const mercator = new GlobalMercator()

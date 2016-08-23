@@ -68,8 +68,8 @@ export default class Grid {
     debug.grid('started')
     range(this.minZoom, this.maxZoom + 1).map(zoom => {
       let [x1, y1, x2, y2] = this.bounds
-      let t1 = mercator.LatLngToTile({lat: y1, lng: x1, zoom: zoom})
-      let t2 = mercator.LatLngToTile({lat: y2, lng: x2, zoom: zoom})
+      let t1 = mercator.LatLngToTile({lat: y1, lng: x1, zoom})
+      let t2 = mercator.LatLngToTile({lat: y2, lng: x2, zoom})
       let minty = Math.min(t1.ty, t2.ty)
       let maxty = Math.max(t1.ty, t2.ty)
       let mintx = Math.min(t1.tx, t2.tx)
@@ -79,15 +79,15 @@ export default class Grid {
         range(mintx, maxtx + 1).map(tile_column => {
           const id = encodeId({
             scheme: this.scheme,
-            tile_column: tile_column,
-            tile_row: tile_row,
+            tile_column,
+            tile_row,
             zoom_level: zoom,
           })
           this.tiles.push({
             scheme: this.scheme,
-            tile_column: tile_column,
+            tile_column,
             tile_id: id,
-            tile_row: tile_row,
+            tile_row,
             zoom_level: zoom })
         })
       })

@@ -8,8 +8,8 @@ export const Map = map
 export const Metadata = metadata
 export const Log = log
 export default {
-  Images: Images,
-  Log: Log,
-  Map: Map,
-  Metadata: Metadata,
+  Images,
+  Log,
+  Map,
+  Metadata,
 }
