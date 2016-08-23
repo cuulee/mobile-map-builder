@@ -164,7 +164,7 @@ $ gdaladdo -r average tiles.tif 2 4 8 16
 Reproject Data to a different projection using `gdalwarp`.
 
 ```bash
-$ gdalwarp -t_srs EPSG:32617 -srcnodata 0 -dstnodata 0 tiles.mbtiles tiles-UTM17N.tif
+$ gdalwarp -t_srs EPSG:32617 -dstalpha tiles.mbtiles tiles-UTM17N.tif
 ```
 
 ### References
