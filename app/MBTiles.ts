@@ -1,12 +1,12 @@
 import debug from './debug'
-import models from '../models'
+import models from './models'
 import * as filesize from 'filesize'
 import * as Sequelize from 'sequelize'
 import Tile, { downloadTile } from './Tile'
 import Grid, { InterfaceGridOptional } from './Grid'
-import { InterfaceMapAttribute, InterfaceMapInstance, InterfaceMapModel } from '../models/Map'
-import { InterfaceMetadataAttribute, InterfaceMetadataInstance, InterfaceMetadataModel } from '../models/Metadata'
-import { InterfaceImagesAttribute, InterfaceImagesInstance, InterfaceImagesModel } from '../models/Images'
+import { InterfaceMapAttribute, InterfaceMapInstance, InterfaceMapModel } from './models/Map'
+import { InterfaceMetadataAttribute, InterfaceMetadataInstance, InterfaceMetadataModel } from './models/Metadata'
+import { InterfaceImagesAttribute, InterfaceImagesInstance, InterfaceImagesModel } from './models/Images'
 
 /**
  * Metadata Interface for MBTiles.metadata
@@ -440,7 +440,7 @@ async function main() {
     center: [-111.2082, 52.6037],
     description: 'Tiles from Bing',
     format: 'jpg',
-    maxZoom: 10,
+    maxZoom: 14,
     minZoom: 8,
     name: 'Bing',
     scheme: SCHEME,

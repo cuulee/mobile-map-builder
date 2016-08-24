@@ -1,5 +1,5 @@
 import test from 'ava'
-import Grid from '../app/utils/Grid'
+import Grid from '../app/Grid'
 
 const BOUNDS = [-66.633234, 45.446628, -66.052350, 45.891202]
 const MAXZOOM = 7

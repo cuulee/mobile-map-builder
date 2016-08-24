@@ -1,12 +1,12 @@
 import test from 'ava'
-import debug from '../app/utils/debug'
+import debug from '../app/debug'
 import Tile, {
   encodeId,
   decodeId,
   validateTile,
   parseSwitch,
   parseUrl,
-  downloadTile } from '../app/utils/Tile'
+  downloadTile } from '../app/Tile'
 
 const X = 655
 const Y = 854

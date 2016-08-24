@@ -2,7 +2,7 @@ import test from 'ava'
 import * as del from 'del'
 import * as uuid from 'node-uuid'
 // import debug from '../app/utils/debug'
-import MBTiles, { parseCenter, parseBounds } from '../app/utils/MBTiles'
+import MBTiles, { parseCenter, parseBounds } from '../app/MBTiles'
 
 const NAME = 'OpenStreetMap'
 const ATTRIBUTION = 'Map data © OpenStreetMap'

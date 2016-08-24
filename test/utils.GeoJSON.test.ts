@@ -1,5 +1,5 @@
 import test from 'ava'
-import GeoJSON from '../app/utils/GeoJSON'
+import GeoJSON from '../app/GeoJSON'
 import { GOOGLE } from './globals'
 
 test('GeoJSON', t => {

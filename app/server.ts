@@ -1,7 +1,7 @@
 import * as express from 'express'
 import * as multer from 'multer'
 import * as bodyParser from 'body-parser'
-import debug from './utils/debug'
+import debug from './debug'
 import routes from './routes'
 import { PORT } from './config'
 

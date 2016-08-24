@@ -1,7 +1,7 @@
 import * as cluster from 'cluster'
 import { range } from 'lodash'
 import { PORT, SECRET, CORES } from './config'
-import debug from './utils/debug'
+import debug from './debug'
 
 if (cluster.isMaster) {
   range(CORES).map(() => cluster.fork())

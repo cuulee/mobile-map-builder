@@ -1,6 +1,6 @@
 import test from 'ava'
 import { pick } from 'lodash'
-import { mercator, bounds, LatLng, LatLngBounds } from '../app/utils/GlobalMercator'
+import { mercator, bounds, LatLng, LatLngBounds } from '../app/GlobalMercator'
 import {
   LATLNG,
   METERS,
