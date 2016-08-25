@@ -5,6 +5,21 @@
 
 An application that helps you build data bundles (MBTiles & GeoPackages) from TileServers.
 
+## Install
+
+```bash
+$ git clone git@github.com:dlcspm/data-generator.git
+$ cd data-generator
+$ npm install
+```
+
+## Quickstart CLI native NodeJS
+
+```bash
+$ npm run build
+$ node dist/app/cli.js [OPTIONS] --config config-example.yml tiles.mbtiles
+```
+
 ## Useful Applications
 
 **[MapTiler](https://www.maptiler.com)** - Previews MBTiles graphically.

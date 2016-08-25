@@ -6,6 +6,9 @@ dist/
 *.jpg
 *.tif
 *.mbtiles
+*.yml
+*.mbtiles-journal
+!config-example.yml
 .vscode/
 .nyc_output
 nohup.out

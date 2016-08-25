@@ -31,7 +31,7 @@ const pathExists = (path: string) => {
 const customHelp = () => {
   console.log(`Examples:
 
-    $ node app/cli.js [options] --config config.yml tiles.mbtiles
+    $ node app/cli.js [OPTIONS] --config config.yml tiles.mbtiles
     `)
 }
 async function main() {
