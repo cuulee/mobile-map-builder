@@ -440,7 +440,7 @@ async function main() {
     center: [-111.2082, 52.6037],
     description: 'Tiles from Bing',
     format: 'jpg',
-    maxZoom: 14,
+    maxZoom: 10,
     minZoom: 8,
     name: 'Bing',
     scheme: SCHEME,

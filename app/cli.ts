@@ -3,6 +3,7 @@ import * as fs from 'fs'
 import * as yaml from 'js-yaml'
 import { isUndefined, get } from 'lodash'
 import debug from './debug'
+import MBTiles from './MBTiles'
 
 interface InterfaceCLI extends commander.ICommand {
   config?: string
@@ -33,7 +34,7 @@ const customHelp = () => {
     $ node app/cli.js [options] --config config.yml tiles.mbtiles
     `)
 }
-function main() {
+async function main() {
   program
     .version('1.0.0')
     .description('Creates MBTiles from Web Map Tile Service')
@@ -68,7 +69,7 @@ function main() {
   const config = yaml.safeLoad(fs.readFileSync(cli.config, 'utf8'))
 
   // Overwrite Config with options
-  const options = ['format', 'maxZoom', 'minZoom', 'scheme', 'attribution', 'bounds', 'center']
+  const options = ['format', 'type', 'maxZoom', 'minZoom', 'scheme', 'attribution', 'bounds', 'center']
   options.map(item => {
     const value = get(cli, item)
     if (typeof(value) === 'string') { config[item] = value
@@ -79,8 +80,13 @@ function main() {
   if (typeof(cli.description) === 'string') { config.description = cli.description }
   if (typeof(cli.name) === 'string') { config.name = cli.name }
 
-  debug.log(cli.args[0])
+  // Create MBTiles
   debug.cli(config)
+  const output = cli.args[0]
+  debug.log(output)
+  const mbtiles = new MBTiles(output)
+  const status = await mbtiles.save(config)
+  debug.log(status)
 }
 
 /* istanbul ignore next */
