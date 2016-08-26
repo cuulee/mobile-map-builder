@@ -2,6 +2,7 @@ import debug from './debug'
 import models from './models'
 import * as filesize from 'filesize'
 import * as Sequelize from 'sequelize'
+import * as ProgressBar from 'progress'
 import Tile, { downloadTile } from './Tile'
 import Grid from './Grid'
 import { InterfaceMapAttribute, InterfaceMapInstance, InterfaceMapModel } from './models/Map'
@@ -320,6 +321,10 @@ export default class MBTiles {
    */
   public async download(init: InterfaceMetadata) {
     const grid = new Grid(init, 10)
+    const bar = new ProgressBar('  downloading [:bar] :percent (:current/:total)', {
+      total: grid.count,
+      width: 20,
+    })
 
     // Index used to quickly find existing tile images by [tile_id]
     const keys = await this.imagesSQL.findAll({ attributes: { exclude: ['tile_data'] } })
@@ -327,6 +332,7 @@ export default class MBTiles {
     for (let key of keys) {
       index[key.tile_id] = key.tile_id
     }
+    bar.tick(keys.length)
 
     debug.download(`started [${ keys.length } of ${ grid.count } tiles]`)
 
@@ -336,8 +342,12 @@ export default class MBTiles {
       if (done) { break }
       const tile = new Tile(value)
 
-      // Download Tile
+      // Check if tile exists
       if (!index[tile.id]) {
+        // Update Progress bar
+        bar.tick()
+
+        // Download Tile
         let data = await downloadTile(tile.url)
         debug.download(`${ tile.url } (${ getFileSize(data) })`)
         this.imagesSQL.create({ tile_data: data, tile_id: tile.id })
@@ -356,19 +366,20 @@ export default class MBTiles {
    * @example
    */
   public async map(init: InterfaceMetadata) {
-    debug.map('started')
+    const grid = new Grid(init, 100000)
+    debug.map(`started [${ grid.count }]`)
+
     // Remove Existing Mapping
     await this.mapSQL.sync({ force: true })
 
     // Iterate over 100K and Bulk save
-    const grid = new Grid(init, 100000)
     while (true) {
       const { value, done } = grid.tilesBulk.next()
       if (done) { break }
       await this.mapSQL.bulkCreate(value)
       debug.map(`saved [${ value.length }]`)
     }
-    debug.map('done')
+    debug.map(`done [${ grid.count }]`)
     return { message: 'Map created', ok: true, status: 'OK' }
   }
 
@@ -382,8 +393,8 @@ export default class MBTiles {
   public async save(init: InterfaceMetadata) {
     await this.metadata(init)
     await this.index(init)
-    await this.map(init)
     await this.download(init)
+    await this.map(init)
     return { message: 'MBTiles saved', ok: true, status: 'OK' }
   }
 }
