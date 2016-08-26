@@ -1,15 +1,15 @@
 import * as debug from 'debug'
 
 export default {
-  build: debug('data-generator:build'),
-  cli: debug('data-generator:cli'),
-  download: debug('data-generator:download'),
-  error: debug('data-generator:error'),
-  grid: debug('data-generator:grid'),
-  index: debug('data-generator:index'),
-  log: debug('data-generator:log'),
-  map: debug('data-generator:map'),
-  metadata: debug('data-generator:metadata'),
-  save: debug('data-generator:save'),
-  skipped: debug('data-generator:skipped'),
+  build: debug('dataGen:build'),
+  cli: debug('dataGen:cli'),
+  download: debug('dataGen:download'),
+  error: debug('dataGen:error'),
+  grid: debug('dataGen:grid'),
+  index: debug('dataGen:index'),
+  log: debug('dataGen:log'),
+  map: debug('dataGen:map'),
+  metadata: debug('dataGen:metadata'),
+  save: debug('dataGen:save'),
+  skipped: debug('dataGen:skipped'),
 }
