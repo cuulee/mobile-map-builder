@@ -25,10 +25,10 @@ export interface InterfaceMapModel extends Sequelize.Model<InterfaceMapInstance,
  * Map Scheme for MBTiles SQL Model
  */
 const scheme: DefineAttributes = {
-  tile_column: { type: INTEGER },
+  tile_column: { type: INTEGER, validate: { isInt: true }},
   tile_id: { primaryKey: true, type: TEXT, unique: true },
-  tile_row: { type: INTEGER },
-  zoom_level: { type: INTEGER },
+  tile_row: { type: INTEGER, validate: { isInt: true }},
+  zoom_level: { type: INTEGER, validate: { isInt: true }},
 }
 
 export default scheme

@@ -13,7 +13,7 @@ $ cd data-generator
 $ npm install
 ```
 
-## Quickstart CLI native NodeJS
+## Quickstart
 
 ```bash
 $ npm run build
