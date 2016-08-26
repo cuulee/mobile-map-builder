@@ -1,4 +1,4 @@
-import { range } from 'lodash'
+import { range, isUndefined } from 'lodash'
 import { mercator, LatLngBounds } from './GlobalMercator'
 import debug from './debug'
 import { encodeId, InterfaceTileTMS } from './Tile'
@@ -17,6 +17,123 @@ export interface InterfaceGridOptional {
   scheme?: string
 }
 
+export interface InterfaceGridLevel {
+  zoom: number
+  tile_rows: number[]
+  tile_columns: number[]
+}
+
+export function buildGridLevels(init: InterfaceGrid) {
+  const levels: InterfaceGridLevel[] = []
+  for (let zoom of range(init.minZoom, init.maxZoom + 1)) {
+    let [x1, y1, x2, y2] = init.bounds
+    let t1 = mercator.LatLngToTile({lat: y1, lng: x1, zoom})
+    let t2 = mercator.LatLngToTile({lat: y2, lng: x2, zoom})
+    let minty = Math.min(t1.ty, t2.ty)
+    let maxty = Math.max(t1.ty, t2.ty)
+    let mintx = Math.min(t1.tx, t2.tx)
+    let maxtx = Math.max(t1.tx, t2.tx)
+    const tile_rows = range(minty, maxty + 1)
+    const tile_columns = range(mintx, maxtx + 1)
+    levels.push({
+      zoom,
+      tile_rows,
+      tile_columns,
+    })
+  }
+  return levels
+}
+
+export function countGrid(init: InterfaceGrid) {
+  // debug.grid('counting')
+  let count = 0
+  const levels = buildGridLevels(init)
+  for (let level of levels) {
+    count += level.tile_rows.length * level.tile_columns.length
+  }
+  // debug.grid(`counted [${ count }]`)
+  return count
+}
+
+export function * buildGridBulk(init: InterfaceGrid, bulk = 50) {
+  const grid = buildGrid(init)
+  let container: InterfaceTileTMS[] = []
+  let i = 0
+  while (true) {
+    i ++
+    const { value, done } = grid.next()
+    if (value) { container.push(value) }
+    if (i % bulk === 0) {
+      yield container
+      container = []
+    }
+    if (done) {
+      yield container
+      break
+    }
+  }
+}
+
+export function * buildGrid(init: InterfaceGrid) {
+  debug.grid('started')
+  let count  = 0
+  const levels = buildGridLevels(init)
+  for (let level of levels) {
+    for (let tile_row of level.tile_rows) {
+      for (let tile_column of level.tile_columns) {
+        const id = encodeId({
+          scheme: init.scheme,
+          tile_column,
+          tile_row,
+          zoom_level: level.zoom,
+        })
+        const item: InterfaceTileTMS = {
+          scheme: init.scheme,
+          tile_column,
+          tile_id: id,
+          tile_row,
+          zoom_level: level.zoom }
+        count ++
+        yield item
+      }
+    }
+  }
+  debug.grid(`done [${ count } tiles]`)
+}
+
+export const validateGrid = (init: InterfaceGrid) => {
+  LatLngBounds(init.bounds)
+  if (init.minZoom < 0) {
+    const message = 'Grid <minZoom> cannot be less than 0'
+    debug.error(message)
+    throw new Error(message)
+  } else if (init.maxZoom > 23) {
+    const message = 'Grid <maxZoom> cannot be greater than 23'
+    debug.error(message)
+    throw new Error(message)
+  } else if (init.minZoom > init.maxZoom) {
+    const message = 'Grid <minZoom> cannot be greater than <maxZoom>'
+    debug.error(message)
+    throw new Error(message)
+  } else if (isUndefined(init.bounds)) {
+    const message = 'Grid <bounds> is required'
+    debug.error(message)
+    throw new Error(message)
+  } else if (isUndefined(init.minZoom)) {
+    const message = 'Grid <minZoom> is required'
+    debug.error(message)
+    throw new Error(message)
+  } else if (isUndefined(init.maxZoom)) {
+    const message = 'Grid <maxZoom> is required'
+    debug.error(message)
+    throw new Error(message)
+  } else if (isUndefined(init.scheme)) {
+    const message = 'Grid <scheme> is required'
+    debug.error(message)
+    throw new Error(message)
+  }
+}
+
 /**
  * Class implementation of Mabpox's MBTile v1.1 specification'
  * 
@@ -32,67 +149,21 @@ export default class Grid {
   public minZoom: number
   public maxZoom: number
   public scheme: string
-  public tiles: InterfaceTileTMS[]
+  public count: number
+  public bulk: number
+  public tiles: IterableIterator<InterfaceTileTMS>
+  public tilesBulk: IterableIterator<InterfaceTileTMS[]>
 
-  constructor(init: InterfaceGrid) {
-    this.bounds = LatLngBounds(init.bounds)
+  constructor(init: InterfaceGrid, bulk = 50000) {
+    validateGrid(init)
+    this.bulk = bulk
+    this.bounds = init.bounds
     this.minZoom = init.minZoom
     this.maxZoom = init.maxZoom
     this.scheme = init.scheme
-    this.tiles = []
-    this.validate()
-    this.build()
-  }
-
-  public validate() {
-    if (this.minZoom < 0) {
-      const message = 'Grid <minZoom> cannot be less than 0'
-      debug.error(message)
-      throw new Error(message)
-    }
-
-    if (this.maxZoom > 23) {
-      const message = 'Grid <maxZoom> cannot be greater than 23'
-      debug.error(message)
-      throw new Error(message)
-    }
-
-    if (this.minZoom > this.maxZoom) {
-      const message = 'Grid <minZoom> cannot be greater than <maxZoom>'
-      debug.error(message)
-      throw new Error(message)
-    }
-  }
-
-  public build() {
-    debug.grid('started')
-    range(this.minZoom, this.maxZoom + 1).map(zoom => {
-      let [x1, y1, x2, y2] = this.bounds
-      let t1 = mercator.LatLngToTile({lat: y1, lng: x1, zoom})
-      let t2 = mercator.LatLngToTile({lat: y2, lng: x2, zoom})
-      let minty = Math.min(t1.ty, t2.ty)
-      let maxty = Math.max(t1.ty, t2.ty)
-      let mintx = Math.min(t1.tx, t2.tx)
-      let maxtx = Math.max(t1.tx, t2.tx)
-
-      range(minty, maxty + 1).map(tile_row => {
-        range(mintx, maxtx + 1).map(tile_column => {
-          const id = encodeId({
-            scheme: this.scheme,
-            tile_column,
-            tile_row,
-            zoom_level: zoom,
-          })
-          this.tiles.push({
-            scheme: this.scheme,
-            tile_column,
-            tile_id: id,
-            tile_row,
-            zoom_level: zoom })
-        })
-      })
-    })
-    debug.grid(`done [${ this.tiles.length } tiles]`)
+    this.count = countGrid(init)
+    this.tiles = buildGrid(init)
+    this.tilesBulk = buildGridBulk(init, bulk)
   }
 }
 
@@ -100,14 +171,16 @@ export default class Grid {
 async function main() {
   const OPTIONS = {
     bounds: [-66.633234, 45.446628, -66.052350, 45.891202],
-    maxZoom: 4,
+    maxZoom: 19,
     minZoom: 4,
     scheme: 'http://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png',
   }
-  const grid = new Grid(OPTIONS)
-  debug.log(grid.bounds)
-  debug.log(grid.tiles.length)
-  debug.log(grid.tiles[0])
+  const grid = new Grid(OPTIONS, 250000)
+  while (true) {
+    const { value, done } = grid.tilesBulk.next()
+    if (done) { break }
+    debug.log(value.length)
+  }
 }
 
 /* istanbul ignore next */

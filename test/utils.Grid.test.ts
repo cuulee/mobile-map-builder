@@ -15,8 +15,9 @@ const OPTIONS = {
 test('Grid', t => {
   const grid = new Grid(OPTIONS)
   t.deepEqual(BOUNDS, grid.bounds)
-  t.deepEqual(4, grid.tiles.length)
-  t.true(!!grid.tiles[0])
+  const { value, done } = grid.tiles.next()
+  t.true(!!value)
+  t.true(!done)
 })
 
 test('Throws Error bad Grid', t => {

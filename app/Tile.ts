@@ -288,5 +288,6 @@ async function main() {
   }
   const tile = new Tile(GOOGLE_TILE)
   debug.log(tile)
+  debug.log(decodeId('em9vbV9sZXZlbD0xMjt0aWxlX2NvbHVtbj0yNjMwO3RpbGVfcm93PTI2Mjk7c2NoZW1lPWh0dHA6Ly9lY24udHtzd2l0Y2g6MCwxLDIsM30udGlsZXMudmlydHVhbGVhcnRoLm5ldC90aWxlcy9he3F1YWRrZXl9LmpwZWc/Zz01MjUw'))
 }
 if (require.main === module) { main() }

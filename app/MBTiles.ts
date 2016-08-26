@@ -3,7 +3,7 @@ import models from './models'
 import * as filesize from 'filesize'
 import * as Sequelize from 'sequelize'
 import Tile, { downloadTile } from './Tile'
-import Grid, { InterfaceGridOptional } from './Grid'
+import Grid from './Grid'
 import { InterfaceMapAttribute, InterfaceMapInstance, InterfaceMapModel } from './models/Map'
 import { InterfaceMetadataAttribute, InterfaceMetadataInstance, InterfaceMetadataModel } from './models/Metadata'
 import { InterfaceImagesAttribute, InterfaceImagesInstance, InterfaceImagesModel } from './models/Images'
@@ -17,12 +17,11 @@ export interface InterfaceMetadata {
   type: string
   description: string
   format: string
-  minZoom?: number
-  maxZoom?: number
-  author?: string
-  attribution?: string
-  center?: number[]
-  scheme?: string
+  minZoom: number
+  maxZoom: number
+  attribution: string
+  center: number[]
+  scheme: string
 }
 
 /**
@@ -313,88 +312,64 @@ export default class MBTiles {
   }
 
   /**
-   * Builds Grid data to MBTile database
-   * 
-   * @name build
-   * @returns {Object} Grid
-   * @example
-   */
-  public async build(init?: InterfaceGridOptional) {
-    // Define Grid attributes
-    if (init) {
-      this.bounds = init.bounds ? init.bounds : this.bounds
-      this.minZoom = init.minZoom ? init.minZoom : this.minZoom
-      this.maxZoom = init.maxZoom ? init.maxZoom : this.maxZoom
-      this.scheme = init.scheme ? init.scheme : this.scheme
-    }
-
-    /* istanbul ignore next */
-    if (!this.bounds) {
-      const message = 'MBTiles.grid <bounds> is required'
-      debug.error(message)
-      throw new Error(message)
-    /* istanbul ignore next */
-    } else if (!this.minZoom) {
-      const message = 'MBTiles.grid <minZoom> is required'
-      debug.error(message)
-      throw new Error(message)
-    /* istanbul ignore next */
-    } else if (!this.maxZoom) {
-      const message = 'MBTiles.grid <maxZoom> is required'
-      debug.error(message)
-      throw new Error(message)
-    /* istanbul ignore next */
-    } else if (!this.scheme) {
-      const message = 'MBTiles.grid <scheme> is required'
-      debug.error(message)
-      throw new Error(message)
-    }
-
-    // Create Grid
-    const grid = new Grid({
-      bounds: this.bounds,
-      maxZoom: this.maxZoom,
-      minZoom: this.minZoom,
-      scheme: this.scheme,
-    })
-
-    // Build SQL tables
-    debug.map('started')
-    await this.mapSQL.sync({ force: true })
-    await this.mapSQL.bulkCreate(grid.tiles)
-    debug.map('done')
-
-    return grid
-  }
-
-  /**
    * Download and saves tile buffer to MBTiles SQL db
    * 
    * @name download
    * @returns {Object} Tile Class
    * @example
    */
-  public async download(tile: Tile) {
-    // Retrieve existing ID if exists
-    const findOne: InterfaceImagesSQL = await this.imagesSQL.findOne({
-      where: { tile_id: tile.id },
-    })
+  public async download(init: InterfaceMetadata) {
+    const grid = new Grid(init, 10)
 
-    // Skip download if tile exist in <images.tile_data>
-    if (findOne) { debug.skipped(`${ tile.zoom }/${ tile.x }/${ tile.y } [${ getFileSize(findOne.tile_data) }]`)
-    } else {
-      // Download Tile from default settings
-      let data = await downloadTile(tile.url)
-      debug.download(`${ tile.url } (${ getFileSize(data) })`)
-      // Save Tile to SQL
-      await this.imagesSQL.create({
-        tile_data: data,
-        tile_id: tile.id,
-      })
-      data = null
+    // Index used to quickly find existing tile images by [tile_id]
+    const keys = await this.imagesSQL.findAll({ attributes: { exclude: ['tile_data'] } })
+    let index: any = {}
+    for (let key of keys) {
+      index[key.tile_id] = key.tile_id
     }
-    return tile
 
+    debug.download(`started [${ keys.length } of ${ grid.count } tiles]`)
+
+    // Iterate over Grid
+    while (true) {
+      const { value, done } = grid.tiles.next()
+      if (done) { break }
+      const tile = new Tile(value)
+
+      // Download Tile
+      if (!index[tile.id]) {
+        let data = await downloadTile(tile.url)
+        debug.download(`${ tile.url } (${ getFileSize(data) })`)
+        await this.imagesSQL.create({ tile_data: data, tile_id: tile.id })
+      // Skipped Tile
+      } else {
+        debug.skipped(`${ tile.zoom }/${ tile.x }/${ tile.y }`)
+      }
+    }
+    debug.download(`done [${ grid.count } tiles]`)
+  }
+  /**
+   * Builds Map to MBTile SQL db
+   * 
+   * @name map
+   * @returns {Object} Status message
+   * @example
+   */
+  public async map(init: InterfaceMetadata) {
+    debug.map('started')
+    // Remove Existing Mapping
+    await this.mapSQL.sync({ force: true })
+
+    // Iterate over 100K and Bulk save
+    const grid = new Grid(init, 100000)
+    while (true) {
+      const { value, done } = grid.tilesBulk.next()
+      if (done) { break }
+      await this.mapSQL.bulkCreate(value)
+      debug.map(`saved [${ value.length }]`)
+    }
+    debug.map('done')
+    return { message: 'Map created', ok: true, status: 'OK' }
   }
 
   /**
@@ -407,13 +382,8 @@ export default class MBTiles {
   public async save(init: InterfaceMetadata) {
     await this.metadata(init)
     await this.index(init)
-    const grid = await this.build(init)
-    debug.build(`started [${ grid.tiles.length } tiles]`)
-    for (let i = 0; i < grid.tiles.length; i ++) {
-      const tile = new Tile(grid.tiles[i])
-      await this.download(tile)
-    }
-    debug.build(`done [${ grid.tiles.length } tiles]`)
+    await this.map(init)
+    await this.download(init)
     return { message: 'MBTiles saved', ok: true, status: 'OK' }
   }
 }

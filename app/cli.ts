@@ -83,10 +83,8 @@ async function main() {
   // Create MBTiles
   debug.cli(config)
   const output = cli.args[0]
-  debug.log(output)
   const mbtiles = new MBTiles(output)
-  const status = await mbtiles.save(config)
-  debug.log(status)
+  await mbtiles.save(config)
 }
 
 /* istanbul ignore next */

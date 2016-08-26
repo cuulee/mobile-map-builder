@@ -22,8 +22,8 @@ const METADATA = {
   center: CENTER,
   description: DESCRIPTION,
   format: FORMAT,
-  maxzoom: MAXZOOM,
-  minzoom: MINZOOM,
+  maxZoom: MAXZOOM,
+  minZoom: MINZOOM,
   name: NAME,
   scheme: SCHEME,
   type: TYPE,
@@ -78,13 +78,9 @@ test('Throws Error parseBounds', t => {
 test('Throws Metadata format error', async (t) => {
   const DB = 'MetadataFormatError.mbtiles'
   const mbtiles = new MBTiles(DB)
-  const METADATA_ERROR_FORMAT = {
-    bounds: BOUNDS,
-    description: DESCRIPTION,
-    format: 'format-error',
-    name: NAME,
-    type: TYPE,
-  }
+  const METADATA_ERROR_FORMAT = METADATA
+  METADATA_ERROR_FORMAT.format = 'format-error'
+
   await mbtiles.metadata(METADATA_ERROR_FORMAT).then(
     status => status,
     error => t.deepEqual(error.message, 'MBTiles.metadata <format> must be [png or jpg]')
@@ -94,13 +90,9 @@ test('Throws Metadata format error', async (t) => {
 test('Throws Metadata type error', async (t) => {
   const DB = 'MetadataTypeError.mbtiles'
   const mbtiles = new MBTiles(DB)
-  const METADATA_ERROR_TYPE = {
-    bounds: BOUNDS,
-    description: DESCRIPTION,
-    format: FORMAT,
-    name: NAME,
-    type: 'type-error',
-  }
+  const METADATA_ERROR_TYPE = METADATA
+  METADATA_ERROR_TYPE.type = 'type-error'
+
   await mbtiles.metadata(METADATA_ERROR_TYPE).then(
     status => status,
     error => t.deepEqual(error.message, 'MBTiles.metadata <type> must be [overlay or baselayer]')
