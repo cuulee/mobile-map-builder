@@ -340,7 +340,7 @@ export default class MBTiles {
       if (!index[tile.id]) {
         let data = await downloadTile(tile.url)
         debug.download(`${ tile.url } (${ getFileSize(data) })`)
-        await this.imagesSQL.create({ tile_data: data, tile_id: tile.id })
+        this.imagesSQL.create({ tile_data: data, tile_id: tile.id })
       // Skipped Tile
       } else {
         debug.skipped(`${ tile.zoom }/${ tile.x }/${ tile.y }`)
