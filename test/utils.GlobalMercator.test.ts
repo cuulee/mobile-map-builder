@@ -1,6 +1,6 @@
 import test from 'ava'
 import { pick } from 'lodash'
-import { mercator, bounds, LatLng, LatLngBounds } from '../app/GlobalMercator'
+import { mercator, validateBounds, LngLat, LngLatBounds } from '../app/GlobalMercator'
 import {
   LATLNG,
   METERS,
@@ -17,18 +17,23 @@ test('Global Mercator', t => {
 })
 
 test('LatLonToMeters', t => {
-  let meters = mercator.LatLonToMeters(LATLNG)
-  t.deepEqual(meters, METERS)
+  const meters = mercator.LatLonToMeters(LATLNG)
+  const { mx, my, zoom } = meters
+  t.deepEqual({ mx, my, zoom }, METERS)
 })
 
 test('MetersToLatLon', t => {
-  let latlng = mercator.MetersToLatLon(METERS)
-  t.deepEqual(latlng, LATLNG)
+  const latlng = mercator.MetersToLatLon(METERS)
+  const { lat, lng, zoom } = latlng
+  t.deepEqual({lat, lng, zoom}, LATLNG)
 })
 
 test('MetersToPixels', t => {
-  let pixels = mercator.MetersToPixels(METERS)
-  t.deepEqual(pixels, PIXELS)
+  const pixels = mercator.MetersToPixels(METERS)
+  const { px, py, zoom } = pixels
+  t.deepEqual(px, PIXELS.px)
+  t.deepEqual(py, PIXELS.py)
+  t.deepEqual(zoom, PIXELS.zoom)
 })
 
 test('PixelsToTile', t => {
@@ -97,7 +102,7 @@ test('LatLngToGoogle', t => {
 })
 
 test('LatLngBounds', t => {
-  let bounds = LatLngBounds(BOUNDS_LATLNG)
+  let { bounds } = new LngLatBounds(BOUNDS_LATLNG)
   t.deepEqual(bounds, BOUNDS_LATLNG)
 })
 
@@ -107,15 +112,15 @@ test('GoogleQuadKey', t => {
 })
 
 test('Throws Error Bad Bounds', t => {
-  t.throws(() => bounds([1]), '[bounds] Must be an array with 4x Numbers.')
-  t.throws(() => bounds([1, 2]), '[bounds] Must be an array with 4x Numbers.')
-  t.throws(() => bounds([1, 2, 3]), '[bounds] Must be an array with 4x Numbers.')
-  t.throws(() => bounds([1, 2, 3, 4, 5]), '[bounds] Must be an array with 4x Numbers.')
+  t.throws(() => validateBounds([1]), '[bounds] must be an Array of 4 numbers')
+  t.throws(() => validateBounds([1, 2]), '[bounds] must be an Array of 4 numbers')
+  t.throws(() => validateBounds([1, 2, 3]), '[bounds] must be an Array of 4 numbers')
+  t.throws(() => validateBounds([1, 2, 3, 4, 5]), '[bounds] must be an Array of 4 numbers')
 })
 
-test('Throws Error Bad LatLng', t => {
-  t.throws(() => new LatLng({ lat: -220, lng: 120 }), 'LatLng [lat] must be within -90 to 90 degrees')
-  t.throws(() => new LatLng({ lat: 220, lng: 120 }), 'LatLng [lat] must be within -90 to 90 degrees')
-  t.throws(() => new LatLng({ lat: 45, lng: -220 }), 'LatLng [lng] must be within -180 to 180 degrees')
-  t.throws(() => new LatLng({ lat: 45, lng: 220 }), 'LatLng [lng] must be within -180 to 180 degrees')
+test('Throws Error Bad LngLat', t => {
+  t.throws(() => new LngLat({ lat: -220, lng: 120 }), 'LngLat [lat] must be within -90 to 90 degrees')
+  t.throws(() => new LngLat({ lat: 220, lng: 120 }), 'LngLat [lat] must be within -90 to 90 degrees')
+  t.throws(() => new LngLat({ lat: 45, lng: -220 }), 'LngLat [lng] must be within -180 to 180 degrees')
+  t.throws(() => new LngLat({ lat: 45, lng: 220 }), 'LngLat [lng] must be within -180 to 180 degrees')
 })

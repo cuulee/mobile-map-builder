@@ -3,6 +3,7 @@ import models from './models'
 import * as filesize from 'filesize'
 import * as Sequelize from 'sequelize'
 import * as ProgressBar from 'progress'
+import { LngLatBounds, LngLat } from './GlobalMercator'
 import Tile, { downloadTile } from './Tile'
 import Grid from './Grid'
 import { InterfaceMapAttribute, InterfaceMapInstance, InterfaceMapModel } from './models/Map'
@@ -34,46 +35,39 @@ export interface InterfaceImagesSQL {
 }
 
 /**
- * Converts & validates bounds coordinates [x1,y1,x2,y2] into proper SQL string
+ * Converts & validates center coordinates [x,y] into proper SQL string
  *
- * @name parseBounds
+ * @name stringifyCenter
  * @param {List} center - [x,y] coordinates
  * @return {String}
  * @example
- * const bounds = parseBounds([45.12, -75.34, 46.56, -74.78])
- * //= '45.12,-75.34,46.56,-74.78'
+ * @example
+ * const center = stringifyCenter([45.12, -75.34])
+ * //= '45.12,-75.34'
  */
-export const parseCenter = (center: number[]): string => {
-  if (center.length < 2 || center.length > 3) { throw new Error('[center] must contain at 2 or 3 numbers')}
-  const [x, y] = center
-  if (y < -90 || y > 90) {
-    const message = 'parseCenter [y] must be within -90 to 90 degrees'
+export const stringifyCenter = (init: number[]): string => {
+  if (init.length < 2 || init.length > 4) {
+    const message = '[center] must be an Array of 2 or 3 numbers'
     debug.error(message)
     throw new Error(message)
   }
-  if (x < -180 || x > 180) {
-    const message = 'parseCenter [x] must be within -180 to 180 degrees'
-    debug.error(message)
-    throw new Error(message)
-  }
-  return center.join(',')
+  const [lng, lat, z] = init
+  const { xyz } = new LngLat({lat, lng, z})
+  return xyz.join(',')
 }
 
 /**
- * Converts & validates center coordinates [x,y] into proper SQL string
+ * Converts & validates bounds coordinates [x1,y1,x2,y2] into proper SQL string
  *
- * @name parseCenter
+ * @name stringifyBounds
  * @param {List} bounds - [x1,y1,x2,y2] coordinates
- * @return {String}
+ * @return {String} bounds
  * @example
- * const center = parseBounds([45.12, -75.34])
- * //= '45.12,-75.34'
+ * const bounds = stringifyBounds([45.12, -75.34, 46.56, -74.78])
+ * //= '45.12,-75.34,46.56,-74.78'
  */
-export const parseBounds = (bounds: number[]) => {
-  if (bounds.length !== 4) { throw new Error('[bounds] must have 4 numbers')}
-  const [x1, y1, x2, y2] = bounds
-  parseCenter([x1, y1])
-  parseCenter([x2, y2])
+export const stringifyBounds = (init: number[]) => {
+  const { bounds } = new LngLatBounds(init)
   return bounds.join(',')
 }
 
@@ -298,8 +292,8 @@ export default class MBTiles {
       { name: 'version', value: this.version },
       { name: 'attribution', value: this.attribution },
       { name: 'description', value: this.description },
-      { name: 'bounds', value: parseBounds(this.bounds) },
-      { name: 'center', value: parseCenter(this.center) },
+      { name: 'bounds', value: stringifyBounds(this.bounds) },
+      { name: 'center', value: stringifyCenter(this.center) },
       { name: 'minZoom', value: String(this.minZoom) },
       { name: 'maxZoom', value: String(this.maxZoom) },
     ]
@@ -427,8 +421,11 @@ async function main() {
     scheme: SCHEME,
     type: 'baselayer',
   }
-  const status = await mbtiles.save(METADATA)
-  debug.log(status)
+  // const status = await mbtiles.save(METADATA)
+  // debug.log(status)
+  // debug.log(stringifyCenter([-111.2082, 52.6037]))
+  // debug.log(stringifyCenter([-111.2082, 52.6037, 2]))
+  debug.log(stringifyBounds([-27, 62, -11]))
 }
 
 if (require.main === module) { main() }

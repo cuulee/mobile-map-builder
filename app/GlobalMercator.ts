@@ -1,9 +1,209 @@
 import debug from './debug'
-import { range } from 'lodash'
+import { range, isUndefined, keys } from 'lodash'
 
-export const bounds = (init: number[]) => {
+export interface InterfaceMeters {
+  mx: number
+  my: number
+  zoom: number
+}
+
+export interface InterfacePixels {
+  px: number
+  py: number
+  zoom: number
+}
+
+export interface InterfaceLatLng {
+  lat: number
+  lng: number
+  zoom?: number
+  z?: number
+}
+
+export interface InterfaceGoogle {
+  x: number
+  y: number
+  zoom: number
+}
+
+export interface InterfaceTile {
+  tx: number
+  ty: number
+  zoom: number
+}
+
+/**
+ * Validate Undefined
+ * @name validateUndefined
+ * @param {String} name
+ * @param {Object} items
+ * @example
+ * validateUndefined('Meters', Object)
+ */
+export const validateUndefined = (items: any, name: string) => {
+  for (let key of keys(items)) {
+    if (isUndefined(items[key])) {
+      const message = `${ name } <${ key }> is required.`
+      debug.error(message)
+      throw new Error(message)
+    }
+  }
+}
+
+/**
+ * Validates Tile
+ * @name validateTile
+ * @example
+ * const tile = validateTile({tx: 60, ty: 80, zoom: 5})
+ * //= {tx: 60, ty: 80, zoom: 5}
+ */
+export const validateTile = (init: InterfaceTile, name = 'Tile') => {
+  const { tx, ty, zoom } = init
+  validateZoom(zoom, 'Tile')
+  if (tx < 0) {
+    const message = `${ name } <tx> must not be less than 0`
+    debug.error(message)
+    throw new Error(message)
+  } else if (ty < 0) {
+    const message = `${ name } <ty> must not be less than 0`
+    debug.error(message)
+    throw new Error(message)
+  }
+  return init
+}
+
+/**
+ * Validates Zoom
+ * @name validateZoom
+ * @example
+ * const zoom = validateZoom(12)
+ * //= 12
+ */
+export const validateZoom = (zoom: number, name: string) => {
+  if (zoom < 0) {
+    const message = `${ name } <zoom> cannot be less than 0`
+    debug.error(message)
+    throw new Error(message)
+  } else if (zoom > 23) {
+    const message = `${ name } <zoom> cannot be greater than 23`
+    debug.error(message)
+    throw new Error(message)
+  }
+  return zoom
+}
+
+/**
+ * Validates Pixels
+ * @name validatePixels
+ * @example
+ * const pixels = validatePixels([-115, 44])
+ * //= [-115, 44]
+ */
+export const validatePixels = (init: number[]) => {
+  if (init.length < 2 || init.length > 3) {
+    const message = 'Pixels must be an Array of 2 numbers'
+    debug.error(message)
+    throw new Error(message)
+  }
+  let [px, py] = init
+  if (px % 1 !== 0) {
+    px = px - px % 1
+    const message = `Pixels [px] has been modified to ${ px }`
+    debug.warning(message)
+  }
+  if (py % 1 !== 0) {
+    py = py - py % 1
+    const message = `Pixels [py] has been modified to ${ py }`
+    debug.warning(message)
+  }
+  return [px, py]
+}
+
+/**
+ * Validates Meters
+ * @name validateMeters
+ * @example
+ * const meters = validateMeters([-115, 44])
+ * //= [-115, 44]
+ */
+export const validateMeters = (init: number[]) => {
+  if (init.length < 2 || init.length > 3) {
+    const message = 'Meters must be an Array of 2 numbers'
+    debug.error(message)
+    throw new Error(message)
+  }
+  const max = 20037508.342789244
+  const min = -20037508.342789244
+  let [mx, my] = init
+  if (my > max) {
+    my = max
+    const message = `Meters [my] has been modified to ${ my }`
+    debug.warning(message)
+  }
+  if (my < min) {
+    my = min
+    const message = `Meters [my] has been modified to ${ my }`
+    debug.warning(message)
+  }
+  if (mx > max) {
+    mx = max
+    const message = `Meters [mx] has been modified to ${ mx }`
+    debug.warning(message)
+  }
+  if (mx < min) {
+    mx = min
+    const message = `Meters [mx] has been modified to ${ mx }`
+    debug.warning(message)
+  }
+  return [mx, my]
+}
+
+/**
+ * Validates LngLat
+ * @name validateLngLat
+ * @example
+ * const lnglat = validateLngLat([-115, 44])
+ * //= [-115, 44]
+ */
+export const validateLngLat = (init: number[]) => {
+  if (init.length < 2 || init.length > 3) {
+    const message = 'LngLat must be an Array of 2 numbers'
+    debug.error(message)
+    throw new Error(message)
+  }
+  let [lng, lat] = init
+  if (lat < -90 || lat > 90) {
+    const message = 'LngLat [lat] must be within -90 to 90 degrees'
+    debug.error(message)
+    throw new Error(message)
+  } else if (lng < -180 || lng > 180) {
+    const message = 'LngLat [lng] must be within -180 to 180 degrees'
+    debug.error(message)
+    throw new Error(message)
+  }
+  if (lat > 85.05112877980659) {
+    const message = 'LngLat [lat] has been modified to 85.05112877980659'
+    debug.warning(message)
+    lat = 85.05112877980659
+  }
+  if (lat < -85.05112877980659) {
+    const message = 'LngLat [lat] has been modified to -85.05112877980659'
+    debug.warning(message)
+    lat = -85.05112877980659
+  }
+  return [lng, lat]
+}
+
+/**
+ * Validates bounds
+ * @name bounds
+ * @example
+ * const bounds = validateBounds([ -75, 44, -74, 45 ])
+ * //= [ -75, 44, -74, 45 ]
+ */
+export const validateBounds = (init: number[]) => {
   if (init.length !== 4) {
-    const message = '[bounds] Must be an array with 4x Numbers.'
+    const message = '[bounds] must be an Array of 4 numbers'
     debug.error(message)
     throw new Error(message)
   }
@@ -11,28 +211,44 @@ export const bounds = (init: number[]) => {
 }
 
 /**
- * Validates LatLng bounds
- * @name LatLngBounds
+ * LngLatbounds
+ * @name LngLatBounds
  * @example
- * const bounds = LatLngBounds([ -75, 44, -74, 45 ])
+ * const { bounds } = new LngLatBounds([ -75, 44, -74, 45 ])
  * //= [ -75, 44, -74, 45 ]
  */
-export const LatLngBounds = (init: number[]) => {
-  const [x1, y1, x2, y2] = bounds(init)
-  const t1 = new LatLng({lat: y1, lng: x1})
-  const t2 = new LatLng({lat: y2, lng: x2})
-  return [t1.lng, t1.lat, t2.lng, t2.lat]
+export class LngLatBounds {
+  public x1: number
+  public y1: number
+  public x2: number
+  public y2: number
+  public bounds: number[]
+  public t1: number[]
+  public t2: number[]
+
+  constructor(init: number[]) {
+    const [x1, y1, x2, y2] = validateBounds(init)
+    this.x1 = x1
+    this.y1 = y1
+    this.x2 = x2
+    this.y2 = y2
+    this.t1 = validateLngLat([x1, y1])
+    this.t2 = validateLngLat([x2, y2])
+    this.bounds = this.t1.concat(this.t2)
+  }
 }
 
 export class Google {
   public x: number
   public y: number
   public zoom: number
-  constructor(init: {x: number, y: number, zoom: number}) {
+
+  constructor(init: InterfaceGoogle) {
     const {x, y, zoom} = init
     this.x = x
     this.y = y
     this.zoom = zoom
+    validateUndefined(this, 'Google')
   }
 }
 
@@ -40,11 +256,14 @@ export class Tile {
   public tx: number
   public ty: number
   public zoom: number
-  constructor(init: {tx: number, ty: number, zoom: number}) {
+
+  constructor(init: InterfaceTile) {
     const {tx, ty, zoom} = init
     this.tx = tx
     this.ty = ty
     this.zoom = zoom
+    validateUndefined(this, 'Tile')
+    validateTile(this)
   }
 }
 
@@ -52,11 +271,13 @@ export class Pixels {
   public px: number
   public py: number
   public zoom: number
-  constructor(init: {px: number, py: number, zoom?: number}) {
-    const {px, py, zoom} = init
+
+  constructor(init: InterfacePixels) {
+    const [px, py] = validatePixels([init.px, init.py])
     this.px = px
     this.py = py
-    if (zoom) { this.zoom = zoom }
+    if (!isUndefined(init.zoom)) { this.zoom = init.zoom }
+    validateUndefined(this, 'Pixels')
   }
 }
 
@@ -64,33 +285,42 @@ export class Meters {
   public mx: number
   public my: number
   public zoom: number
-  constructor(init: {mx: number, my: number, zoom?: number}) {
-    const {mx, my, zoom} = init
+
+  constructor(init: InterfaceMeters) {
+    const [mx, my] = validateMeters([init.mx, init.my])
     this.mx = mx
     this.my = my
-    if (zoom) { this.zoom = zoom }
+    this.zoom = init.zoom
+    validateUndefined(this, 'Meters')
   }
 }
 
-export class LatLng {
+export class LngLat {
   public lat: number
   public lng: number
+  public x: number
+  public y: number
+  public z: number
   public zoom: number
-  constructor(init: {lat: number, lng: number, zoom?: number}) {
-    const {lat, lng, zoom} = init
+  public xy: number[]
+  public xyz: number[]
+  public latlng: number[]
+  public lnglat: number[]
+  constructor(init: InterfaceLatLng) {
+    const [lng, lat] = validateLngLat([init.lng, init.lat])
     this.lat = lat
     this.lng = lng
-    if (zoom) { this.zoom = zoom }
-    if (lat < -90 || lat > 90) {
-      const message = 'LatLng [lat] must be within -90 to 90 degrees'
-      debug.error(message)
-      throw new Error(message)
-    }
-    if (lng < -180 || lng > 180) {
-      const message = 'LatLng [lng] must be within -180 to 180 degrees'
-      debug.error(message)
-      throw new Error(message)
-    }
+    this.x = lng
+    this.y = lat
+    this.xy = [lng, lat]
+    this.lnglat = [lng, lat]
+    this.latlng = [lat, lng]
+
+    if (!isUndefined(init.zoom)) { this.zoom = init.zoom }
+    if (!isUndefined(init.z)) { this.z = init.z } else { this.z = 0 }
+
+    this.xyz = [lng, lat, this.z]
+    validateUndefined(this, 'LatLng')
   }
 }
 
@@ -136,12 +366,11 @@ export default class GlobalMercator {
    * @param {Number} lng
    * @returns {Meters}
    */
-  public LatLonToMeters(init: LatLng) {
-    const { lat, lng, zoom } = new LatLng(init)
+  public LatLonToMeters(init: InterfaceLatLng) {
+    const { lat, lng, zoom } = new LngLat(init)
     let mx: number = lng * this.originShift / 180.0
     let my: number = Math.log(Math.tan((90 + lat) * Math.PI / 360.0 )) / (Math.PI / 180.0)
     my = my * this.originShift / 180.0
-
     return new Meters({ mx, my, zoom })
   }
 
@@ -153,13 +382,13 @@ export default class GlobalMercator {
    * @param {Number} my
    * @returns {LatLng}
    */
-  public MetersToLatLon(init: Meters) {
+  public MetersToLatLon(init: InterfaceMeters) {
     const { mx, my, zoom } = new Meters(init)
     let lng = (mx / this.originShift) * 180.0
     let lat = (my / this.originShift) * 180.0
     lat = 180 / Math.PI * (2 * Math.atan( Math.exp( lat * Math.PI / 180.0)) - Math.PI / 2.0)
 
-    return new LatLng({ lat, lng, zoom })
+    return new LngLat({ lat, lng, zoom })
   }
 
   /**
@@ -168,9 +397,10 @@ export default class GlobalMercator {
    * @name MetersToPixels
    * @param {Number} mx
    * @param {Number} my
+   * @param {Number} zoom
    * @returns {Pixels}
    */
-  public MetersToPixels(init: Meters) {
+  public MetersToPixels(init: InterfaceMeters) {
     const { mx, my, zoom } = new Meters(init)
     const res = this.Resolution(zoom)
     const px = (mx + this.originShift) / res
@@ -185,11 +415,13 @@ export default class GlobalMercator {
    * @name LatLngToTile
    * @param {Number} lat
    * @param {Number} lng
+   * @param {Number} zoom
    * @returns {Tile}
    */
-  public LatLngToTile(init: LatLng) {
-    const Pixels = this.MetersToPixels(this.LatLonToMeters(init))
-    return this.PixelsToTile(Pixels)
+  public LatLngToTile(init: InterfaceLatLng) {
+    const meters = this.LatLonToMeters(init)
+    const pixels = this.MetersToPixels(meters)
+    return this.PixelsToTile(pixels)
   }
 
   /**
@@ -200,7 +432,7 @@ export default class GlobalMercator {
    * @param {Number} lng
    * @returns {Google} Google Tile
    */
-  public LatLngToGoogle(init: LatLng) {
+  public LatLngToGoogle(init: InterfaceLatLng) {
     if (init.zoom === 0) { return new Google({ x: 0, y: 0, zoom: 0 })}
     const tile = this.LatLngToTile(init)
     return this.TileGoogle(tile)
@@ -249,11 +481,11 @@ export default class GlobalMercator {
    */
   public PixelsToTile(init: Pixels) {
     if (init.zoom === 0) { return new Tile({ tx: 0, ty: 0, zoom: 0 })}
-
     const {px, py, zoom} = new Pixels(init)
-    const tx = Math.ceil(px / this.TileSize) - 1
-    const ty = Math.ceil(py / this.TileSize) - 1
-
+    let tx = Math.ceil(px / this.TileSize) - 1
+    let ty = Math.ceil(py / this.TileSize) - 1
+    if (tx < 0) { tx = 0 }
+    if (ty < 0) { ty = 0 }
     return new Tile({ tx, ty, zoom })
   }
 
@@ -271,7 +503,7 @@ export default class GlobalMercator {
     let min = this.PixelsToMeters({ px: tx * this.TileSize, py: ty * this.TileSize, zoom })
     let max = this.PixelsToMeters({ px: (tx + 1) * this.TileSize, py: (ty + 1) * this.TileSize, zoom })
 
-    return bounds([ min.mx, min.my, max.mx, max.my ])
+    return validateBounds([ min.mx, min.my, max.mx, max.my ])
   }
 
   /**
@@ -291,7 +523,7 @@ export default class GlobalMercator {
     const min = this.MetersToLatLon({ mx: mx1, my: my1, zoom })
     const max = this.MetersToLatLon({ mx: mx2, my: my2, zoom })
 
-    return bounds([ min.lng, min.lat, max.lng, max.lat ])
+    return validateBounds([ min.lng, min.lat, max.lng, max.lat ])
   }
 
   /**
@@ -451,24 +683,9 @@ export const mercator = new GlobalMercator()
 
 /* istanbul ignore next */
 async function main() {
-  const { LatLng, Meters, Pixels, Tile, Google, QUADKEY } = require('../../test/globals')
-  debug.log(mercator.GoogleQuadKey(Google))
-  debug.log(mercator.LatLonToMeters(LatLng))
-  debug.log(mercator.MetersToPixels(Meters))
-  debug.log(mercator.MetersToLatLon(Meters))
-  debug.log(mercator.PixelsToTile(Pixels))
-  debug.log(mercator.MetersToTile(Meters))
-  debug.log(mercator.PixelsToMeters(Pixels))
-  debug.log(mercator.TileBounds(Tile))
-  debug.log(mercator.TileQuadKey(Tile))
-  debug.log(mercator.QuadKeyGoogle(QUADKEY))
-  debug.log(mercator.QuadKeyTile(QUADKEY))
-  debug.log(mercator.TileGoogle(Tile))
-  debug.log(mercator.GoogleTile(Google))
-  debug.log(mercator.GoogleBounds(Google))
-  debug.log(mercator.GoogleLatLonBounds(Google))
-  debug.log(mercator.TileLatLonBounds(Tile))
-  debug.log(mercator.GoogleQuadKey(Google))
+  // const METERS = { mx: -8348961.809495518, my: 5621521.486192067, zoom: 13 }
+  // const lnglat = new LngLat({lat: 45, lng: -75})
+  new LngLat({ lat: -220, lng: 120 })
 }
 
 /* istanbul ignore next */

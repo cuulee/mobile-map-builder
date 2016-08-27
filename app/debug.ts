@@ -12,4 +12,5 @@ export default {
   metadata: debug('dataGen:metadata'),
   save: debug('dataGen:save'),
   skipped: debug('dataGen:skipped'),
+  warning: debug('dataGen:warning'),
 }

@@ -2,7 +2,7 @@ import test from 'ava'
 import * as del from 'del'
 import * as uuid from 'node-uuid'
 // import debug from '../app/utils/debug'
-import MBTiles, { parseCenter, parseBounds } from '../app/MBTiles'
+import MBTiles, { stringifyCenter, stringifyBounds } from '../app/MBTiles'
 
 const NAME = 'OpenStreetMap'
 const ATTRIBUTION = 'Map data © OpenStreetMap'
@@ -55,24 +55,24 @@ test('Save', async (t) => {
   t.true(status.ok)
 })
 
-test('parseCenter', t => {
-  const center = parseCenter(CENTER)
+test('stringifyCenter', t => {
+  const center = stringifyCenter(CENTER)
   t.deepEqual(center, CENTER_STRING)
 })
 
-test('Throws Error parseCenter', t => {
-  t.throws(() => parseCenter([0, 110]), 'parseCenter [y] must be within -90 to 90 degrees')
-  t.throws(() => parseCenter([-190, 0]), 'parseCenter [x] must be within -180 to 180 degrees')
+test('Throws Error stringifyCenter', t => {
+  t.throws(() => stringifyCenter([0, 110]), 'LngLat [lat] must be within -90 to 90 degrees')
+  t.throws(() => stringifyCenter([-190, 0]), 'LngLat [lng] must be within -180 to 180 degrees')
 })
 
-test('parseBounds', t => {
-  const bounds = parseBounds(BOUNDS)
+test('stringifyBounds', t => {
+  const bounds = stringifyBounds(BOUNDS)
   t.deepEqual(bounds, BOUNDS_STRING)
 })
 
-test('Throws Error parseBounds', t => {
-  t.throws(() => parseBounds([1, 2, 3]), '[bounds] must have 4 numbers')
-  t.throws(() => parseBounds([1, 2, 3, 4, 5]), '[bounds] must have 4 numbers')
+test('Throws Error stringifyBounds', t => {
+  t.throws(() => stringifyBounds([1, 2, 3]), '[bounds] must be an Array of 4 numbers')
+  t.throws(() => stringifyBounds([1, 2, 3, 4, 5]), '[bounds] must be an Array of 4 numbers')
 })
 
 test('Throws Metadata format error', async (t) => {

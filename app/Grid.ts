@@ -1,5 +1,5 @@
 import { range, isUndefined } from 'lodash'
-import { mercator, LatLngBounds } from './GlobalMercator'
+import { mercator, LngLatBounds } from './GlobalMercator'
 import debug from './debug'
 import { encodeId, InterfaceTileTMS } from './Tile'
 
@@ -102,7 +102,6 @@ export function * buildGrid(init: InterfaceGrid) {
 }
 
 export const validateGrid = (init: InterfaceGrid) => {
-  LatLngBounds(init.bounds)
   if (init.minZoom < 0) {
     const message = 'Grid <minZoom> cannot be less than 0'
     debug.error(message)
@@ -157,22 +156,23 @@ export default class Grid {
   constructor(init: InterfaceGrid, bulk = 50000) {
     validateGrid(init)
     this.bulk = bulk
-    this.bounds = init.bounds
+    const { bounds } = new LngLatBounds(init.bounds)
+    this.bounds = bounds
     this.minZoom = init.minZoom
     this.maxZoom = init.maxZoom
     this.scheme = init.scheme
-    this.count = countGrid(init)
-    this.tiles = buildGrid(init)
-    this.tilesBulk = buildGridBulk(init, bulk)
+    this.count = countGrid(this)
+    this.tiles = buildGrid(this)
+    this.tilesBulk = buildGridBulk(this, bulk)
   }
 }
 
 /* istanbul ignore next */
 async function main() {
   const OPTIONS = {
-    bounds: [-66.633234, 45.446628, -66.052350, 45.891202],
-    maxZoom: 19,
-    minZoom: 4,
+    bounds: [-180.0, -90.0, 180, 90],
+    maxZoom: 10,
+    minZoom: 0,
     scheme: 'http://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png',
   }
   const grid = new Grid(OPTIONS, 250000)
