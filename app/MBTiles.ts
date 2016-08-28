@@ -323,9 +323,7 @@ export default class MBTiles {
     // Index used to quickly find existing tile images by [tile_id]
     const keys = await this.imagesSQL.findAll({ attributes: { exclude: ['tile_data'] } })
     let index: any = {}
-    for (let key of keys) {
-      index[key.tile_id] = key.tile_id
-    }
+    for (let key of keys) { index[key.tile_id] = key.tile_id }
     bar.tick(keys.length)
 
     debug.download(`started [${ keys.length } of ${ grid.count } tiles]`)
@@ -336,21 +334,20 @@ export default class MBTiles {
       if (done) { break }
       const tile = new Tile(value)
 
-      // Check if tile exists
       if (!index[tile.id]) {
-        // Update Progress bar
-        bar.tick()
-
-        // Download Tile
-        let data = await downloadTile(tile.url)
-        debug.download(`${ tile.url } (${ getFileSize(data) })`)
-        this.imagesSQL.create({ tile_data: data, tile_id: tile.id })
-      // Skipped Tile
+        bar.tick() // Update Progress bar
+        await this.downloadTile(tile)
       } else {
         debug.skipped(`${ tile.zoom }/${ tile.x }/${ tile.y }`)
       }
     }
     debug.download(`done [${ grid.count } tiles]`)
+  }
+
+  public async downloadTile(tile: Tile) {
+    let data = await downloadTile(tile.url)
+    debug.download(`${ tile.url } (${ getFileSize(data) })`)
+    this.imagesSQL.create({ tile_data: data, tile_id: tile.id })
   }
   /**
    * Builds Map to MBTile SQL db

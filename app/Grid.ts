@@ -44,14 +44,12 @@ export function buildGridLevels(init: InterfaceGrid) {
   return levels
 }
 
-export function countGrid(init: InterfaceGrid) {
-  // debug.grid('counting')
+export const countGrid = (init: InterfaceGrid) => {
   let count = 0
   const levels = buildGridLevels(init)
   for (let level of levels) {
     count += level.tile_rows.length * level.tile_columns.length
   }
-  // debug.grid(`counted [${ count }]`)
   return count
 }
 

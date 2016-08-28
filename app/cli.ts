@@ -1,7 +1,7 @@
 import * as program from 'commander'
 import * as fs from 'fs'
 import * as yaml from 'js-yaml'
-import { isUndefined, get } from 'lodash'
+import { isUndefined, get, set, range } from 'lodash'
 import debug from './debug'
 import MBTiles from './MBTiles'
 
@@ -17,6 +17,19 @@ interface InterfaceCLI extends commander.ICommand {
   bounds?: number[]
   attribution?: string
   type?: string
+}
+
+interface InterfaceCLIOptions {
+  format: string
+  maxZoom: number
+  minZoom: number
+  name: string
+  scheme: string
+  description: string
+  center: number[]
+  bounds: number[]
+  attribution: string
+  type: string
 }
 
 const pathExists = (path: string) => {
@@ -66,25 +79,25 @@ async function main() {
 
   // Validate Config
   pathExists(cli.config)
-  const config = yaml.safeLoad(fs.readFileSync(cli.config, 'utf8'))
+  const config: InterfaceCLIOptions = yaml.safeLoad(fs.readFileSync(cli.config, 'utf8'))
 
   // Overwrite Config with options
   const options = ['format', 'type', 'maxZoom', 'minZoom', 'scheme', 'attribution', 'bounds', 'center']
   options.map(item => {
     const value = get(cli, item)
-    if (typeof(value) === 'string') { config[item] = value
-    } else if (!isUndefined(value)) { config[item] = value }
+    if (typeof(value) === 'string') { set(config, item, value)
+    } else if (!isUndefined(value)) { set(config, item, value) }
   })
 
   // Overwrite Exceptions
-  if (typeof(cli.description) === 'string') { config.description = cli.description }
-  if (typeof(cli.name) === 'string') { config.name = cli.name }
+  if (typeof(cli.description) === 'string') { set(config, 'description', cli.description) }
+  if (typeof(cli.name) === 'string') { set(config, 'name', cli.name) }
 
   // Create MBTiles
   debug.cli(config)
   const output = cli.args[0]
   const mbtiles = new MBTiles(output)
-  await mbtiles.save(config)
+  mbtiles.save(config)
 }
 
 /* istanbul ignore next */
