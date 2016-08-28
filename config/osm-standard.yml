@@ -1,0 +1,5 @@
+name: 'OSM Standard'
+scheme: 'https://{switch:a,b,c}.tile.openstreetmap.org/{zoom}/{x}/{y}.png'
+description: 'Tiles from OSM'
+attribution: 'Map data © OSM'
+format: 'png'

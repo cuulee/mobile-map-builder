@@ -1,0 +1,5 @@
+name: 'OSM Humanitarian'
+scheme: 'https://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png'
+description: 'Tiles from OSM'
+attribution: 'Map data © OSM'
+format: 'png'

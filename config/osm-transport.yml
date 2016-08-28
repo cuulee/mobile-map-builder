@@ -1,0 +1,5 @@
+name: 'OSM Transport Map'
+scheme: 'https://{switch:a,b,c}.tile.thunderforest.com/transport/{zoom}/{x}/{y}.png'
+description: 'Tiles from OSM'
+attribution: 'Map data © OSM'
+format: 'png'
