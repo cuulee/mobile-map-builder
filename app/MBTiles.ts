@@ -171,7 +171,7 @@ export default class MBTiles {
   JOIN images ON images.tile_id = map.tile_id`)
 
     debug.index('done')
-    return { message: 'Indexes created', ok: true, status: 'OK' }
+    return { message: 'Indexes created', ok: true, status: 'OK', status_code: 200 }
   }
 
   /**
@@ -303,14 +303,13 @@ export default class MBTiles {
 
     metadataSQL.bulkCreate(saveItems)
     debug.metadata('done')
-    return { message: 'Metadata created', ok: true, status: 'OK' }
+    return { message: 'Metadata created', ok: true, status: 'OK', status_code: 200 }
   }
 
   /**
-   * Download and saves tile buffer to MBTiles SQL db
-   * 
+   * Download tiles from a Grid and saves them to MBTiles.
    * @name download
-   * @returns {Object} Tile Class
+   * @returns {Object} Status message
    * @example
    */
   public async download(init: InterfaceMetadata) {
@@ -342,12 +341,17 @@ export default class MBTiles {
       }
     }
     debug.download(`done [${ grid.count } tiles]`)
+    return { message: 'Download finished', ok: true, status: 'OK', status_code: 200 }
   }
 
   public async downloadTile(tile: Tile) {
     let data = await downloadTile(tile.url)
-    debug.download(`${ tile.url } (${ getFileSize(data) })`)
-    this.imagesSQL.create({ tile_data: data, tile_id: tile.id })
+    if (data) {
+      debug.download(`${ tile.url } (${ getFileSize(data) })`)
+      this.imagesSQL.create({ tile_data: data, tile_id: tile.id })
+      return { message: 'Downloaded Tile', ok: true, status: 'OK' }
+    }
+    return { message: '<ERROR> Download Tile', ok: false, status: 'ERROR', status_code: 500 }
   }
   /**
    * Builds Map to MBTile SQL db
@@ -371,7 +375,7 @@ export default class MBTiles {
       debug.map(`saved [${ value.length }]`)
     }
     debug.map(`done [${ grid.count }]`)
-    return { message: 'Map created', ok: true, status: 'OK' }
+    return { message: 'Map created', ok: true, status: 'OK', status_code: 200 }
   }
 
   /**
@@ -380,49 +384,39 @@ export default class MBTiles {
    * @name save
    * @returns {Object} Status message
    * @example
+   * const METADATA = {...}
+   * const status = await mbtiles.save(METADATA)
    */
   public async save(init: InterfaceMetadata) {
     await this.metadata(init)
     await this.index(init)
     await this.download(init)
     await this.map(init)
-    return { message: 'MBTiles saved', ok: true, status: 'OK' }
+    return { message: 'MBTiles saved', ok: true, status: 'OK', status_code: 200 }
   }
 }
 
 /* istanbul ignore next */
 async function main() {
   // Initialize
-  const mbtiles = new MBTiles('cfb-wainwright.mbtiles')
-
-  // Save Metadata
-  // const SCHEME = 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{zoom}/{y}/{x}'
-  // const SCHEME = 'https://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png'
-  // const SCHEME = 'https://maps.wikimedia.org/osm-intl/{zoom}/{x}/{y}.png'
-  const SCHEME = 'http://ecn.t{switch:0,1,2,3}.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=5250'
-  // const SCHEME = 'http://ecn.t{switch:0,1,2,3}.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=1512&n=z'
-
-  // const CANADA = [-141.0027499, 41.6765556, -52.323198, 83.3362128]
-  // const SUDBURY = [-81.1507388, 46.3310993, -80.8307388, 46.6510993]
-  // const GREATER_SUDBURY = [-81.90, 45.75, -80.15, 47.25]
-  const GAGETOWN = [-111.2082, 52.6037, -110.5503, 52.8544]
+  const mbtiles = new MBTiles('tiles.mbtiles')
   const METADATA = {
-    attribution: 'Map data © Bing',
-    bounds: GAGETOWN,
+    attribution: 'Map data © OpenStreetMap',
+    bounds: [-111.2082, 52.6037, -110.5503, 52.8544],
     center: [-111.2082, 52.6037],
-    description: 'Tiles from Bing',
-    format: 'jpg',
+    description: 'Tiles from OpenStreetMap',
+    format: 'png',
     maxZoom: 10,
     minZoom: 8,
-    name: 'Bing',
-    scheme: SCHEME,
+    name: 'OpenStreetMap',
+    scheme: 'https://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png',
     type: 'baselayer',
   }
-  // const status = await mbtiles.save(METADATA)
-  // debug.log(status)
+  const status = await mbtiles.save(METADATA)
+  debug.log(status)
   // debug.log(stringifyCenter([-111.2082, 52.6037]))
   // debug.log(stringifyCenter([-111.2082, 52.6037, 2]))
-  debug.log(stringifyBounds([-27, 62, -11]))
+  // debug.log(stringifyBounds([-27, 62, -11]))
 }
 
 if (require.main === module) { main() }

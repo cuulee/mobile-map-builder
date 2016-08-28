@@ -685,7 +685,8 @@ export const mercator = new GlobalMercator()
 async function main() {
   // const METERS = { mx: -8348961.809495518, my: 5621521.486192067, zoom: 13 }
   // const lnglat = new LngLat({lat: 45, lng: -75})
-  new LngLat({ lat: -220, lng: 120 })
+  const latlng = new LngLat({ lat: -220, lng: 120 })
+  debug.log(latlng)
 }
 
 /* istanbul ignore next */
