@@ -1,9 +1,11 @@
-import debug from './debug'
-import models from './models'
+
 import * as filesize from 'filesize'
 import * as Sequelize from 'sequelize'
 import * as ProgressBar from 'progress'
+import * as turf from 'turf'
 import { set } from 'lodash'
+import debug from './debug'
+import models from './models'
 import { LngLatBounds, LngLat } from './GlobalMercator'
 import Tile, { downloadTile } from './Tile'
 import Grid from './Grid'
@@ -17,14 +19,14 @@ import { InterfaceImagesAttribute, InterfaceImagesInstance, InterfaceImagesModel
 export interface InterfaceMetadata {
   name: string
   bounds: number[]
-  type: string
   description: string
   format: string
   minZoom: number
   maxZoom: number
   attribution: string
-  center: number[]
   scheme: string
+  type?: string
+  center?: number[]
 }
 
 /**
@@ -36,17 +38,31 @@ export interface InterfaceImagesSQL {
 }
 
 /**
+ * Converts Bounds to Center
+ *
+ * @name boundsToCenter
+ * @param {List} bounds- [x1, y1, x2, y2] coordinates
+ * @return {List} center - [x, y] coordinates
+ * @example
+ * const center = boundsToCenter([90, -45, 85, -50])
+ * //= [ 87.5, -47.5 ]
+ */
+export const boundsToCenter = (bounds: number[]) => {
+  const poly = turf.bboxPolygon(bounds)
+  return turf.centroid(poly).geometry.coordinates
+}
+
+/**
  * Converts & validates center coordinates [x,y] into proper SQL string
  *
  * @name stringifyCenter
  * @param {List} center - [x,y] coordinates
  * @return {String}
  * @example
- * @example
  * const center = stringifyCenter([45.12, -75.34])
  * //= '45.12,-75.34'
  */
-export const stringifyCenter = (init: number[]): string => {
+export const stringifyCenter = (init: number[]) => {
   if (init.length < 2 || init.length > 4) {
     const message = '[center] must be an Array of 2 or 3 numbers'
     debug.error(message)
@@ -121,12 +137,8 @@ export default class MBTiles {
    */
   constructor(db: string = 'tiles.mbtiles') {
     this.db = db
-    this.name = 'OpenStreetMap'
     this.version = '1.1.0'
     this.type = 'baselayer'
-    this.format = 'png'
-    this.attribution = 'Map data © OpenStreetMap'
-    this.description = 'Tiles from OSM'
 
     // Create SQL connections
     const sequelize = this.connect()
@@ -195,27 +207,22 @@ export default class MBTiles {
    * Builds metadata to MBTile database
    * 
    * @name metadata
-   * @param {Number[x,y]} center (Required)
-   * @param {Number[x1,y1,x2,y2]} bounds (Required)
-   * @param {Number} minZoom (Required)
-   * @param {Number} maxZoom (Required)
-   * @param {String} name (Required)
-   * @param {String} type (Required)
-   * @param {String} format (Required)
-   * @param {String} attribution (Optional)
-   * @param {String} description (Optional)
-   * @param {String} author (Optional)
-   * @param {String} scheme (Optional)
+   * @param {Number[x1,y1,x2,y2]} bounds
+   * @param {Number} minZoom
+   * @param {Number} maxZoom
+   * @param {String} name
+   * @param {String} format
+   * @param {String} attribution
+   * @param {String} description
+   * @param {String} scheme
    * @returns {Object} Status message
    * @example
    * mbtiles.metadata({
    *   name: 'OpenStreetMap',
    *   format: 'png',
-   *   type: 'baselayer',
    *   attribution: 'Map data © OpenStreetMap',
    *   description: 'Tiles from OSM',
    *   scheme: 'http://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png',
-   *   center: [-18.7, 65, 7],
    *   bounds: [-27, 62, -11, 67.5],
    *   minZoom: 1,
    *   maxZoom: 18
@@ -228,7 +235,7 @@ export default class MBTiles {
     if (init) {
       this.name = init.name ? init.name : this.name
       this.bounds = init.bounds ? init.bounds : this.bounds
-      this.center = init.center ? init.center : this.center
+      this.center = boundsToCenter(this.bounds)
       this.minZoom = init.minZoom ? init.minZoom : this.minZoom
       this.maxZoom = init.maxZoom ? init.maxZoom : this.maxZoom
       this.scheme = init.scheme ? init.scheme : this.scheme
@@ -350,6 +357,14 @@ export default class MBTiles {
     return { message: 'Download finished', ok: true, status: 'OK', status_code: 200 }
   }
 
+  /**
+   * Download single Tile
+   * 
+   * @name downloadTile
+   * @param {Object} Tile
+   * @returns {Object} Status message
+   * @example
+   */
   public async downloadTile(tile: Tile) {
     let data = await downloadTile(tile.url)
     if (data) {
@@ -359,6 +374,7 @@ export default class MBTiles {
     }
     return { message: '<ERROR> Download Tile', ok: false, status: 'ERROR', status_code: 500 }
   }
+
   /**
    * Builds Map to MBTile SQL db
    * 
@@ -409,21 +425,19 @@ export default class MBTiles {
 /* istanbul ignore next */
 async function main() {
   // Initialize
-  const mbtiles = new MBTiles('tiles.mbtiles')
-  const METADATA = {
-    attribution: 'Map data © OpenStreetMap',
-    bounds: [-111.2082, 52.6037, -110.5503, 52.8544],
-    center: [-111.2082, 52.6037],
-    description: 'Tiles from OpenStreetMap',
-    format: 'png',
-    maxZoom: 10,
-    minZoom: 8,
-    name: 'OpenStreetMap',
-    scheme: 'https://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png',
-    type: 'baselayer',
-  }
-  const status = await mbtiles.save(METADATA)
-  debug.log(status)
+  // const mbtiles = new MBTiles('tiles.mbtiles')
+  // const METADATA = {
+  //   attribution: 'Map data © OpenStreetMap',
+  //   bounds: [-111.2082, 52.6037, -110.5503, 52.8544],
+  //   description: 'Tiles from OpenStreetMap',
+  //   format: 'png',
+  //   maxZoom: 10,
+  //   minZoom: 8,
+  //   name: 'OpenStreetMap',
+  //   scheme: 'https://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png',
+  // }
+  // const status = await mbtiles.save(METADATA)
+  // debug.log(status)
   // debug.log(stringifyCenter([-111.2082, 52.6037]))
   // debug.log(stringifyCenter([-111.2082, 52.6037, 2]))
   // debug.log(stringifyBounds([-27, 62, -11]))
