@@ -314,7 +314,7 @@ export default class MBTiles {
    * @example
    */
   public async download(init: InterfaceMetadata) {
-    const grid = new Grid(init, 250)
+    const grid = new Grid(init, 500)
     const bar = new ProgressBar('  downloading [:bar] :percent (:current/:total)', {
       total: grid.count,
       width: 20,
@@ -333,18 +333,17 @@ export default class MBTiles {
         attributes: ['tile_id'],
         where: { $or: findSelection },
       })
-      findAll.map(item => { set(index, item.tile_id, undefined) })
+      findAll.map(item => set(index, item.tile_id, true))
 
-      for (const item of value) {
-        // Update Progress bar
+      // Find remaining
+      const remaining = value.filter(item => !index[item.tile_id])
+      bar.tick(value.length - remaining.length)
+
+      // Download remaining tiles
+      for (const item of remaining) {
         bar.tick()
-
-        // Find for existing tile in MBTiles <images.tile_id>
         const tile = new Tile(item)
-
-        // Download or Skip Tile
-        if (index[tile.id]) { await this.downloadTile(tile)
-        } else { debug.skipped(`${ tile.zoom }/${ tile.x }/${ tile.y }`) }
+        await this.downloadTile(tile)
       }
     }
     debug.download(`done [${ grid.count } tiles]`)
@@ -368,7 +367,7 @@ export default class MBTiles {
    * @example
    */
   public async map(init: InterfaceMetadata) {
-    const grid = new Grid(init, 100000)
+    const grid = new Grid(init, 500)
     debug.map(`started [${ grid.count }]`)
 
     // Remove Existing Mapping
