@@ -320,9 +320,12 @@ export default class MBTiles {
     })
 
     // Index used to quickly find existing tile images by [tile_id]
+    debug.download('index')
     const keys = await this.imagesSQL.findAll({ attributes: { exclude: ['tile_data'] } })
+    debug.download('index get keys')
     let index: any = {}
     for (let key of keys) { index[key.tile_id] = key.tile_id }
+    debug.download('index done keys')
     bar.tick(keys.length)
 
     debug.download(`started [${ keys.length } of ${ grid.count } tiles]`)
