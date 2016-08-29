@@ -398,9 +398,9 @@ export default class MBTiles {
    * const status = await mbtiles.save(METADATA)
    */
   public async save(init: InterfaceMetadata) {
-    // await this.metadata(init)
-    // await this.index(init)
-    // await this.download(init)
+    await this.metadata(init)
+    await this.index(init)
+    await this.download(init)
     await this.map(init)
     return { message: 'MBTiles saved', ok: true, status: 'OK', status_code: 200 }
   }
