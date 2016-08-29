@@ -201,6 +201,7 @@ export default class Tile {
   public quadkey: string
   public url: string
   public id: string
+  public tile_id: string
   public bbox: number[]
   public tms: InterfaceTMS
   public geometry: { type: string, coordinates: number[][][] }
@@ -255,6 +256,7 @@ export default class Tile {
       tile_row: this.tile_row,
       zoom_level: this.zoom,
     })
+    this.tile_id = this.id
 
     // Validation
     validateTile(init)

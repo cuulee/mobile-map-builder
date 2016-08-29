@@ -318,30 +318,23 @@ export default class MBTiles {
       total: grid.count,
       width: 20,
     })
+    debug.download(`started [${ grid.count }]`)
 
-    // Index used to quickly find existing tile images by [tile_id]
-    debug.download('index')
-    const keys = await this.imagesSQL.findAll({ attributes: { exclude: ['tile_data'] } })
-    debug.download('index get keys')
-    let index: any = {}
-    for (let key of keys) { index[key.tile_id] = key.tile_id }
-    debug.download('index done keys')
-    bar.tick(keys.length)
-
-    debug.download(`started [${ keys.length } of ${ grid.count } tiles]`)
-
-    // Iterate over Grid
     while (true) {
+      // Iterate over Grid
       const { value, done } = grid.tiles.next()
       if (done) { break }
-      const tile = new Tile(value)
 
-      if (!index[tile.id]) {
-        bar.tick() // Update Progress bar
-        await this.downloadTile(tile)
-      } else {
-        debug.skipped(`${ tile.zoom }/${ tile.x }/${ tile.y }`)
-      }
+      // Update Progress bar
+      bar.tick()
+
+      // Find for existing tile in MBTiles <images.tile_id>
+      const tile = new Tile(value)
+      const findOne = await this.imagesSQL.findOne({ where: { tile_id: tile.id }})
+
+      // Download or Skip Tile
+      if (!findOne) { await this.downloadTile(tile)
+      } else { debug.skipped(`${ tile.zoom }/${ tile.x }/${ tile.y }`) }
     }
     debug.download(`done [${ grid.count } tiles]`)
     return { message: 'Download finished', ok: true, status: 'OK', status_code: 200 }

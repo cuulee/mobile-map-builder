@@ -1,0 +1,10 @@
+scheme: 'http://ecn.t{switch:0,1,2,3}.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=5250'
+attribution: 'Map data © Bing'
+bounds: [-76.3426911, 44.9613394, -75.2462098, 45.537979]
+center: [-75.6900218, 45.4210328]
+description: 'Tiles from Bing'
+format: 'jpg'
+maxZoom: 10
+minZoom: 8
+name: 'Bing'
+type: 'baselayer'
