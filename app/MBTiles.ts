@@ -314,7 +314,7 @@ export default class MBTiles {
    * @example
    */
   public async download(init: InterfaceMetadata) {
-    const grid = new Grid(init, 10000)
+    const grid = new Grid(init, 250)
     const bar = new ProgressBar('  downloading [:bar] :percent (:current/:total)', {
       total: grid.count,
       width: 20,
