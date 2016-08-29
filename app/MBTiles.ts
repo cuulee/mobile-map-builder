@@ -1,6 +1,5 @@
 import debug from './debug'
 import models from './models'
-import * as os from 'os'
 import * as filesize from 'filesize'
 import * as Sequelize from 'sequelize'
 import * as ProgressBar from 'progress'
@@ -315,8 +314,7 @@ export default class MBTiles {
    * @example
    */
   public async download(init: InterfaceMetadata) {
-    // 500 @ 1GB RAM
-    const grid = new Grid(init, Math.floor(os.totalmem() / 2000000))
+    const grid = new Grid(init, 500)
     const bar = new ProgressBar('  downloading [:bar] :percent (:current/:total)', {
       total: grid.count,
       width: 20,
@@ -369,8 +367,11 @@ export default class MBTiles {
    * @example
    */
   public async map(init: InterfaceMetadata) {
-    // 10000 @ 1GB RAM
-    const grid = new Grid(init, Math.floor(os.totalmem() / 100000))
+    const grid = new Grid(init, 10000)
+    const bar = new ProgressBar('  mapping     [:bar] :percent (:current/:total)', {
+      total: grid.count,
+      width: 20,
+    })
     debug.map(`started [${ grid.count }]`)
 
     // Remove Existing Mapping
@@ -381,7 +382,7 @@ export default class MBTiles {
       const { value, done } = grid.tilesBulk.next()
       if (done) { break }
       await this.mapSQL.bulkCreate(value)
-      debug.map(`saved [${ value.length }]`)
+      bar.tick(value.length)
     }
     debug.map(`done [${ grid.count }]`)
     return { message: 'Map created', ok: true, status: 'OK', status_code: 200 }
@@ -397,9 +398,9 @@ export default class MBTiles {
    * const status = await mbtiles.save(METADATA)
    */
   public async save(init: InterfaceMetadata) {
-    await this.metadata(init)
-    await this.index(init)
-    await this.download(init)
+    // await this.metadata(init)
+    // await this.index(init)
+    // await this.download(init)
     await this.map(init)
     return { message: 'MBTiles saved', ok: true, status: 'OK', status_code: 200 }
   }
