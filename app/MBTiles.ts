@@ -1,5 +1,6 @@
 import debug from './debug'
 import models from './models'
+import * as os from 'os'
 import * as filesize from 'filesize'
 import * as Sequelize from 'sequelize'
 import * as ProgressBar from 'progress'
@@ -314,7 +315,8 @@ export default class MBTiles {
    * @example
    */
   public async download(init: InterfaceMetadata) {
-    const grid = new Grid(init, 500)
+    // 500 @ 1GB RAM
+    const grid = new Grid(init, Math.floor(os.totalmem() / 2000000))
     const bar = new ProgressBar('  downloading [:bar] :percent (:current/:total)', {
       total: grid.count,
       width: 20,
@@ -367,7 +369,8 @@ export default class MBTiles {
    * @example
    */
   public async map(init: InterfaceMetadata) {
-    const grid = new Grid(init, 500)
+    // 10000 @ 1GB RAM
+    const grid = new Grid(init, Math.floor(os.totalmem() / 100000))
     debug.map(`started [${ grid.count }]`)
 
     // Remove Existing Mapping
