@@ -3,6 +3,7 @@ import models from './models'
 import * as filesize from 'filesize'
 import * as Sequelize from 'sequelize'
 import * as ProgressBar from 'progress'
+import { set } from 'lodash'
 import { LngLatBounds, LngLat } from './GlobalMercator'
 import Tile, { downloadTile } from './Tile'
 import Grid from './Grid'
@@ -313,7 +314,7 @@ export default class MBTiles {
    * @example
    */
   public async download(init: InterfaceMetadata) {
-    const grid = new Grid(init, 10)
+    const grid = new Grid(init, 50000)
     const bar = new ProgressBar('  downloading [:bar] :percent (:current/:total)', {
       total: grid.count,
       width: 20,
@@ -322,19 +323,29 @@ export default class MBTiles {
 
     while (true) {
       // Iterate over Grid
-      const { value, done } = grid.tiles.next()
+      const { value, done } = grid.tilesBulk.next()
       if (done) { break }
 
-      // Update Progress bar
-      bar.tick()
+      // Build Index
+      const index: any = {}
+      const findSelection = value.map(item => { return { tile_id: item.tile_id }})
+      const findAll = await this.imagesSQL.findAll({
+        attributes: ['tile_id'],
+        where: { $or: findSelection },
+      })
+      findAll.map(item => { set(index, item.tile_id, undefined) })
 
-      // Find for existing tile in MBTiles <images.tile_id>
-      const tile = new Tile(value)
-      const findOne = await this.imagesSQL.findOne({ where: { tile_id: tile.id }})
+      for (const item of value) {
+        // Update Progress bar
+        bar.tick()
 
-      // Download or Skip Tile
-      if (!findOne) { await this.downloadTile(tile)
-      } else { debug.skipped(`${ tile.zoom }/${ tile.x }/${ tile.y }`) }
+        // Find for existing tile in MBTiles <images.tile_id>
+        const tile = new Tile(item)
+
+        // Download or Skip Tile
+        if (index[tile.id]) { await this.downloadTile(tile)
+        } else { debug.skipped(`${ tile.zoom }/${ tile.x }/${ tile.y }`) }
+      }
     }
     debug.download(`done [${ grid.count } tiles]`)
     return { message: 'Download finished', ok: true, status: 'OK', status_code: 200 }
