@@ -1,7 +1,7 @@
 import * as program from 'commander'
 import * as fs from 'fs'
 import * as yaml from 'js-yaml'
-import { isUndefined, get, set, keys, merge } from 'lodash'
+import { isUndefined, get, set, merge } from 'lodash'
 import debug from './debug'
 import MBTiles from './MBTiles'
 
