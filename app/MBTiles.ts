@@ -357,9 +357,15 @@ export default class MBTiles {
 
       // Download remaining tiles
       for (const item of remaining) {
-        bar.tick()
         const tile = new Tile(item)
-        await this.downloadTile(tile)
+        const status = await this.downloadTile(tile)
+        // Add broken Tile back to queue
+        if (status.ok) {
+          bar.tick()
+        } else {
+          debug.error(`broken tile: ${ tile.url }`)
+          remaining.push(item)
+        }
       }
     }
     debug.download(`done [${ grid.count } tiles]`)
