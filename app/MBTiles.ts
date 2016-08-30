@@ -9,9 +9,18 @@ import models from './models'
 import { LngLatBounds, LngLat } from './GlobalMercator'
 import Tile, { downloadTile } from './Tile'
 import Grid from './Grid'
-import { InterfaceMapAttribute, InterfaceMapInstance, InterfaceMapModel } from './models/Map'
-import { InterfaceMetadataAttribute, InterfaceMetadataInstance, InterfaceMetadataModel } from './models/Metadata'
-import { InterfaceImagesAttribute, InterfaceImagesInstance, InterfaceImagesModel } from './models/Images'
+import {
+  InterfaceMapAttribute,
+  InterfaceMapInstance,
+  InterfaceMapModel } from './models/Map'
+import {
+  InterfaceMetadataAttribute,
+  InterfaceMetadataInstance,
+  InterfaceMetadataModel } from './models/Metadata'
+import {
+  InterfaceImagesAttribute,
+  InterfaceImagesInstance,
+  InterfaceImagesModel } from './models/Images'
 
 /**
  * Metadata Interface for MBTiles.metadata
