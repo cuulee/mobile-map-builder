@@ -383,7 +383,7 @@ export default class MBTiles {
   public async downloadTile(tile: Tile) {
     let data = await downloadTile(tile.url)
     if (data) {
-      debug.download(`${ tile.url } (${ getFileSize(data) })`)
+      debug.downloadTile(`${ tile.url } (${ getFileSize(data) })`)
       this.imagesSQL.create({ tile_data: data, tile_id: tile.id })
       return { message: 'Downloaded Tile', ok: true, status: 'OK' }
     }

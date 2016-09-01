@@ -4,6 +4,7 @@ export default {
   build: debug('dataGen:build'),
   cli: debug('dataGen:cli'),
   download: debug('dataGen:download'),
+  downloadTile: debug('dataGen:downloadTile'),
   error: debug('dataGen:error'),
   grid: debug('dataGen:grid'),
   index: debug('dataGen:index'),
