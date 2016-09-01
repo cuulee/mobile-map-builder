@@ -100,8 +100,8 @@ export function * buildGrid(init: InterfaceGrid) {
 }
 
 export const validateGrid = (init: InterfaceGrid) => {
-  if (init.minZoom < 0) {
-    const message = 'Grid <minZoom> cannot be less than 0'
+  if (init.minZoom < 1) {
+    const message = 'Grid <minZoom> cannot be less than 1'
     debug.error(message)
     throw new Error(message)
   } else if (init.maxZoom > 23) {

@@ -28,12 +28,12 @@ import {
 export interface InterfaceMetadata {
   name: string
   bounds: number[]
-  description: string
-  format: string
   minZoom: number
   maxZoom: number
-  attribution: string
   scheme: string
+  attribution?: string
+  description?: string
+  format?: string
   type?: string
   center?: number[]
 }
@@ -149,6 +149,9 @@ export default class MBTiles {
     this.db = db
     this.version = '1.1.0'
     this.type = 'baselayer'
+    this.format = 'png'
+    this.description = ''
+    this.attribution = ''
 
     // Create SQL connections
     this.sequelize = this.connect()
@@ -235,6 +238,7 @@ export default class MBTiles {
    * @param {String} attribution
    * @param {String} description
    * @param {String} scheme
+   * @param {String} type
    * @returns {Object} Status message
    * @example
    * mbtiles.metadata({
@@ -309,6 +313,7 @@ export default class MBTiles {
     // Save Metadata to SQL
     const saveItems = [
       { name: 'name', value: this.name },
+      { name: 'type', value: this.type },
       { name: 'version', value: this.version },
       { name: 'attribution', value: this.attribution },
       { name: 'description', value: this.description },
@@ -318,7 +323,6 @@ export default class MBTiles {
       { name: 'maxZoom', value: String(this.maxZoom) },
     ]
     if (this.format) { saveItems.push({ name: 'format', value: this.format }) }
-    if (this.author) { saveItems.push({ name: 'author', value: this.author }) }
     if (this.scheme) { saveItems.push({ name: 'scheme', value: this.scheme }) }
 
     this.metadataSQL.bulkCreate(saveItems)
@@ -366,6 +370,7 @@ export default class MBTiles {
       // Download remaining tiles
       for (const item of remaining) {
         const tile = new Tile(item)
+        debug.downloadTile(tile)
         const status = await this.downloadTile(tile)
         // Add broken Tile back to queue
         if (status.ok) {

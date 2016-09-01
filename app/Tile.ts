@@ -128,7 +128,10 @@ export const parseUrl = (tile: InterfaceTile) => {
  */
 export const downloadTile = (url: string) => {
   return rp.get(url, { encoding : 'binary' })
-    .then(data => new Buffer(data, 'binary'))
+    .then(
+      data => new Buffer(data, 'binary'),
+      error => { if (error) { debug.error(`downloadTile: ${ url }`) } }
+    )
 }
 
 /**

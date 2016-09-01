@@ -80,8 +80,8 @@ export const validateTile = (init: InterfaceTile, name = 'Tile') => {
  * //= 12
  */
 export const validateZoom = (zoom: number, name: string) => {
-  if (zoom < 0) {
-    const message = `${ name } <zoom> cannot be less than 0`
+  if (zoom < 1) {
+    const message = `${ name } <zoom> cannot be less than 1`
     debug.error(message)
     throw new Error(message)
   } else if (zoom > 23) {

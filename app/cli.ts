@@ -44,7 +44,7 @@ const customHelp = () => {
     $ node app/cli.js [OPTIONS] --config config.yml tiles.mbtiles
     `)
 }
-async function main() {
+function main() {
   program
     .version('1.0.0')
     .description('Creates MBTiles from Web Map Tile Service')
@@ -58,7 +58,6 @@ async function main() {
     .option('--minZoom [Integer]', 'Minimum Zoom Level', value => JSON.parse(value))
     .option('--name [String]', 'Name given to MBTiles DB')
     .option('--scheme [String]', 'Scheme given to MBTiles DB')
-    .option('--type [String]', 'Type given to MBTiles DB')
     .on('--help', customHelp)
 
   // Parse Program
@@ -69,22 +68,32 @@ async function main() {
     cli.help()
   }
 
-  // Load File Path configurations
+  // Load providers & bounds YAML indexes
+  const providers: any = yaml.safeLoad(fs.readFileSync(`${ __dirname }/configs/providers.yml`, 'utf8'))
+  const bounds: any = yaml.safeLoad(fs.readFileSync(`${ __dirname }/configs/bounds.yml`, 'utf8'))
+
+  // Load custom config YAML
   const OPTIONS: any = {}
   if (cli.config) {
     pathExists(cli.config)
     merge(OPTIONS, yaml.safeLoad(fs.readFileSync(cli.config, 'utf8')))
   }
-  if (cli.provider) {
-    pathExists(cli.provider)
-    merge(OPTIONS, yaml.safeLoad(fs.readFileSync(cli.provider, 'utf8')))
-  }
-  if (cli.bounds) {
-    if (fs.existsSync(cli.bounds)) {
-      merge(OPTIONS, yaml.safeLoad(fs.readFileSync(cli.bounds, 'utf8')))
-    } else { OPTIONS.bounds = JSON.parse(cli.bounds)}
-  }
 
+  // Load custom providers & bounds from indexes
+  if (cli.bounds) {
+    if (bounds[cli.bounds]) {
+      set(OPTIONS, 'bounds', bounds[cli.bounds])
+    } else { set(OPTIONS, 'bounds', cli.bounds) }
+  }
+  if (cli.provider) {
+    if (providers[cli.provider]) {
+      merge(OPTIONS, providers[cli.provider])
+    } else {
+      const message = `<provider> does not match index.`
+      debug.error(message)
+      throw new Error(message)
+    }
+  }
   // Overwrite Config with user input
   ['format', 'maxZoom', 'minZoom', 'scheme', 'attribution'].map(item => {
     const value = get(cli, item)
@@ -97,6 +106,27 @@ async function main() {
   if (typeof(cli.name) === 'string') { set(OPTIONS, 'name', cli.name) }
 
   // Create MBTiles
+  if (isUndefined(OPTIONS.name)) {
+    const message = 'CLI Options <name> must be included.'
+    debug.error(message)
+    throw new Error(message)
+  } else if (isUndefined(OPTIONS.bounds)) {
+    const message = 'CLI Options <bounds> must be included.'
+    debug.error(message)
+    throw new Error(message)
+  } else if (isUndefined(OPTIONS.minZoom)) {
+    const message = 'CLI Options <minZoom> must be included.'
+    debug.error(message)
+    throw new Error(message)
+  } else if (isUndefined(OPTIONS.maxZoom)) {
+    const message = 'CLI Options <maxZoom> must be included.'
+    debug.error(message)
+    throw new Error(message)
+  } else if (isUndefined(OPTIONS.scheme)) {
+    const message = 'CLI Options <scheme> must be included.'
+    debug.error(message)
+    throw new Error(message)
+  }
   debug.cli(OPTIONS)
   const output = cli.args[0]
   const mbtiles = new MBTiles(output)
