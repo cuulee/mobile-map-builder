@@ -430,9 +430,9 @@ export default class MBTiles {
    */
   public async save(init: InterfaceMetadata) {
     await this.metadata(init)
-    await this.index(init)
     await this.download(init)
     await this.map(init)
+    await this.index(init)
     return { message: 'MBTiles saved', ok: true, status: 'OK', status_code: 200 }
   }
 }
