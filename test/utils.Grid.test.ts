@@ -24,9 +24,9 @@ test('Throws Error bad Grid', t => {
   t.throws(() => new Grid({
     bounds: BOUNDS,
     maxZoom: MAXZOOM,
-    minZoom: -1,
+    minZoom: 0,
     scheme: SCHEME,
-  }), 'Grid <minZoom> cannot be less than 0')
+  }), 'Grid <minZoom> cannot be less than 1')
   t.throws(() => new Grid({
     bounds: BOUNDS,
     maxZoom: 24,

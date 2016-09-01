@@ -39,16 +39,12 @@ test('Update Metadata', async (t) => {
 test('Save', async (t) => {
   const DB_SAVE = `${ uuid.v4() }.mbtiles`
   const DB_METADATA = {
-    attribution: 'Map data © Bing',
     bounds: BOUNDS,
-    center: [-111.2082, 52.6037],
-    description: 'Tiles from Bing',
     format: 'jpg',
     maxZoom: 3,
     minZoom: 3,
     name: 'Test',
     scheme: SCHEME,
-    type: 'baselayer',
   }
   const mbtiles = new MBTiles(DB_SAVE)
   const status = await mbtiles.save(DB_METADATA)

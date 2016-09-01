@@ -452,23 +452,17 @@ export default class MBTiles {
 
 /* istanbul ignore next */
 async function main() {
-  // Initialize
-  // const mbtiles = new MBTiles('tiles.mbtiles')
-  // const METADATA = {
-  //   attribution: 'Map data © OpenStreetMap',
-  //   bounds: [-111.2082, 52.6037, -110.5503, 52.8544],
-  //   description: 'Tiles from OpenStreetMap',
-  //   format: 'png',
-  //   maxZoom: 10,
-  //   minZoom: 8,
-  //   name: 'OpenStreetMap',
-  //   scheme: 'https://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png',
-  // }
-  // const status = await mbtiles.save(METADATA)
-  // debug.log(status)
-  // debug.log(stringifyCenter([-111.2082, 52.6037]))
-  // debug.log(stringifyCenter([-111.2082, 52.6037, 2]))
-  // debug.log(stringifyBounds([-27, 62, -11]))
+  const mbtiles = new MBTiles('tiles.mbtiles')
+  const METADATA = {
+    bounds: [-27, 62, -11, 67.5],
+    format: 'jpg',
+    maxZoom: 3,
+    minZoom: 3,
+    name: 'OpenStreetMap',
+    scheme: 'http://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png',
+  }
+  const status = await mbtiles.save(METADATA)
+  debug.log(status)
 }
 
 if (require.main === module) { main() }
