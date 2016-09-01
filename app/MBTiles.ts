@@ -5,7 +5,7 @@ import * as ProgressBar from 'progress'
 import * as turf from 'turf'
 import debug from './debug'
 import models from './models'
-import { set } from 'lodash'
+import { set, isUndefined } from 'lodash'
 import { LngLatBounds, LngLat } from './GlobalMercator'
 import Tile, { downloadTile } from './Tile'
 import Grid from './Grid'
@@ -133,6 +133,7 @@ export default class MBTiles {
   public scheme: string
   public format: string
   public type: string
+  private sequelize: Sequelize.Sequelize
   private mapSQL: InterfaceMapModel
   private imagesSQL: InterfaceImagesModel
   private metadataSQL: InterfaceMetadataModel
@@ -150,10 +151,29 @@ export default class MBTiles {
     this.type = 'baselayer'
 
     // Create SQL connections
-    const sequelize = this.connect()
-    this.mapSQL = sequelize.define<InterfaceMapInstance, InterfaceMapAttribute>('map', models.Map)
-    this.imagesSQL = sequelize.define<InterfaceImagesInstance, InterfaceImagesAttribute>('images', models.Images)
-    this.metadataSQL = sequelize.define<InterfaceMetadataInstance, InterfaceMetadataAttribute>('metadata', models.Metadata)
+    this.sequelize = this.connect()
+    this.mapSQL = this.sequelize.define<InterfaceMapInstance, InterfaceMapAttribute>('map', models.Map)
+    this.imagesSQL = this.sequelize.define<InterfaceImagesInstance, InterfaceImagesAttribute>('images', models.Images)
+    this.metadataSQL = this.sequelize.define<InterfaceMetadataInstance, InterfaceMetadataAttribute>('metadata', models.Metadata)
+  }
+
+  /**
+   * Builds Tables for MBTiles SQL db
+   * 
+   * @name tables
+   * @returns {Object} Status message
+   * @example
+   */
+  public async tables() {
+    // Connect SQL
+    debug.tables('started')
+
+    await this.imagesSQL.sync()
+    await this.metadataSQL.sync()
+    await this.mapSQL.sync()
+
+    debug.tables('done')
+    return { message: 'Tables created', ok: true, status: 'OK', status_code: 200 }
   }
 
   /**
@@ -166,24 +186,15 @@ export default class MBTiles {
   public async index(init: InterfaceMetadata) {
     // Connect SQL
     debug.index('started')
-    const sequelize = this.connect()
-
-    // Build tables
-    const metadataSQL = await sequelize.define('metadata', models.Metadata)
-    const mapSQL = await sequelize.define('map', models.Map)
-    const imagesSQL = await sequelize.define('images', models.Images)
-    await metadataSQL.sync()
-    await mapSQL.sync()
-    await imagesSQL.sync()
 
     // Build Index
-    await sequelize.query('CREATE UNIQUE INDEX IF NOT EXISTS metadata_name on metadata (name)')
-    await sequelize.query('CREATE UNIQUE INDEX IF NOT EXISTS map_tile_id on map (tile_id)')
-    await sequelize.query('CREATE UNIQUE INDEX IF NOT EXISTS map_tile on map (tile_row, tile_column, zoom_level)')
-    await sequelize.query('CREATE UNIQUE INDEX IF NOT EXISTS images_tile_id on images (tile_id)')
+    await this.sequelize.query('CREATE UNIQUE INDEX IF NOT EXISTS metadata_name on metadata (name)')
+    await this.sequelize.query('CREATE UNIQUE INDEX IF NOT EXISTS map_tile_id on map (tile_id)')
+    await this.sequelize.query('CREATE UNIQUE INDEX IF NOT EXISTS map_tile on map (tile_row, tile_column, zoom_level)')
+    await this.sequelize.query('CREATE UNIQUE INDEX IF NOT EXISTS images_tile_id on images (tile_id)')
 
     // Build View
-    await sequelize.query(`CREATE VIEW IF NOT EXISTS tiles AS
+    await this.sequelize.query(`CREATE VIEW IF NOT EXISTS tiles AS
   SELECT
     map.zoom_level AS zoom_level,
     map.tile_column AS tile_column,
@@ -255,33 +266,27 @@ export default class MBTiles {
     }
 
     // Metadata required key/values
-    /* istanbul ignore next */
-    if (!this.name) {
+    if (isUndefined(this.name)) {
       const message = 'MBTiles.metadata <name> is required'
       debug.error(message)
       throw new Error(message)
-    /* istanbul ignore next */
-    } else if (!this.type) {
+    } else if (isUndefined(this.type)) {
       const message = 'MBTiles.metadata <type> is required'
       debug.error(message)
       throw new Error(message)
-    /* istanbul ignore next */
-    } else if (!this.version) {
+    } else if (isUndefined(this.version)) {
       const message = 'MBTiles.metadata <version> is required'
       debug.error(message)
       throw new Error(message)
-    /* istanbul ignore next */
-    } else if (!this.description) {
+    } else if (isUndefined(this.description)) {
       const message = 'MBTiles.metadata <description> is required'
       debug.error(message)
       throw new Error(message)
-    /* istanbul ignore next */
-    } else if (!this.format) {
+    } else if (isUndefined(this.format)) {
       const message = 'MBTiles.metadata <format> is required'
       debug.error(message)
       throw new Error(message)
-    /* istanbul ignore next */
-    } else if (!this.bounds) {
+    } else if (isUndefined(this.bounds)) {
       const message = 'MBTiles.metadata <bounds> is required'
       debug.error(message)
       throw new Error(message)
@@ -298,10 +303,8 @@ export default class MBTiles {
       throw new Error(message)
     }
 
-    // Connect SQL
-    const sequelize = this.connect()
-    const metadataSQL = await sequelize.define('metadata', models.Metadata)
-    await metadataSQL.sync({ force: true })
+    // Remove existing Meta attributes
+    await this.metadataSQL.sync({ force: true })
 
     // Save Metadata to SQL
     const saveItems = [
@@ -318,7 +321,8 @@ export default class MBTiles {
     if (this.author) { saveItems.push({ name: 'author', value: this.author }) }
     if (this.scheme) { saveItems.push({ name: 'scheme', value: this.scheme }) }
 
-    metadataSQL.bulkCreate(saveItems)
+    this.metadataSQL.bulkCreate(saveItems)
+
     debug.metadata('done')
     return { message: 'Metadata created', ok: true, status: 'OK', status_code: 200 }
   }
@@ -330,6 +334,10 @@ export default class MBTiles {
    * @example
    */
   public async download(init: InterfaceMetadata) {
+    // Build SQL Table if does not exists
+    await this.imagesSQL.sync()
+
+    // Construct Grid
     const grid = new Grid(init, 500)
     const bar = new ProgressBar('  downloading [:bar] :percent (:current/:total)', {
       total: grid.count,
@@ -381,7 +389,7 @@ export default class MBTiles {
    * @example
    */
   public async downloadTile(tile: Tile) {
-    let data = await downloadTile(tile.url)
+    const data = await downloadTile(tile.url)
     if (data) {
       debug.downloadTile(`${ tile.url } (${ getFileSize(data) })`)
       this.imagesSQL.create({ tile_data: data, tile_id: tile.id })
