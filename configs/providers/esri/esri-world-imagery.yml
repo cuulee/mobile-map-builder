@@ -1,5 +1,0 @@
-name: 'ESRI World Topographic Map'
-scheme: 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{zoom}/{y}/{x}'
-description: 'This map service presents satellite imagery for the world and high-resolution imagery for the United States and other areas around the world.'
-attribution: 'Esri, DigitalGlobe, Earthstar Geographics, CNES/Airbus DS, GeoEye, USDA FSA, USGS, Getmapping, Aerogrid, IGN, IGP, and the GIS User Community'
-format: 'jpg'

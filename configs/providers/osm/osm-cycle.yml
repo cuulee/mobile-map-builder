@@ -1,5 +1,0 @@
-name: 'OSM Cycle Map'
-scheme: 'https://{switch:a,b,c}.tile.thunderforest.com/cycle/{zoom}/{x}/{y}.png'
-description: 'Tiles from OSM'
-attribution: 'Map data © OSM'
-format: 'png'

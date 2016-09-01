@@ -1,5 +1,0 @@
-name: 'USA Topo Maps'
-scheme: 'https://services.arcgisonline.com/ArcGIS/rest/services/USA_Topo_Maps/MapServer/tile/{zoom}/{y}/{x}'
-description: 'This map service presents detailed USGS topographic maps for the United States at multiple scales.'
-attribution: '© 2011 National Geographic Society, i-cubed'
-format: 'jpg'
