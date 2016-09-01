@@ -330,33 +330,31 @@ export default class MBTiles {
    * @example
    */
   public async download(init: InterfaceMetadata) {
-    const grid = new Grid(init, 500)
+    const grid = new Grid(init, 10000)
     const bar = new ProgressBar('  downloading [:bar] :percent (:current/:total)', {
       total: grid.count,
       width: 20,
     })
     debug.download(`started [${ grid.count }]`)
 
+    // Build index
+    const index: any = {}
+    const findAll = await this.imagesSQL.findAll({
+        attributes: ['tile_id'],
+      })
+    for (const item of findAll) { index[item.tile_id] = true }
+
     while (true) {
       // Iterate over Grid
       const { value, done } = grid.tilesBulk.next()
       if (done) { break }
 
-      // Build Index
-      const index: any = {}
-      const findSelection = value.map(item => { return { tile_id: item.tile_id }})
-      const findAll = await this.imagesSQL.findAll({
-        attributes: ['tile_id'],
-        where: { $or: findSelection },
-      })
-      findAll.map(item => set(index, item.tile_id, true))
+      // Build Queue
+      const queue = value.filter(item => !index[item.tile_id])
+      bar.tick(value.length - queue.length)
 
-      // Find remaining
-      const remaining = value.filter(item => !index[item.tile_id])
-      bar.tick(value.length - remaining.length)
-
-      // Download remaining tiles
-      for (const item of remaining) {
+      // Download queued tiles
+      for (const item of queue) {
         const tile = new Tile(item)
         const status = await this.downloadTile(tile)
         // Add broken Tile back to queue
@@ -364,7 +362,7 @@ export default class MBTiles {
           bar.tick()
         } else {
           debug.error(`broken tile: ${ tile.url }`)
-          remaining.push(item)
+          queue.push(item)
         }
       }
     }
