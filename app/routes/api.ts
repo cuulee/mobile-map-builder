@@ -28,9 +28,14 @@ router.route('/')
 router.route('/:zoom/:tile_column/:tile_row/ball-diamonds.osm')
   .get(async (request: any, response: any) => {
     // Build Tile
-    const tile = new Tile(request.params)
-    const polygon = turf.polygon(tile.geometry.coordinates)
-    const collection = turf.featureCollection([polygon])
+    const TILE = {
+      tile_column: JSON.parse(request.params.tile_column),
+      tile_row: JSON.parse(request.params.tile_row),
+      zoom: JSON.parse(request.params.zoom),
+    }
+    const tile = new Tile(TILE)
+    const poly = turf.bboxPolygon(tile.bbox)
+    const collection = turf.featureCollection([ poly ])
 
     // Download Dataset
     const url = 'http://data.ottawa.ca/dataset/cad648df-85d9-45e9-a573-914dc7c00b74/resource/' +
@@ -38,10 +43,10 @@ router.route('/:zoom/:tile_column/:tile_row/ball-diamonds.osm')
     const data = JSON.parse(await rp.get(url))
 
     // Only find points within
-    const within = turf.within(data, collection)
+    let within = turf.within(data, collection)
 
     // Parse GeoJSON to OSM
-    const osm = geojson2osm.geojson2osm(within)
+    let osm = geojson2osm.geojson2osm(within)
     response.set('Content-Type', 'text/xml')
     response.send(osm)
   })

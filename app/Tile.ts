@@ -279,19 +279,19 @@ export default class Tile {
 /* istanbul ignore next */
 async function main() {
   const SCHEME = 'http://ecn.t{switch:0,1,2,3}.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=1512&n=z'
-  // const TILE = {
-  //   scheme: SCHEME,
-  //   tile_column: 8,
-  //   tile_row: 8,
-  //   zoom: 4,
-  // }
-  const GOOGLE_TILE = {
+  const TILE = {
     scheme: SCHEME,
-    x: 3,
-    y: 3,
-    zoom: 3,
+    tile_column: 2375,
+    tile_row: 5256,
+    zoom: 13,
   }
-  const tile = new Tile(GOOGLE_TILE)
-  debug.log(tile)
+  // const GOOGLE_TILE = {
+  //   scheme: SCHEME,
+  //   x: 3,
+  //   y: 3,
+  //   zoom: 3,
+  // }
+  const tile = new Tile(TILE)
+  debug.log(tile.geometry.coordinates)
 }
 if (require.main === module) { main() }

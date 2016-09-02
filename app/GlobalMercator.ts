@@ -138,22 +138,25 @@ export const validateMeters = (init: number[]) => {
   if (my > max) {
     my = max
     const message = `Meters [my] has been modified to ${ my }`
-    debug.warning(message)
+    debug.error(message)
   }
   if (my < min) {
     my = min
     const message = `Meters [my] has been modified to ${ my }`
-    debug.warning(message)
+    debug.error(message)
   }
   if (mx > max) {
+    debug.log('greater', mx, max)
     mx = max
     const message = `Meters [mx] has been modified to ${ mx }`
-    debug.warning(message)
+    debug.error(message)
   }
   if (mx < min) {
+    debug.log(init)
+    debug.log('less', mx, min)
     mx = min
     const message = `Meters [mx] has been modified to ${ mx }`
-    debug.warning(message)
+    debug.error(message)
   }
   return [mx, my]
 }
