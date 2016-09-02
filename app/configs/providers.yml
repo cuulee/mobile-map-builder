@@ -8,12 +8,19 @@ bing:
   attribution: 'Map data © Bing'
   format: 'jpg'
 
+imagery:
+  name: 'Bing Imagery'
+  scheme: 'http://ecn.t{switch:0,1,2,3}.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=5250'
+  description: 'Tiles from Bing'
+  attribution: 'Map data © Bing'
+  format: 'jpg'
+
 # Strava
 # =======
 # - both
 # - cycle
 # - foot
-strava-both:
+strava:
   name: 'Strava Cycling & Running'
   scheme: 'https://globalheat.strava.com/tiles/both/color/{zoom}/{x}/{y}.png'
   description: 'Tiles from Strava'
@@ -26,6 +33,13 @@ strava-both:
 # - hot
 # - standard
 # - transport
+osm:
+  name: 'OSM Standard'
+  scheme: 'https://{switch:a,b,c}.tile.openstreetmap.org/{zoom}/{x}/{y}.png'
+  description: 'Tiles from OSM'
+  attribution: 'Map data © OSM'
+  format: 'png'
+
 osm-cycle:
   name: 'OSM Cycle Map'
   scheme: 'https://{switch:a,b,c}.tile.thunderforest.com/cycle/{zoom}/{x}/{y}.png'
@@ -50,6 +64,13 @@ osm-standard:
 osm-transport:
   name: 'OSM Transport Map'
   scheme: 'https://{switch:a,b,c}.tile.thunderforest.com/transport/{zoom}/{x}/{y}.png'
+  description: 'Tiles from OSM'
+  attribution: 'Map data © OSM'
+  format: 'png'
+
+osm-wikimedia:
+  name: 'OSM Wikimedia'
+  scheme: 'https://maps.wikimedia.org/osm-intl/{zoom}/{x}/{y}.png'
   description: 'Tiles from OSM'
   attribution: 'Map data © OSM'
   format: 'png'

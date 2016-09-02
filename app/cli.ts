@@ -47,26 +47,31 @@ const customHelp = () => {
 function main() {
   program
     .version('1.0.0')
+    .usage('[options] <tiles.mbtile>')
     .description('Creates MBTiles from Web Map Tile Service')
     .option('--config <File Path>', 'Config YML file to load CLI Options')
-    .option('--provider <File Path>', 'Proivder YML file to load CLI Options')
-    .option('--attribution [String]', 'Attribution given to MBTiles DB')
-    .option('--bounds <File Path>', 'Bounds given to MBTiles DB')
-    .option('--description [String]', 'Description given to MBTiles DB')
-    .option('--format [String]', 'Tile image format [png/jpg]')
-    .option('--maxZoom [Integer]', 'Maximum Zoom Level', value => JSON.parse(value))
-    .option('--minZoom [Integer]', 'Minimum Zoom Level', value => JSON.parse(value))
-    .option('--name [String]', 'Name given to MBTiles DB')
-    .option('--scheme [String]', 'Scheme given to MBTiles DB')
+    .option('--name [string]', 'Name given to MBTiles DB')
+    .option('-b, --bounds <File Path>', 'Bounds given to MBTiles DB')
+    .option('-p, --provider <File Path>', 'Proivder YML file to load CLI Options')
+    .option('--max, --maxZoom [number]', 'Maximum Zoom Level', value => JSON.parse(value))
+    .option('--min, --minZoom [number]', 'Minimum Zoom Level', value => JSON.parse(value))
+    .option('--scheme [string]', 'Scheme given to MBTiles DB')
+    .option('--attribution [string]', 'Attribution given to MBTiles DB')
+    .option('--description [string]', 'Description given to MBTiles DB')
+    .option('--format [string]', 'Tile image format [png/jpg]')
+    .option('--type [string]', 'Type of MBTiles layer [baselayer/overlay]')
     .on('--help', customHelp)
 
   // Parse Program
   const cli: InterfaceCLI = program.parse(process.argv)
 
-  // Validation of CLI options & arguments
+  // User input for MBTile file path
+  let output = ''
   if (!cli.args.length) {
-    cli.help()
-  }
+    const message = 'Default CLI Arguments <tiles.mbtiles> will be used.'
+    debug.warning(message)
+    output = 'tiles.mbtiles'
+  } else { output = cli.args[0] }
 
   // Load providers & bounds YAML indexes
   const providers: any = yaml.safeLoad(fs.readFileSync(`${ __dirname }/configs/providers.yml`, 'utf8'))
@@ -81,13 +86,23 @@ function main() {
 
   // Load custom providers & bounds from indexes
   if (cli.bounds) {
-    if (bounds[cli.bounds]) {
-      set(OPTIONS, 'bounds', bounds[cli.bounds])
-    } else { set(OPTIONS, 'bounds', cli.bounds) }
+    const lookupBounds = bounds[cli.bounds.toLocaleLowerCase()]
+    if (lookupBounds) {
+      set(OPTIONS, 'bounds', lookupBounds)
+    } else {
+      try {
+        set(OPTIONS, 'bounds', JSON.parse(cli.bounds))
+      } catch (e) {
+        const message = 'CLI Options <bounds> cannot be parsed or indexed.'
+        debug.error(message)
+        throw new Error(message)
+      }
+    }
   }
   if (cli.provider) {
-    if (providers[cli.provider]) {
-      merge(OPTIONS, providers[cli.provider])
+    const lookupProvider = providers[cli.provider.toLowerCase()]
+    if (lookupProvider) {
+      merge(OPTIONS, lookupProvider)
     } else {
       const message = `<provider> does not match index.`
       debug.error(message)
@@ -128,7 +143,6 @@ function main() {
     throw new Error(message)
   }
   debug.cli(OPTIONS)
-  const output = cli.args[0]
   const mbtiles = new MBTiles(output)
   mbtiles.save(OPTIONS)
 }
