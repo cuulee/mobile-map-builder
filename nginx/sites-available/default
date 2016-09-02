@@ -1,0 +1,39 @@
+upstream addxy {
+    server 127.0.0.1:5000;
+}
+
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+
+    server_name addxy.com;
+
+    ssl_certificate             /etc/letsencrypt/live/addxy.com/fullchain.pem;
+    ssl_certificate_key         /etc/letsencrypt/live/addxy.com/privkey.pem;
+    ssl_trusted_certificate     /etc/letsencrypt/live/addxy.com/fullchain.pem;
+
+
+    location / {
+        proxy_pass http://addxy;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
+
+server {
+    server_name www.addxy.com addxy.com;
+    return 301 https://addxy.com$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+
+    ssl_certificate             /etc/letsencrypt/live/addxy.com/fullchain.pem;
+    ssl_certificate_key         /etc/letsencrypt/live/addxy.com/privkey.pem;
+    ssl_trusted_certificate     /etc/letsencrypt/live/addxy.com/fullchain.pem;
+
+    server_name www.addxy.com;
+    return 301 https://addxy.com$request_uri;
+}
