@@ -32,6 +32,7 @@
     "debug": "latest",
     "express": "latest",
     "filesize": "latest",
+    "geojson2osm": "0.0.5",
     "js-base64": "latest",
     "js-yaml": "latest",
     "lodash": "latest",
