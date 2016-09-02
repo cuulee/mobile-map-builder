@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/dlcspm/data-generator.svg?branch=master)](https://travis-ci.org/dlcspm/data-generator)
-[![Coverage Status](https://coveralls.io/repos/github/dlcspm/data-generator/badge.svg?branch=master)](https://coveralls.io/github/dlcspm/data-generator?branch=master)
+[![Build Status](https://travis-ci.org/DenisCarriere/mobile-map-bundler.svg?branch=master)](https://travis-ci.org/DenisCarriere/mobile-map-bundler)
+[![Coverage Status](https://coveralls.io/repos/github/DenisCarriere/mobile-map-bundler/badge.svg?branch=master)](https://coveralls.io/github/DenisCarriere/mobile-map-bundler?branch=master)
 
 # Mobile Map Bundler
 
@@ -191,5 +191,3 @@ $ gdalwarp -t_srs EPSG:32617 -dstalpha tiles.mbtiles tiles-UTM17N.tif
 - http://spatialreference.org/ref/sr-org/7483/
 - http://www.gdal.org/gdal_translate.html
 - http://www.gdal.org/gdaladdo.html
-
-Test Travis
