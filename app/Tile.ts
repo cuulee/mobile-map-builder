@@ -215,7 +215,7 @@ export default class Tile {
       this.x = init.x
       this.y = init.y
       this.zoom = init.zoom ? init.zoom : init.zoom_level
-      this.scheme = init.scheme
+      this.scheme = init.scheme ? init.scheme : ''
       this.quadkey = init.quadkey
       this.tile_row = init.tile_row
       this.tile_column = init.tile_column
