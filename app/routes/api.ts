@@ -25,7 +25,7 @@ router.route('/')
     })
   })
 
-router.route('/:zoom/:x/:y/ball-diamonds.osm')
+router.route('/:zoom/:tile_column/:tile_row/ball-diamonds.osm')
   .get(async (request: any, response: any) => {
     // Build Tile
     const tile = new Tile(request.params)
