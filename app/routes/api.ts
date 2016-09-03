@@ -1,39 +1,29 @@
-import * as fs from 'fs'
 import * as turf from 'turf'
-import { Router } from 'express'
+import { Router, Request, Response } from 'express'
 import { worker } from 'cluster'
 import * as rp from 'request-promise'
 import Tile from '../Tile'
-import debug from '../debug'
 
 const geojson2osm = require('geojson2osm')
 const router = Router()
 
 router.route('/')
-  .all((request: any, response: any) => {
-    response.json({
-      api: 'Data Generator',
+  .all((req: Request, res: Response) => {
+    res.json({
+      api: 'Mobile Map Bundler v1.0.0',
       cluster: worker.process.pid,
       http: [
-        { method: 'GET', url: '/product' },
-        { method: 'GET', url: '/token' },
-        { method: 'GET', url: '/user' },
+        { method: 'GET', url: '/{zoom}/{x}/{y}/ball-diamonds.osm' },
       ],
-      message: 'Demonstrates the Data Generator API, yay!!',
       ok: true,
       status: 200,
     })
   })
 
-router.route('/:zoom/:tile_column/:tile_row/ball-diamonds.osm')
-  .get(async (request: any, response: any) => {
+router.route('/:zoom(\\d+)/:tile_column(\\d+)/:tile_row(\\d+)/ball-diamonds.osm')
+  .get(async (req: Request, res: Response) => {
     // Build Tile
-    const TILE = {
-      tile_column: JSON.parse(request.params.tile_column),
-      tile_row: JSON.parse(request.params.tile_row),
-      zoom: JSON.parse(request.params.zoom),
-    }
-    const tile = new Tile(TILE)
+    const tile = new Tile(req.params)
     const poly = turf.bboxPolygon(tile.bbox)
     const collection = turf.featureCollection([ poly ])
 
@@ -43,12 +33,12 @@ router.route('/:zoom/:tile_column/:tile_row/ball-diamonds.osm')
     const data = JSON.parse(await rp.get(url))
 
     // Only find points within
-    let within = turf.within(data, collection)
+    const within = turf.within(data, collection)
 
     // Parse GeoJSON to OSM
-    let osm = geojson2osm.geojson2osm(within)
-    response.set('Content-Type', 'text/xml')
-    response.send(osm)
+    const osm = geojson2osm.geojson2osm(within)
+    res.set('Content-Type', 'text/xml')
+    res.send(osm)
   })
 
 export default router

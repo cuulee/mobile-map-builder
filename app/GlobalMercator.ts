@@ -136,27 +136,24 @@ export const validateMeters = (init: number[]) => {
   const min = -20037508.342789244
   let [mx, my] = init
   if (my > max) {
-    my = max
-    const message = `Meters [my] has been modified to ${ my }`
+    const message = `Meters [my] cannot be greater than ${ max }`
     debug.error(message)
+    throw new Error(message)
   }
   if (my < min) {
-    my = min
-    const message = `Meters [my] has been modified to ${ my }`
+    const message = `Meters [my] cannot be less than ${ min }`
     debug.error(message)
+    throw new Error(message)
   }
   if (mx > max) {
-    debug.log('greater', mx, max)
-    mx = max
-    const message = `Meters [mx] has been modified to ${ mx }`
+    const message = `Meters [mx] cannot be greater than ${ max }`
     debug.error(message)
+    throw new Error(message)
   }
   if (mx < min) {
-    debug.log(init)
-    debug.log('less', mx, min)
-    mx = min
-    const message = `Meters [mx] has been modified to ${ mx }`
+    const message = `Meters [mx] cannot be less than ${ min }`
     debug.error(message)
+    throw new Error(message)
   }
   return [mx, my]
 }

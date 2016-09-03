@@ -212,13 +212,13 @@ export default class Tile {
   constructor(init: InterfaceTile) {
     // Define Tile attributes
     if (init) {
-      this.x = init.x
-      this.y = init.y
-      this.zoom = init.zoom ? init.zoom : init.zoom_level
+      this.x = Number(init.x)
+      this.y = Number(init.y)
+      this.zoom = init.zoom ? Number(init.zoom) : Number(init.zoom_level)
       this.scheme = init.scheme ? init.scheme : ''
       this.quadkey = init.quadkey
-      this.tile_row = init.tile_row
-      this.tile_column = init.tile_column
+      this.tile_row = Number(init.tile_row)
+      this.tile_column = Number(init.tile_column)
     }
     // Add missing attributes
     if (!this.x || !this.y) {
