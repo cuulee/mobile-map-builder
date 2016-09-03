@@ -12,6 +12,7 @@ export default {
   map: debug('dataGen:map'),
   metadata: debug('dataGen:metadata'),
   save: debug('dataGen:save'),
+  server: debug('dataGen:server'),
   skipped: debug('dataGen:skipped'),
   tables: debug('dataGen:tables'),
   warning: debug('dataGen:warning'),

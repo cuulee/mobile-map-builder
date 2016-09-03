@@ -9,9 +9,12 @@ const geojson2osm = require('geojson2osm')
 const router = Router()
 
 async function downloadData(url: string): Promise<GeoJSON.FeatureCollection<any>> {
-  debug.log(`downloading: ${ url }`)
+  debug.download(url)
   return rp.get(url)
-    .then(data => JSON.parse(data))
+    .then(
+      data => JSON.parse(data),
+      error => { if (error) { debug.error(error.message) }}
+    )
 }
 
 const ballDiamonds = downloadData(

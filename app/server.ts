@@ -21,7 +21,7 @@ app.use(upload.array(), (request: any, response: any, next: any) => {
     method: request.method,
     url: request.originalUrl,
   }
-  debug.log(log)
+  debug.server(log)
   next()
 })
 
@@ -37,4 +37,4 @@ app.use('/', routes.api)
 
 // Start Listening
 app.listen(PORT)
-debug.log(`Listening on PORT ${ PORT }`)
+debug.server(`Listening on PORT ${ PORT }`)

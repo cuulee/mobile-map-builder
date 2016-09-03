@@ -7,11 +7,11 @@ if (cluster.isMaster) {
   range(CORES).map(() => cluster.fork())
 
   cluster.on('online', (worker: any) => {
-    debug.log(`[${ worker.process.pid }] Web Worker started ${ worker.id }`)
+    debug.server(`[${ worker.process.pid }] Web Worker started ${ worker.id }`)
   })
-  debug.log(`HTTP [PORT]: ${ PORT }`)
-  debug.log(`JWT [SECRET]: ${ SECRET }`)
-  debug.log(`CPU [CORES]: ${ CORES }`)
+  debug.server(`HTTP [PORT]: ${ PORT }`)
+  debug.server(`JWT [SECRET]: ${ SECRET }`)
+  debug.server(`CPU [CORES]: ${ CORES }`)
 
 } else { server() }
 
