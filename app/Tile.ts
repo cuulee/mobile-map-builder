@@ -19,7 +19,7 @@ export interface InterfaceTMS {
 }
 
 export interface InterfaceTileSQL {
-  id: string
+  tile_id: string
   x: number
   y: number
   zoom: number
@@ -28,23 +28,23 @@ export interface InterfaceTileSQL {
 export interface InterfaceTileTMS {
   scheme: string
   tile_column: number
+  tile_id?: string
   tile_row: number
   zoom_level: number
-  tile_id?: string
 }
 
 export interface InterfaceTile {
-  x?: number
-  y?: number
-  zoom?: number
+  bbox?: number[]
+  geometry?: {type: string, coordinates: number[][][]}
   scheme?: string
   tile_row?: number
   tile_column?: number
-  zoom_level?: number
+  tile_id?: string
   quadkey?: string
-  id?: string
-  bbox?: number[]
-  geometry?: {type: string, coordinates: number[][][]}
+  x?: number
+  y?: number
+  zoom?: number
+  zoom_level?: number
 }
 
 /**
@@ -203,11 +203,9 @@ export default class Tile {
   public scheme: string
   public quadkey: string
   public url: string
-  public id: string
   public tile_id: string
   public bbox: number[]
   public tms: InterfaceTMS
-  public geometry: { type: string, coordinates: number[][][] }
 
   constructor(init: InterfaceTile) {
     // Define Tile attributes
@@ -249,17 +247,15 @@ export default class Tile {
 
     // Extra Properties
     this.bbox = mercator.GoogleLatLonBounds({ x: this.x, y: this.y, zoom: this.zoom })
-    this.geometry = turf.bboxPolygon(this.bbox).geometry
 
     // Handle URL
     this.url = parseUrl(this)
-    this.id = encodeId({
+    this.tile_id = encodeId({
       scheme: this.scheme,
       tile_column: this.tile_column,
       tile_row: this.tile_row,
       zoom_level: this.zoom,
     })
-    this.tile_id = this.id
 
     // Validation
     validateTile(init)
@@ -292,6 +288,6 @@ async function main() {
   //   zoom: 3,
   // }
   const tile = new Tile(TILE)
-  debug.log(tile.geometry.coordinates)
+  debug.log(tile)
 }
 if (require.main === module) { main() }

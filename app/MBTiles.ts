@@ -394,10 +394,10 @@ export default class MBTiles {
    * @example
    */
   public async downloadTile(tile: Tile) {
-    const data = await downloadTile(tile.url)
-    if (data) {
-      debug.downloadTile(`${ tile.url } (${ getFileSize(data) })`)
-      this.imagesSQL.create({ tile_data: data, tile_id: tile.id })
+    const tile_data = await downloadTile(tile.url)
+    if (tile_data) {
+      debug.downloadTile(`${ tile.url } (${ getFileSize(tile_data) })`)
+      this.imagesSQL.create({ tile_data, tile_id: tile.tile_id })
       return { message: 'Downloaded Tile', ok: true, status: 'OK' }
     }
     return { message: '<ERROR> Download Tile', ok: false, status: 'ERROR', status_code: 500 }
