@@ -24,14 +24,54 @@ router.route('/')
       api: 'Mobile Map Bundler v1.0.0',
       cluster: worker.process.pid,
       http: [
-        { method: 'GET', url: '/{zoom}/{x}/{y}/ball-diamonds.osm' },
+        { method: 'GET', url: '/{zoom}/{x}/{y}(.json|.geojson|.osm)' },
+        { method: 'GET', url: '/{zoom}/{x}/{y}/extent(.json|.geojson|.osm)' },
+        { method: 'GET', url: '/{zoom}/{x}/{y}/ball-diamonds(.json|.geojson|.osm)'},
       ],
       ok: true,
       status: 200,
     })
   })
 
-router.route('/:zoom(\\d+)/:tile_column(\\d+)/:tile_row(\\d+)/ball-diamonds.osm')
+router.route('/:zoom(\\d+)/:tile_column(\\d+)/:tile_row(\\d+)(/extent(.osm|)|.osm|)')
+  .get(async (req: Request, res: Response) => {
+    // Build Tile
+    const tile = new Tile(req.params)
+    const poly = turf.bboxPolygon(tile.bbox)
+    poly.properties = tile
+    poly.bbox = tile.bbox
+    const collection = turf.featureCollection([ poly ])
+
+    // Parse OSM
+    const osm = geojson2osm.geojson2osm(collection)
+    res.set('Content-Type', 'text/xml')
+    res.send(osm)
+  })
+
+router.route('/:zoom(\\d+)/:tile_column(\\d+)/:tile_row(\\d+)(/extent(.json|.geojson)|(.json|.geojson))')
+  .get(async (req: Request, res: Response) => {
+    // Build Tile
+    const tile = new Tile(req.params)
+    const poly = turf.bboxPolygon(tile.bbox)
+    poly.properties = tile
+    poly.bbox = tile.bbox
+    const collection = turf.featureCollection([ poly ])
+    res.json(collection)
+  })
+
+router.route('/:zoom(\\d+)/:tile_column(\\d+)/:tile_row(\\d+)/ball-diamonds(.json|.geojson)')
+  .get(async (req: Request, res: Response) => {
+    // Build Tile
+    const tile = new Tile(req.params)
+    const poly = turf.bboxPolygon(tile.bbox)
+    const collection = turf.featureCollection([ poly ])
+
+    // Only find points within
+    const within = turf.within(await ballDiamonds, collection)
+    res.json(within)
+  })
+
+router.route('/:zoom(\\d+)/:tile_column(\\d+)/:tile_row(\\d+)/ball-diamonds(.osm|)')
   .get(async (req: Request, res: Response) => {
     // Build Tile
     const tile = new Tile(req.params)
