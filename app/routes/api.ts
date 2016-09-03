@@ -3,9 +3,20 @@ import { Router, Request, Response } from 'express'
 import { worker } from 'cluster'
 import * as rp from 'request-promise'
 import Tile from '../Tile'
+import debug from '../debug'
 
 const geojson2osm = require('geojson2osm')
 const router = Router()
+
+async function downloadData(url: string): Promise<GeoJSON.FeatureCollection<any>> {
+  debug.log(`downloading: ${ url }`)
+  return rp.get(url)
+    .then(data => JSON.parse(data))
+}
+
+const ballDiamonds = downloadData(
+  'http://data.ottawa.ca/dataset/cad648df-85d9-45e9-a573-914dc7c00b74/resource/' +
+  'fcc7bdf7-dc8b-4396-be5b-db3e2dab41d3/download/ball-diamonds.json')
 
 router.route('/')
   .all((req: Request, res: Response) => {
@@ -27,13 +38,8 @@ router.route('/:zoom(\\d+)/:tile_column(\\d+)/:tile_row(\\d+)/ball-diamonds.osm'
     const poly = turf.bboxPolygon(tile.bbox)
     const collection = turf.featureCollection([ poly ])
 
-    // Download Dataset
-    const url = 'http://data.ottawa.ca/dataset/cad648df-85d9-45e9-a573-914dc7c00b74/resource/' +
-                'fcc7bdf7-dc8b-4396-be5b-db3e2dab41d3/download/ball-diamonds.json'
-    const data = JSON.parse(await rp.get(url))
-
     // Only find points within
-    const within = turf.within(data, collection)
+    const within = turf.within(await ballDiamonds, collection)
 
     // Parse GeoJSON to OSM
     const osm = geojson2osm.geojson2osm(within)
