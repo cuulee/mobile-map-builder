@@ -17,9 +17,17 @@ async function downloadData(url: string): Promise<GeoJSON.FeatureCollection<any>
     )
 }
 
+const featureCollection = (poly: GeoJSON.Feature<any>): GeoJSON.FeatureCollection<any> => {
+  return {
+      features: [ poly ],
+      type: 'FeatureCollection',
+  }
+}
+
 const ballDiamonds = downloadData(
-  'http://data.ottawa.ca/dataset/cad648df-85d9-45e9-a573-914dc7c00b74/resource/' +
-  'fcc7bdf7-dc8b-4396-be5b-db3e2dab41d3/download/ball-diamonds.json')
+  'https://gist.githubusercontent.com/DenisCarriere/4d0ebc8126eb0c4bffe7b0bd5ee029c9' +
+  '/raw/2066be37fd9fa5d06d1f912f7b6bb20b8efb7406/ball-diamonds.geojson'
+)
 
 router.route('/')
   .all((req: Request, res: Response) => {
@@ -43,7 +51,7 @@ router.route('/:zoom(\\d+)/:tile_column(\\d+)/:tile_row(\\d+)(/extent(.osm|)|.os
     const poly = turf.bboxPolygon(tile.bbox)
     poly.properties = tile
     poly.bbox = tile.bbox
-    const collection = turf.featureCollection([ poly ])
+    const collection = featureCollection(poly)
 
     // Parse OSM
     const osm = geojson2osm.geojson2osm(collection)
@@ -58,7 +66,7 @@ router.route('/:zoom(\\d+)/:tile_column(\\d+)/:tile_row(\\d+)(/extent(.json|.geo
     const poly = turf.bboxPolygon(tile.bbox)
     poly.properties = tile
     poly.bbox = tile.bbox
-    const collection = turf.featureCollection([ poly ])
+    const collection = featureCollection(poly)
     res.json(collection)
   })
 
@@ -67,7 +75,7 @@ router.route('/:zoom(\\d+)/:tile_column(\\d+)/:tile_row(\\d+)/ball-diamonds(.jso
     // Build Tile
     const tile = new Tile(req.params)
     const poly = turf.bboxPolygon(tile.bbox)
-    const collection = turf.featureCollection([ poly ])
+    const collection = featureCollection(poly)
 
     // Only find points within
     const within = turf.within(await ballDiamonds, collection)
@@ -79,7 +87,7 @@ router.route('/:zoom(\\d+)/:tile_column(\\d+)/:tile_row(\\d+)/ball-diamonds(.osm
     // Build Tile
     const tile = new Tile(req.params)
     const poly = turf.bboxPolygon(tile.bbox)
-    const collection = turf.featureCollection([ poly ])
+    const collection = featureCollection(poly)
 
     // Only find points within
     const within = turf.within(await ballDiamonds, collection)
