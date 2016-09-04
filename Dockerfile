@@ -12,7 +12,8 @@ RUN npm install
 
 # Bundle app source
 COPY . /app
-RUN npm run build
-WORKDIR /app/dist
 
-
+# Start App
+EXPOSE 5000
+ENV DEBUG mmb:*
+CMD ["npm", "start"]
