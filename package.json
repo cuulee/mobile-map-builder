@@ -1,13 +1,13 @@
 {
-  "name": "data-generator",
-  "version": "1.0.0",
-  "description": "An application that helps you build data bundles (MBTiles & GeoPackages) from TileServers.",
+  "name": "mobile-map-builder",
+  "version": "0.1.0",
+  "description": "An application that helps you build map data (MBTiles & GeoPackages) from Tile Servers.",
   "main": "index.js",
   "scripts": {
     "postinstall": "npm run typings && npm run build",
     "typings": "./node_modules/typings/dist/bin.js install",
     "test": "npm run build && npm run ava && npm run lint",
-    "docker-test": "docker build -t data-generator . && docker run --rm -it data-generator npm run test",
+    "docker-test": "docker build -t mmb . && docker run --rm -it mmb npm run test",
     "build": "./node_modules/typescript/bin/tsc",
     "ava": "./node_modules/nyc/bin/nyc.js ./node_modules/ava/cli.js --verbose",
     "start": "./node_modules/ts-node/dist/bin.js app/cluster.ts",
@@ -16,16 +16,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dlcspm/data-generator.git"
+    "url": "git+https://github.com/DenisCarriere/mobile-map-builder.git"
   },
-  "author": "DLCSPM",
+  "author": "Denis Carriere",
   "contributors": [
-    "Denis Carriere <denis.carriere@lsec.dnd.ca>"
+    "Denis Carriere <carriere.denis@gmail.com>"
   ],
   "bugs": {
-    "url": "https://github.com/dlcspm/data-generator/issues"
+    "url": "https://github.com/DenisCarriere/mobile-map-builder/issues"
   },
-  "homepage": "https://github.com/dlcspm/data-generator#readme",
+  "homepage": "https://github.com/DenisCarriere/mobile-map-builder#readme",
   "dependencies": {
     "body-parser": "latest",
     "commander": "latest",

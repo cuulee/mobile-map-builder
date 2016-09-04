@@ -15,5 +15,5 @@ COPY . /app
 
 # Start App
 EXPOSE 5000
-ENV DEBUG mmb:*
+ENV DEBUG mmb:server
 CMD ["npm", "start"]
