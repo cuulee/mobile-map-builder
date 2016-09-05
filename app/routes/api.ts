@@ -25,9 +25,8 @@ const featureCollection = (poly: GeoJSON.Feature<any>): GeoJSON.FeatureCollectio
 }
 
 const ballDiamonds = downloadData(
-  'https://gist.githubusercontent.com/DenisCarriere/4d0ebc8126eb0c4bffe7b0bd5ee029c9' +
-  '/raw/2066be37fd9fa5d06d1f912f7b6bb20b8efb7406/ball-diamonds.geojson'
-)
+  'https://gist.githubusercontent.com/DenisCarriere/4d0ebc8126eb0c4bffe7b0bd5ee029c9/' +
+  'raw/02cb7069be7c9c52d0b8e6db554bb0d47bbf2b33/ball-diamonds.geojson')
 
 router.route('/')
   .all((req: Request, res: Response) => {
@@ -37,7 +36,9 @@ router.route('/')
       http: [
         { method: 'GET', url: '/{zoom}/{x}/{y}(.json|.geojson|.osm)' },
         { method: 'GET', url: '/{zoom}/{x}/{y}/extent(.json|.geojson|.osm)' },
-        { method: 'GET', url: '/{zoom}/{x}/{y}/ball-diamonds(.json|.geojson|.osm)'},
+        { method: 'GET',
+          source: 'https://gist.github.com/DenisCarriere/4d0ebc8126eb0c4bffe7b0bd5ee029c9',
+          url: '/{zoom}/{x}/{y}/ball-diamonds(.json|.geojson|.osm)'},
       ],
       ok: true,
       status: 200,
