@@ -25,8 +25,8 @@ const featureCollection = (poly: GeoJSON.Feature<any>): GeoJSON.FeatureCollectio
 }
 
 const ballDiamonds = downloadData(
-  'https://gist.githubusercontent.com/DenisCarriere/4d0ebc8126eb0c4bffe7b0bd5ee029c9/' +
-  'raw/02cb7069be7c9c52d0b8e6db554bb0d47bbf2b33/ball-diamonds.geojson')
+  'https://gist.githubusercontent.com/DenisCarriere/4d0ebc8126eb0c4bffe7b0bd5ee029c9/raw/' +
+  '2af406db35332898aae1aa72c0aae68188504b59/ball-diamonds.geojson')
 
 router.route('/')
   .all((req: Request, res: Response) => {
