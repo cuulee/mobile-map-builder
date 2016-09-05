@@ -1,4 +1,6 @@
-typings/
+typings/*
+!typings/turf.d.ts
+!typings/geojson2osm.d.ts
 coverage/
 built/
 dist/

@@ -4,8 +4,8 @@ import { worker } from 'cluster'
 import * as rp from 'request-promise'
 import Tile from '../Tile'
 import debug from '../debug'
+import { geojson2osm } from 'geojson2osm'
 
-const geojson2osm = require('geojson2osm')
 const router = Router()
 
 async function downloadData(url: string): Promise<GeoJSON.FeatureCollection<any>> {
@@ -55,7 +55,7 @@ router.route('/:zoom(\\d+)/:tile_column(\\d+)/:tile_row(\\d+)(/extent(.osm|)|.os
     const collection = featureCollection(poly)
 
     // Parse OSM
-    const osm = geojson2osm.geojson2osm(collection)
+    const osm = geojson2osm(collection)
     res.set('Content-Type', 'text/xml')
     res.send(osm)
   })
@@ -94,7 +94,7 @@ router.route('/:zoom(\\d+)/:tile_column(\\d+)/:tile_row(\\d+)/ball-diamonds(.osm
     const within = turf.within(await ballDiamonds, collection)
 
     // Parse GeoJSON to OSM
-    const osm = geojson2osm.geojson2osm(within)
+    const osm = geojson2osm(within)
     res.set('Content-Type', 'text/xml')
     res.send(osm)
   })

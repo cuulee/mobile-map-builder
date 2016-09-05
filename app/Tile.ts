@@ -1,4 +1,3 @@
-import * as turf from 'turf'
 import * as rp from 'request-promise'
 import { Base64 } from 'js-base64'
 import { sample, isUndefined } from 'lodash'
