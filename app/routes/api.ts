@@ -17,13 +17,6 @@ async function downloadData(url: string): Promise<GeoJSON.FeatureCollection<any>
     )
 }
 
-const featureCollection = (poly: GeoJSON.Feature<any>): GeoJSON.FeatureCollection<any> => {
-  return {
-      features: [ poly ],
-      type: 'FeatureCollection',
-  }
-}
-
 const ballDiamonds = downloadData(
   'https://gist.githubusercontent.com/DenisCarriere/4d0ebc8126eb0c4bffe7b0bd5ee029c9/raw/' +
   '2af406db35332898aae1aa72c0aae68188504b59/ball-diamonds.geojson')
@@ -52,7 +45,7 @@ router.route('/:zoom(\\d+)/:tile_column(\\d+)/:tile_row(\\d+)(/extent(.osm|)|.os
     const poly = turf.bboxPolygon(tile.bbox)
     poly.properties = tile
     poly.bbox = tile.bbox
-    const collection = featureCollection(poly)
+    const collection = turf.featureCollection([poly])
 
     // Parse OSM
     const osm = geojson2osm(collection)
@@ -67,7 +60,7 @@ router.route('/:zoom(\\d+)/:tile_column(\\d+)/:tile_row(\\d+)(/extent(.json|.geo
     const poly = turf.bboxPolygon(tile.bbox)
     poly.properties = tile
     poly.bbox = tile.bbox
-    const collection = featureCollection(poly)
+    const collection = turf.featureCollection([poly])
     res.json(collection)
   })
 
@@ -76,7 +69,7 @@ router.route('/:zoom(\\d+)/:tile_column(\\d+)/:tile_row(\\d+)/ball-diamonds(.jso
     // Build Tile
     const tile = new Tile(req.params)
     const poly = turf.bboxPolygon(tile.bbox)
-    const collection = featureCollection(poly)
+    const collection = turf.featureCollection([poly])
 
     // Only find points within
     const within = turf.within(await ballDiamonds, collection)
@@ -88,7 +81,7 @@ router.route('/:zoom(\\d+)/:tile_column(\\d+)/:tile_row(\\d+)/ball-diamonds(.osm
     // Build Tile
     const tile = new Tile(req.params)
     const poly = turf.bboxPolygon(tile.bbox)
-    const collection = featureCollection(poly)
+    const collection = turf.featureCollection([poly])
 
     // Only find points within
     const within = turf.within(await ballDiamonds, collection)
