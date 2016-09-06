@@ -40,12 +40,16 @@ keys(data).map(key => {
 router.route('/')
   .all((req: Request, res: Response) => {
     res.json({
-      api: 'Mobile Map Builder v1.0.0',
-      cluster: (worker) ? worker.process.pid : 0,
+      api: 'Mobile Map Builder v0.1.0',
+      cluster: (worker) ? worker.process.pid : undefined,
       datasets: keys(data),
-      http: [,
-        { method: 'GET', url: '/{zoom}/{x}/{y}/extent(.json|.geojson|.osm)' },
-        { method: 'GET', url: '/{zoom}/{x}/{y}/<dataset>(.json|.geojson|.osm)'},
+      http: [
+        { example: '/13/2375/5256/extent.geojson',
+          method: 'GET',
+          url: '/{zoom}/{x}/{y}/extent(.json|.geojson|.osm)'},
+        { example: '/13/2375/5256/ottawa-ball-diamonds.osm',
+          method: 'GET',
+          url: '/{zoom}/{x}/{y}/<dataset>(.json|.geojson|.osm)' },
       ],
       ok: true,
       status: 200,
