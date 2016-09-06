@@ -45,7 +45,7 @@
     "sequelize": "latest",
     "sqlite3": "latest",
     "tslint": "latest",
-    "turf": "latest"
+    "turf": "^3.0.14"
   },
   "devDependencies": {
     "ava": "latest",
