@@ -43,24 +43,30 @@ $ docker run -d --name mmb -p 5000:5000 mmb
 
 ## REST API
 
-Implementation is drasticaly changing, connect to `localhost`[http://localhost] for more information.
+Implementation is drasticaly changing, connect to [`localhost:5000`](http://localhost:5000) for more information.
 
 ```json
 {
   "api": "Mobile Map Builder v0.1.0",
   "cluster": 27,
+  "datasets": [
+    "ottawa-ball-diamonds",
+    "ottawa-splash-pads",
+    "ottawa-outdoor-rinks",
+    "ottawa-volleyball-courts",
+    "ottawa-public-washrooms",
+    "ottawa-wards"
+  ],
   "http": [
     {
-      "method": "GET",
-      "url": "/{zoom}/{x}/{y}(.json|.geojson|.osm)"
-    },
-    {
+      "example": "/13/2375/5256/extent.geojson",
       "method": "GET",
       "url": "/{zoom}/{x}/{y}/extent(.json|.geojson|.osm)"
     },
     {
+      "example": "/13/2375/5256/ottawa-ball-diamonds.osm",
       "method": "GET",
-      "url": "/{zoom}/{x}/{y}/ball-diamonds(.json|.geojson|.osm)"
+      "url": "/{zoom}/{x}/{y}/<dataset>(.json|.geojson|.osm)"
     }
   ],
   "ok": true,
