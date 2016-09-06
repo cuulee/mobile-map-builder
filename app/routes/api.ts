@@ -24,10 +24,9 @@ interface InterfaceRequest extends Request {
 async function downloadData(url: string): Promise<GeoJSON.FeatureCollection<any>> {
   debug.download(url)
   return rp.get(url)
-    .then(
-      data => JSON.parse(data),
-      error => { if (error) { debug.error(error.message) }}
-    )
+    .catch(error => debug.log('URL Connection', url, error))
+    .then(data => JSON.parse(data.trim()))
+    .catch(error => debug.error('JSON.parse', url, error))
 }
 
 // Build datasets
