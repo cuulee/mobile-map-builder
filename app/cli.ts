@@ -74,8 +74,8 @@ function main() {
   } else { output = cli.args[0] }
 
   // Load providers & bounds YAML indexes
-  const providers: any = yaml.safeLoad(fs.readFileSync(`${ __dirname }/configs/providers.yml`, 'utf8'))
-  const bounds: any = yaml.safeLoad(fs.readFileSync(`${ __dirname }/configs/bounds.yml`, 'utf8'))
+  const providers: any = yaml.safeLoad(fs.readFileSync(`${ __dirname }/../configs/providers.yml`, 'utf8'))
+  const bounds: any = yaml.safeLoad(fs.readFileSync(`${ __dirname }/../configs/bounds.yml`, 'utf8'))
 
   // Load custom config YAML
   const OPTIONS: any = {}
