@@ -1,4 +1,3 @@
-
 import * as filesize from 'filesize'
 import * as Sequelize from 'sequelize'
 import * as ProgressBar from 'progress'

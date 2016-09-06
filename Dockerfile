@@ -7,8 +7,11 @@ WORKDIR /app
 
 # Install app dependencies
 COPY package.json /app/
-COPY typings.json /app/
 RUN npm install
+
+# Install typings
+COPY typings.json /app/
+RUN npm run typings
 
 # Bundle app source
 COPY . /app

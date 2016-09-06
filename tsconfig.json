@@ -16,6 +16,7 @@
     "filesGlob": [
         "./**/*.ts",
         "typings/index.d.ts",
-        "typings/turf.d.ts"
+        "typings/turf.d.ts",
+        "typings/geojson2osm.d.ts"
     ]
 }

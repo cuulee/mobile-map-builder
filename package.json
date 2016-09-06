@@ -4,7 +4,7 @@
   "description": "An application that helps you build map data (MBTiles & GeoPackages) from Tile Servers.",
   "main": "index.js",
   "scripts": {
-    "postinstall": "npm run typings && npm run build",
+    "postinstall": "npm run typings",
     "typings": "./node_modules/typings/dist/bin.js install",
     "test": "npm run build && npm run ava && npm run lint",
     "docker-test": "docker build -t mmb . && docker run --rm -it mmb npm run test",
