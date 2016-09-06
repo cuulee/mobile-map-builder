@@ -90,15 +90,11 @@ router.route('/:zoom(\\d+)/:tile_column(\\d+)/:tile_row(\\d+)/:dataset([\da-zA-Z
     // Filter by Within or intersect
     let within: GeoJSON.FeatureCollection<any>
     if (dataset.features[0].geometry.type === 'Point') {
-      debug.log('within')
       within = turf.within(dataset, turf.featureCollection([extent]))
     } else {
-      debug.log('intersect')
       const intersect = dataset.features.filter(feature => turf.intersect(feature, extent) )
       within = turf.featureCollection(intersect)
     }
-    debug.log('end')
-    debug.log(within)
 
     // Output as GeoJSON or OSM
     if (req.params.ext === '.json' || req.params.ext === '.geojson') {
