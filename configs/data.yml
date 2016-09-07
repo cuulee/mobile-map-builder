@@ -1,4 +1,4 @@
-osm-gatineau-fire-hydrants: 'https://gist.githubusercontent.com/DenisCarriere/0b245ca9922ecbc499a9408d374dd4f6/raw/2d20a0ded8ced9ec2cbb5f160cda7a7fc037c7c2/gatineau-fire-hydrants.geojson'
+osm-gatineau-fire-hydrants: 'https://gist.githubusercontent.com/DenisCarriere/0b245ca9922ecbc499a9408d374dd4f6/raw/c2790662b296f7a426a492cdc5ed6f142f5e72a2/gatineau-fire-hydrants.geojson'
 osm-ottawa-ball-diamonds: 'https://gist.githubusercontent.com/DenisCarriere/4d0ebc8126eb0c4bffe7b0bd5ee029c9/raw/2af406db35332898aae1aa72c0aae68188504b59/ball-diamonds.geojson'
 gatineau-fire-hydrants: 'http://gatineau.ca/upload/donneesouvertes/BORNE_FONTAINE.json'
 ottawa-ball-diamonds: 'http://data.ottawa.ca/dataset/cad648df-85d9-45e9-a573-914dc7c00b74/resource/fcc7bdf7-dc8b-4396-be5b-db3e2dab41d3/download/ball-diamonds.json'
