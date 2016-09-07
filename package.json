@@ -29,6 +29,7 @@
   "dependencies": {
     "body-parser": "latest",
     "commander": "latest",
+    "concaveman": "^1.1.0",
     "debug": "latest",
     "express": "latest",
     "filesize": "latest",
@@ -45,7 +46,8 @@
     "sequelize": "latest",
     "sqlite3": "latest",
     "tslint": "latest",
-    "turf": "^3.0.14"
+    "turf": "^3.0.14",
+    "turf-line-to-polygon": "^0.2.1"
   },
   "devDependencies": {
     "ava": "latest",
