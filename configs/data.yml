@@ -1,8 +1,22 @@
+# ////////////////////////
+# FILE PATH
+# ////////////////////////
+# caledon-address: '/Users/mac/Downloads/caledon/caledon-address.geojson'
+# caledon-buildings: '/Users/mac/Downloads/caledon/caledon-building.geojson'
+# caledon-buildings-address: '/Users/mac/Downloads/caledon/caledon-building-address.geojson'
+
+# ////////////////////////
+# URL
+# ////////////////////////
+caledon-address: 'https://gist.github.com/DenisCarriere/312775d66fc136f4d91b26e5c7b8fd65/raw/bce13d55f3e5053ab3b945efc0b0de0e690b6bf4/caledon-address.geojson'
+caledon-buildings: 'https://gist.github.com/DenisCarriere/218598adeccf51ed09313fd2c9f28350/raw/04284a625d60503c0942f10de9d06e8f12eb52a9/caledon-buildings.geojson'
+caledon-buildings-address: 'https://gist.github.com/DenisCarriere/263312e80d9b3d17376ee2b64a0a7ff7/raw/430777c8c373ee39a54cecc7731877d414dd4045/caledon-buildings-address.geojson'
 gatineau-fire-hydrants: 'https://gist.githubusercontent.com/DenisCarriere/0b245ca9922ecbc499a9408d374dd4f6/raw/c2790662b296f7a426a492cdc5ed6f142f5e72a2/gatineau-fire-hydrants.geojson'
 ottawa-ball-diamonds: 'https://gist.githubusercontent.com/DenisCarriere/4d0ebc8126eb0c4bffe7b0bd5ee029c9/raw/2af406db35332898aae1aa72c0aae68188504b59/ball-diamonds.geojson'
-caledon-building-footprints: 'https://gist.githubusercontent.com/DenisCarriere/218598adeccf51ed09313fd2c9f28350/raw/271f7204f34b23ed4c86fcea5e2419bd086f3a38/caledon-building-footprints.geojson'
-caledon-address-points: 'https://gist.githubusercontent.com/DenisCarriere/312775d66fc136f4d91b26e5c7b8fd65/raw/37c71eae637b9a3a0501f5aee1a9c4c7581472b2/caledon-address-points.geojson'
-caledon-building-address: 'https://gist.githubusercontent.com/DenisCarriere/263312e80d9b3d17376ee2b64a0a7ff7/raw/7aa4b532ed374ce7ae04ef66b5fcaf7685fbeae7/caledon-building-address.geojson'
+
+# ////////////////////////
+# TODO
+# ////////////////////////
 # ottawa-bus-routes: 'https://transit.land/api/v1/routes.geojson?operated_by=o-f24-octranspo'
 # ottawa-splash-pads: 'http://data.ottawa.ca/dataset/493ec7fd-7aff-4003-995c-5f0557d375c6/resource/9ada2541-539d-455a-b450-6c76dfc9b3e3/download/splash-pads.json'
 # ottawa-outdoor-rinks: 'http://data.ottawa.ca/dataset/3a19f905-e0fb-4afb-81fe-aff54a08b268/resource/dff7eb5c-3392-47d3-a6a4-4440ccdc0b77/download/outdoor-rinks.json'
