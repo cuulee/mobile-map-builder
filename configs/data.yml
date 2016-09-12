@@ -10,8 +10,6 @@
 # ////////////////////////
 caledon-address: 'https://gist.github.com/DenisCarriere/312775d66fc136f4d91b26e5c7b8fd65/raw/bce13d55f3e5053ab3b945efc0b0de0e690b6bf4/caledon-address.geojson'
 caledon-buildings: 'https://gist.github.com/DenisCarriere/218598adeccf51ed09313fd2c9f28350/raw/04284a625d60503c0942f10de9d06e8f12eb52a9/caledon-buildings.geojson'
-caledon-buildings-address: 'https://gist.github.com/DenisCarriere/263312e80d9b3d17376ee2b64a0a7ff7/raw/430777c8c373ee39a54cecc7731877d414dd4045/caledon-buildings-address.geojson'
-caledon-missing-address: 'https://gist.githubusercontent.com/DenisCarriere/d57acdc54407b2a7511d4551023b6b98/raw/9aa19c8f2d55896b8b02fef5c43c0bb60eb6f54f/caledon-missing-address.geojson'
 gatineau-fire-hydrants: 'https://gist.githubusercontent.com/DenisCarriere/0b245ca9922ecbc499a9408d374dd4f6/raw/c2790662b296f7a426a492cdc5ed6f142f5e72a2/gatineau-fire-hydrants.geojson'
 ottawa-ball-diamonds: 'https://gist.githubusercontent.com/DenisCarriere/4d0ebc8126eb0c4bffe7b0bd5ee029c9/raw/2af406db35332898aae1aa72c0aae68188504b59/ball-diamonds.geojson'
 
