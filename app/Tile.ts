@@ -271,6 +271,10 @@ export default class Tile {
   }
 }
 
+export const tile = (init: InterfaceTile) => {
+  return new Tile(init)
+}
+
 /* istanbul ignore next */
 async function main() {
   const SCHEME = 'http://ecn.t{switch:0,1,2,3}.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=1512&n=z'
