@@ -37,8 +37,8 @@ router.route('/')
           '/<dataset>(.json|.geojson|.osm)',
           '/<dataset>/extent(.json|.geojson|.osm)',
           '/{zoom}/{x}/{y}/extent(.json|.geojson|.osm)',
-          '/{zoom}/{x}/{y}/<dataset>(.json|.geojson|.osm)' 
-        ]
+          '/{zoom}/{x}/{y}/<dataset>(.json|.geojson|.osm)',
+        ],
       },
       ok: true,
       status: 200,
@@ -57,10 +57,10 @@ router.route('/:dataset([\da-zA-Z_\-]+)/extent:ext(.json|.geojson|.osm|)')
     // Check if datasets is available
     if (isUndefined(datasets[req.params.dataset])) {
       return res.status(500).json({
+        error: 'Invalid dataset',
+        message: 'URL does not match any of the avaiable datasets',
         ok: false,
         status_code: 500,
-        message: 'URL does not match any of the avaiable datasets',
-        error: 'Invalid dataset',
       })
     }
     // Set up Cache
@@ -153,10 +153,10 @@ router.route('/:zoom(\\d+)/:tile_column(\\d+)/:tile_row(\\d+)/:dataset([\da-zA-Z
     // Check if datasets is available
     if (isUndefined(datasets[req.params.dataset])) {
       return res.status(500).json({
+        error: 'Invalid dataset',
+        message: 'URL does not match any of the avaiable datasets',
         ok: false,
         status_code: 500,
-        message: 'URL does not match any of the avaiable datasets',
-        error: 'Invalid dataset',
       })
     }
     // Set up Cache
@@ -182,7 +182,7 @@ router.route('/:zoom(\\d+)/:tile_column(\\d+)/:tile_row(\\d+)/:dataset([\da-zA-Z
         data.features.map(feature => {
 
           // Parsing single Polygon
-          if (feature.geometry.type === 'Polygon') {
+          if (feature.geometry.type === 'Polygon' || feature.geometry.type === 'LineString') {
             if (!!turf.intersect(feature, extent)) { container.push(feature) }
 
           // Parsing Multi Polygon
@@ -191,6 +191,13 @@ router.route('/:zoom(\\d+)/:tile_column(\\d+)/:tile_row(\\d+)/:dataset([\da-zA-Z
             multi.geometry.coordinates.map(poly => {
               const polygon = turf.polygon(poly)
               if (!!turf.intersect(polygon, extent)) { container.push(polygon) }
+            })
+          } else {
+            return res.status(500).json({
+              error: 'Invalid dataset geometry',
+              message: `${ feature.geometry.type }: Dataset's geometry could not be parsed`,
+              ok: false,
+              status_code: 500,
             })
           }
         })
