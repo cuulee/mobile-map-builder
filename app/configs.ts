@@ -4,12 +4,12 @@ import * as fs from 'fs'
 import * as yml from 'js-yaml'
 import * as validator from 'validator'
 import debug from '../app/debug'
-import { keys, isUndefined } from 'lodash'
+import { keys } from 'lodash'
 import * as rp from 'request-promise'
 
 const config = {
   data: yml.safeLoad(fs.readFileSync(`${ __dirname }/../configs/data.yml`, { encoding: 'utf-8' })),
-  server: yml.safeLoad(fs.readFileSync(`${ __dirname }/../configs/server.yml`, { encoding: 'utf-8' }))
+  server: yml.safeLoad(fs.readFileSync(`${ __dirname }/../configs/server.yml`, { encoding: 'utf-8' })),
 }
 
 export const downloadDatasets = () => {
@@ -42,7 +42,7 @@ export const downloadDatasets = () => {
     }
   })
   return datasets
-} 
+}
 export const PORT = (process.env.PORT) ? process.env.PORT : (config.server.PORT) ? config.server.PORT : 5000
 export const SECRET = (process.env.SECRET) ? process.env.SECRET : (config.server.SECRET) ? config.server.SECRET : uuid.v4()
 export const CORES = (process.env.CORES) ? process.env.CORES : (config.server.CORES) ? config.server.CORES : os.cpus().length
