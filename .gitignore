@@ -9,7 +9,6 @@ dist/
 *.tif
 *.mbtiles
 *.mbtiles-journal
-.vscode/
 .nyc_output
 nohup.out
 node_modules

@@ -4,13 +4,14 @@ import { Router, Request, Response } from 'express'
 import { worker } from 'cluster'
 import Tile from '../Tile'
 import debug from '../debug'
-import datasets from '../../configs/data'
+import { downloadDatasets } from '../configs'
 import { geojson2osm } from 'geojson2osm'
 
 const concaveman = require('concaveman')
 const lineToPolygon = require('turf-line-to-polygon')
 const router = Router()
 const cache: any = {}
+const datasets = downloadDatasets()
 
 interface InterfaceRequest extends Request {
   params: {
@@ -21,14 +22,6 @@ interface InterfaceRequest extends Request {
     dataset: string
   }
 }
-
-// async function downloadData(url: string): Promise<GeoJSON.FeatureCollection<any>> {
-//   debug.download(url)
-//   return rp.get(url)
-//     .catch(error => debug.log('URL Connection', url, error))
-//     .then(data => JSON.parse(data.trim()))
-//     .catch(error => debug.error('JSON.parse', url, error))
-// }
 
 /**
  * Documentation for API

@@ -1,5 +1,3 @@
-# Not being used at the moment
-# Must be configured
-port: 5000
-secret: 
-cores: 
+PORT: 5000
+CORES: 1
+SECRET:
