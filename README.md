@@ -3,7 +3,7 @@
 
 # Mobile Map Builder
 
-An application that helps you build map data (MBTiles & GeoPackages) from Tile Servers.
+An application that helps you build maps & data for mobile applications.
 
 ## Install
 
@@ -16,7 +16,13 @@ $ npm install
 ## Quickstart
 
 ```bash
-$ npm run start
+$ npm start
+
+  mmb:server HTTP [PORT]: 5000
+  mmb:server JWT [SECRET]: d6cd605d-557d-40b7-9006-2bb4fa35357d
+  mmb:server CPU [CORES]: 1
+  mmb:server [16614] Web Worker started 1
+  mmb:server Listening on PORT 5000
 ```
 
 ## Docker Deployment
@@ -24,52 +30,24 @@ $ npm run start
 Docker provides an integrated technology suite that enables development and
 IT operations teams to build, ship, and run distributed applications anywhere.
 
-```bash
-$ docker build -t mmb .
-$ docker run --rm -it -p 5000:5000 mmb
+With Compose, you use `docker-compose.yml` to configure your application’s services.
+Then, using a single command, you create and start all the services from your configuration. 
 
-mmb:server HTTP [PORT]: 5000 +0ms
-mmb:server JWT [SECRET]: 8b58f738-42c2-432b-9847-7fdbdc16fda9 +4ms
-mmb:server CPU [CORES]: 1 +7ms
-mmb:server [27] Web Worker started 1 +123ms
-mmb:server Listening on PORT 5000 +116ms
-```
-
-Demonized Docker as a background process.
+**Interactive** debugging will output to CLI
 
 ```bash
-$ docker run -d --name mmb -p 5000:5000 mmb
+$ docker-compose up
 ```
+
+**Background Process**
+
+```
+$ docker-compose start
+$ docker-compose restart
+$ docker-compose stop
+```
+
 
 ## REST API
 
 Implementation is drasticaly changing, connect to [`localhost:5000`](http://localhost:5000) for more information.
-
-```json
-{
-  "api": "Mobile Map Builder v0.1.0",
-  "cluster": 27,
-  "datasets": [
-    "ottawa-ball-diamonds",
-    "ottawa-splash-pads",
-    "ottawa-outdoor-rinks",
-    "ottawa-volleyball-courts",
-    "ottawa-public-washrooms",
-    "ottawa-wards"
-  ],
-  "http": [
-    {
-      "example": "/13/2375/5256/extent.geojson",
-      "method": "GET",
-      "url": "/{zoom}/{x}/{y}/extent(.json|.geojson|.osm)"
-    },
-    {
-      "example": "/13/2375/5256/ottawa-ball-diamonds.osm",
-      "method": "GET",
-      "url": "/{zoom}/{x}/{y}/<dataset>(.json|.geojson|.osm)"
-    }
-  ],
-  "ok": true,
-  "status": 200
-}
-```
