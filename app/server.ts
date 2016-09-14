@@ -21,6 +21,7 @@ app.use(upload.array(), (request: any, response: any, next: any) => {
     method: request.method,
     url: request.originalUrl,
   }
+  debug.server(log)
   next()
 })
 

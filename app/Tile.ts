@@ -290,7 +290,7 @@ async function main() {
   //   y: 3,
   //   zoom: 3,
   // }
-  const tile = new Tile(TILE)
-  debug.log(tile)
+  const t = new Tile(TILE)
+  debug.log(t)
 }
 if (require.main === module) { main() }
