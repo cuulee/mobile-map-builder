@@ -13,6 +13,7 @@ caledon-buildings: 'https://gist.github.com/DenisCarriere/218598adeccf51ed09313f
 gatineau-fire-hydrants: 'https://gist.githubusercontent.com/DenisCarriere/0b245ca9922ecbc499a9408d374dd4f6/raw/c2790662b296f7a426a492cdc5ed6f142f5e72a2/gatineau-fire-hydrants.geojson'
 ottawa-ball-diamonds: 'https://gist.githubusercontent.com/DenisCarriere/4d0ebc8126eb0c4bffe7b0bd5ee029c9/raw/2af406db35332898aae1aa72c0aae68188504b59/ball-diamonds.geojson'
 cecce-schools: 'https://github.com/osmottawa/imports/raw/master/CECCE/schools.geojson'
+sumter-roads: 'https://gist.github.com/DenisCarriere/45a09e6d740e0d9cd06475f3d487c1ba/raw/2a50750086e3acef440f8ad801938d4c92992989/sumter-roads.geojson'
 
 # ////////////////////////
 # TODO

@@ -18,8 +18,8 @@ imagery:
 # Strava
 # =======
 # - both
-# - cycle
-# - foot
+# - cycle (missing)
+# - foot (missing)
 strava:
   name: 'Strava Cycling & Running'
   scheme: 'https://globalheat.strava.com/tiles/both/color/{zoom}/{x}/{y}.png'
@@ -29,11 +29,20 @@ strava:
 
 # Open Street map
 # ===============
+# - standard
 # - cycle
 # - hot
-# - standard
 # - transport
+# - wikimedia
+# - lyrk
 osm:
+  name: 'OSM Standard'
+  scheme: 'https://{switch:a,b,c}.tile.openstreetmap.org/{zoom}/{x}/{y}.png'
+  description: 'Tiles from OSM'
+  attribution: 'Map data © OSM'
+  format: 'png'
+
+osm-standard:
   name: 'OSM Standard'
   scheme: 'https://{switch:a,b,c}.tile.openstreetmap.org/{zoom}/{x}/{y}.png'
   description: 'Tiles from OSM'
@@ -54,13 +63,6 @@ osm-hot:
   attribution: 'Map data © OSM'
   format: 'png'
 
-osm-standard:
-  name: 'OSM Standard'
-  scheme: 'https://{switch:a,b,c}.tile.openstreetmap.org/{zoom}/{x}/{y}.png'
-  description: 'Tiles from OSM'
-  attribution: 'Map data © OSM'
-  format: 'png'
-
 osm-transport:
   name: 'OSM Transport Map'
   scheme: 'https://{switch:a,b,c}.tile.thunderforest.com/transport/{zoom}/{x}/{y}.png'
@@ -71,6 +73,13 @@ osm-transport:
 osm-wikimedia:
   name: 'OSM Wikimedia'
   scheme: 'https://maps.wikimedia.org/osm-intl/{zoom}/{x}/{y}.png'
+  description: 'Tiles from OSM'
+  attribution: 'Map data © OSM'
+  format: 'png'
+
+osm-lyrk:
+  name: 'OSM Lyrk'
+  scheme: 'https://tiles.lyrk.org/ls/{zoom}/{x}/{y}?apikey=6e8cfef737a140e2a58c8122aaa26077'
   description: 'Tiles from OSM'
   attribution: 'Map data © OSM'
   format: 'png'
