@@ -16,7 +16,7 @@ export const downloadDatasets = () => {
   const datasets: any = {}
   keys(config.data).map(key => {
     // Download from URL
-    if (validator.isURL(config.data[key], { require_protocol: true })) {
+    if (validator.isURL(config.data[key], { require_host: true, require_protocol: true })) {
       debug.download(config.data[key])
       rp.get(config.data[key]).then(
         data => {

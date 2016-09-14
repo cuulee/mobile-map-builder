@@ -32,20 +32,14 @@ router.route('/')
       api: 'Mobile Map Builder v0.1.0',
       cluster: (worker) ? worker.process.pid : undefined,
       datasets: keys(datasets),
-      http: [
-        { example: '/ottawa-ball-diamonds.geojson',
-          method: 'GET',
-          url: '/<dataset>(.json|.geojson|.osm)'},
-        { example: '/ottawa-ball-diamonds.geojson',
-          method: 'GET',
-          url: '/<dataset>/extent(.json|.geojson|.osm)'},
-        { example: '/13/2375/5256/extent.geojson',
-          method: 'GET',
-          url: '/{zoom}/{x}/{y}/extent(.json|.geojson|.osm)'},
-        { example: '/13/2375/5256/ottawa-ball-diamonds.osm',
-          method: 'GET',
-          url: '/{zoom}/{x}/{y}/<dataset>(.json|.geojson|.osm)' },
-      ],
+      http: {
+        GET: [
+          '/<dataset>(.json|.geojson|.osm)',
+          '/<dataset>/extent(.json|.geojson|.osm)',
+          '/{zoom}/{x}/{y}/extent(.json|.geojson|.osm)',
+          '/{zoom}/{x}/{y}/<dataset>(.json|.geojson|.osm)' 
+        ]
+      },
       ok: true,
       status: 200,
     })

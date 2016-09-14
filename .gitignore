@@ -35,6 +35,7 @@ lib64/
 parts/
 sdist/
 var/
+ts-node/
 *.egg-info/
 .installed.cfg
 *.egg
