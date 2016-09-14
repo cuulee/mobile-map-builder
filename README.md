@@ -35,7 +35,7 @@ Then, using a single command, you create and start all the services from your co
 
 **Interactive**
 
-> Debugger will output to CLI
+> Interactive mode will enable a debugger to output everything to CLI
 
 ```bash
 $ docker-compose up
