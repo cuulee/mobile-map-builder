@@ -33,7 +33,9 @@ IT operations teams to build, ship, and run distributed applications anywhere.
 With Compose, you use `docker-compose.yml` to configure your application’s services.
 Then, using a single command, you create and start all the services from your configuration. 
 
-**Interactive** debugging will output to CLI
+**Interactive**
+
+> Debugger will output to CLI
 
 ```bash
 $ docker-compose up
@@ -68,6 +70,10 @@ $ npm run lint
 ```
 
 Code coverage is also being calculated after each test. When implementing a new feature you must add a test case for it, otherwise the coverage will decrease.
+
+```bash
+$ npm run coverage
+```
 
 ```bash
 --------------------------------|----------|----------|----------|----------|----------------|
