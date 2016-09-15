@@ -14,7 +14,7 @@ const cache: any = {}
 const datasets = downloadDatasets()
 
 const parseOSM = (results: GeoJSON.FeatureCollection<any>) : string => {
-  return geojson2osm(results).replace(/changeset="false"/, 'action=\"modifiy\"')
+  return geojson2osm(results).replace(/changeset="false"/g, 'action=\"modifiy\"')
 }
 
 interface InterfaceRequest extends Request {
