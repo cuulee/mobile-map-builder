@@ -3,6 +3,7 @@ import * as debug from 'debug'
 export default {
   build: debug('mmb:build'),
   cli: debug('mmb:cli'),
+  configs: debug('mmb:configs'),
   download: debug('mmb:download'),
   downloadTile: debug('mmb:downloadTile'),
   error: debug('mmb:error'),

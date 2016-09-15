@@ -7,10 +7,79 @@ import debug from '../app/debug'
 import { keys } from 'lodash'
 import * as rp from 'request-promise'
 
-const config = {
-  data: yml.safeLoad(fs.readFileSync(`${ __dirname }/../configs/data.yml`, { encoding: 'utf-8' })),
-  server: yml.safeLoad(fs.readFileSync(`${ __dirname }/../configs/server.yml`, { encoding: 'utf-8' })),
+const config: any = {}
+
+//////////////////////////////////////
+// Loading Configurations
+//////////////////////////////////////
+
+// DATA
+if (fs.existsSync(`${ __dirname }/../configs/data.yml`)) {
+  config.data = yml.safeLoad(fs.readFileSync(`${ __dirname }/../configs/data.yml`, { encoding: 'utf-8' }))
+  debug.configs('[OK] loaded <configs/data.yml>')
+
+} else if (fs.existsSync(`${ __dirname }/../configs/data-example.yml`)) {
+  config.data = yml.safeLoad(fs.readFileSync(`${ __dirname }/../configs/data-example.yml`, { encoding: 'utf-8' }))
+  debug.warning('Configs must be renamed from <configs/data-example.yml> to <configs/data.yml>')
+  debug.configs('[OK] loaded <configs/data-example.yml>')
+
+} else {
+  const message = 'Missing data configs <configs/data.yml>'
+  debug.error(message)
+  throw new Error(message)
 }
+
+// SERVER
+if (fs.existsSync(`${ __dirname }/../configs/server.yml`)) {
+  config.server = yml.safeLoad(fs.readFileSync(`${ __dirname }/../configs/server.yml`, { encoding: 'utf-8' }))
+  debug.configs('[OK] loaded <configs/server.yml>')
+
+} else if (fs.existsSync(`${ __dirname }/../configs/server-example.yml`)) {
+  config.server = yml.safeLoad(fs.readFileSync(`${ __dirname }/../configs/server-example.yml`, { encoding: 'utf-8' }))
+  debug.warning('Configs must be renamed from <configs/server-example.yml> to <configs/server.yml>')
+  debug.configs('[OK] loaded <configs/server-example.yml>')
+
+} else {
+  const message = 'Missing server configs <configs/server.yml>'
+  debug.error(message)
+  throw new Error(message)
+}
+
+// PROVIDERS
+if (fs.existsSync(`${ __dirname }/../configs/providers.yml`)) {
+  config.providers = yml.safeLoad(fs.readFileSync(`${ __dirname }/../configs/providers.yml`, { encoding: 'utf-8' }))
+  debug.configs('[OK] loaded <configs/providers.yml>')
+
+} else if (fs.existsSync(`${ __dirname }/../configs/providers-example.yml`)) {
+  config.providers = yml.safeLoad(fs.readFileSync(`${ __dirname }/../configs/providers-example.yml`, { encoding: 'utf-8' }))
+  debug.warning('Configs must be renamed from <configs/providers-example.yml> to <configs/providers.yml>')
+  debug.configs('[OK] loaded <configs/providers-example.yml>')
+
+} else {
+  const message = 'Missing providers configs <configs/providers.yml>'
+  debug.error(message)
+  throw new Error(message)
+}
+
+// BOUNDS
+if (fs.existsSync(`${ __dirname }/../configs/bounds.yml`)) {
+  config.bounds = yml.safeLoad(fs.readFileSync(`${ __dirname }/../configs/bounds.yml`, { encoding: 'utf-8' }))
+  debug.configs('[OK] loaded <configs/bounds.yml>')
+
+} else if (fs.existsSync(`${ __dirname }/../configs/bounds-example.yml`)) {
+  config.bounds = yml.safeLoad(fs.readFileSync(`${ __dirname }/../configs/bounds-example.yml`, { encoding: 'utf-8' }))
+  debug.warning('Configs must be renamed from <configs/bounds-example.yml> to <configs/bounds.yml>')
+  debug.configs('[OK] loaded <configs/bounds-example.yml>')
+
+} else {
+  const message = 'Missing bounds configs <configs/bounds.yml>'
+  debug.error(message)
+  throw new Error(message)
+}
+
+//////////////////////////////////////
+// Download Datasets
+//////////////////////////////////////
 
 export const downloadDatasets = () => {
   const datasets: any = {}

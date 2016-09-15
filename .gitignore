@@ -1,3 +1,4 @@
+configs/data.yml
 typings/*
 !typings/turf.d.ts
 !typings/geojson2osm.d.ts
@@ -17,7 +18,6 @@ uploads
 __pycache__/
 *.py[cod]
 *$py.class
-
 # C extensions
 *.so
 
