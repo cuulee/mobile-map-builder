@@ -13,6 +13,10 @@ const router = Router()
 const cache: any = {}
 const datasets = downloadDatasets()
 
+const parseOSM = (results: GeoJSON.FeatureCollection<any>) : string => {
+  return geojson2osm(results).replace(/changeset="false"/, 'action=\"modifiy\"')
+}
+
 interface InterfaceRequest extends Request {
   params: {
     ext: string
@@ -92,9 +96,8 @@ router.route('/:dataset([\da-zA-Z_\-]+)/extent:ext(.json|.geojson|.osm|)')
       res.json(results)
     // Parse GeoJSON to OSM
     } else {
-      const osm = geojson2osm(results)
       res.set('Content-Type', 'text/xml')
-      res.send(osm)
+      res.send(parseOSM(results))
     }
   })
 
@@ -110,9 +113,8 @@ router.route('/:dataset([\da-zA-Z_\-]+):ext(.json|.geojson|.osm|)')
       res.json(dataset)
     // Parse GeoJSON to OSM
     } else {
-      const osm = geojson2osm(dataset)
       res.set('Content-Type', 'text/xml')
-      res.send(osm)
+      res.send(parseOSM(dataset))
     }
   })
 
@@ -136,9 +138,8 @@ router.route('/:zoom(\\d+)/:tile_column(\\d+)/:tile_row(\\d+)/extent:ext(.json|.
       res.json(extent)
     // Parse GeoJSON to OSM
     } else {
-      const osm = geojson2osm(extent)
       res.set('Content-Type', 'text/xml')
-      res.send(osm)
+      res.send(parseOSM(extent))
     }
   })
 
@@ -212,9 +213,8 @@ router.route('/:zoom(\\d+)/:tile_column(\\d+)/:tile_row(\\d+)/:dataset([\da-zA-Z
       res.json(results)
     // Parse GeoJSON to OSM
     } else {
-      const osm = geojson2osm(results)
       res.set('Content-Type', 'text/xml')
-      res.send(osm)
+      res.send(parseOSM(results))
     }
   })
 
