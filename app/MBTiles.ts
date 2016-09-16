@@ -410,7 +410,7 @@ export default class MBTiles {
    * @example
    */
   public async map(init: InterfaceMetadata) {
-    const grid = new Grid(init, 10000)
+    const grid = new Grid(init, 2500)
     const bar = new ProgressBar('  mapping     [:bar] :percent (:current/:total)', {
       total: grid.count,
       width: 20,
