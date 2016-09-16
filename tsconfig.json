@@ -17,6 +17,7 @@
         "./**/*.ts",
         "typings/index.d.ts",
         "typings/turf.d.ts",
-        "typings/geojson2osm.d.ts"
+        "typings/geojson2osm.d.ts",
+        "typings/concaveman.d.ts"
     ]
 }
