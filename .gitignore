@@ -1,7 +1,11 @@
-configs/data.yml
+configs/datasets.yml
+configs/server.yml
+configs/bounds.yml
+configs/providers.yml
 typings/*
 !typings/turf.d.ts
 !typings/geojson2osm.d.ts
+!typings/concaveman.d.ts
 coverage/
 built/
 dist/

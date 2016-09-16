@@ -1,6 +1,10 @@
+# ////////////////////////
+# PROVIDERS
+# ////////////////////////
+
+# ////////////////////////
 # Bing
-# ====
-# - imagery
+# ////////////////////////
 bing:
   name: 'Bing Imagery'
   scheme: 'http://ecn.t{switch:0,1,2,3}.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=5250'
@@ -15,11 +19,9 @@ imagery:
   attribution: 'Map data © Bing'
   format: 'jpg'
 
+# ////////////////////////
 # Strava
-# =======
-# - both
-# - cycle (missing)
-# - foot (missing)
+# ////////////////////////
 strava:
   name: 'Strava Cycling & Running'
   scheme: 'https://globalheat.strava.com/tiles/both/color/{zoom}/{x}/{y}.png'
@@ -27,14 +29,9 @@ strava:
   attribution: 'Map data © Strava'
   format: 'png'
 
-# Open Street map
-# ===============
-# - standard
-# - cycle
-# - hot
-# - transport
-# - wikimedia
-# - lyrk
+# ////////////////////////
+# Open Street Map
+# ////////////////////////
 osm:
   name: 'OSM Standard'
   scheme: 'https://{switch:a,b,c}.tile.openstreetmap.org/{zoom}/{x}/{y}.png'
@@ -84,14 +81,9 @@ osm-lyrk:
   attribution: 'Map data © OSM'
   format: 'png'
 
+# ////////////////////////
 # ESRI
-# ====
-# - natgeo
-# - ocean
-# - usa-topo
-# - imagery
-# - street
-# - topo
+# ////////////////////////
 esri-natgeo:
   name: 'National Geographic World Map'
   scheme: 'https://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{zoom}/{y}/{x}'

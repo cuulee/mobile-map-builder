@@ -7,74 +7,89 @@ import debug from '../app/debug'
 import { keys } from 'lodash'
 import * as rp from 'request-promise'
 
-const config: any = {}
-
 //////////////////////////////////////
 // Loading Configurations
 //////////////////////////////////////
 
-// DATA
-if (fs.existsSync(`${ __dirname }/../configs/data.yml`)) {
-  config.data = yml.safeLoad(fs.readFileSync(`${ __dirname }/../configs/data.yml`, { encoding: 'utf-8' }))
-  debug.configs('[OK] loaded <configs/data.yml>')
-
-} else if (fs.existsSync(`${ __dirname }/../configs/data-example.yml`)) {
-  config.data = yml.safeLoad(fs.readFileSync(`${ __dirname }/../configs/data-example.yml`, { encoding: 'utf-8' }))
-  debug.warning('Configs must be renamed from <configs/data-example.yml> to <configs/data.yml>')
-  debug.configs('[OK] loaded <configs/data-example.yml>')
-
-} else {
-  const message = 'Missing data configs <configs/data.yml>'
-  debug.error(message)
-  throw new Error(message)
+interface InterfaceConfigs {
+  bounds: any
+  datasets: any
+  providers: any
+  server: any
 }
 
-// SERVER
-if (fs.existsSync(`${ __dirname }/../configs/server.yml`)) {
-  config.server = yml.safeLoad(fs.readFileSync(`${ __dirname }/../configs/server.yml`, { encoding: 'utf-8' }))
-  debug.configs('[OK] loaded <configs/server.yml>')
+const loadConfigs = () => {
+  const configs: InterfaceConfigs = {
+    bounds: {},
+    datasets: {},
+    providers: {},
+    server: {},
+  }
 
-} else if (fs.existsSync(`${ __dirname }/../configs/server-example.yml`)) {
-  config.server = yml.safeLoad(fs.readFileSync(`${ __dirname }/../configs/server-example.yml`, { encoding: 'utf-8' }))
-  debug.warning('Configs must be renamed from <configs/server-example.yml> to <configs/server.yml>')
-  debug.configs('[OK] loaded <configs/server-example.yml>')
+  // DATASETS
+  if (fs.existsSync(`${ __dirname }/../configs/datasets.yml`)) {
+    configs.datasets = yml.safeLoad(fs.readFileSync(`${ __dirname }/../configs/datasets.yml`, { encoding: 'utf-8' }))
+    debug.configs('[OK] loaded <configs/datasets.yml>')
 
-} else {
-  const message = 'Missing server configs <configs/server.yml>'
-  debug.error(message)
-  throw new Error(message)
-}
+  } else if (fs.existsSync(`${ __dirname }/../configs/datasets-example.yml`)) {
+    configs.datasets = yml.safeLoad(fs.readFileSync(`${ __dirname }/../configs/datasets-example.yml`, { encoding: 'utf-8' }))
+    debug.warning('Configs must be renamed from <configs/datasets-example.yml> to <configs/datasets.yml>')
+    debug.configs('[OK] loaded <configs/datasets-example.yml>')
 
-// PROVIDERS
-if (fs.existsSync(`${ __dirname }/../configs/providers.yml`)) {
-  config.providers = yml.safeLoad(fs.readFileSync(`${ __dirname }/../configs/providers.yml`, { encoding: 'utf-8' }))
-  debug.configs('[OK] loaded <configs/providers.yml>')
+  } else {
+    const message = 'Missing datasets configs <configs/datasets.yml>'
+    debug.error(message)
+    throw new Error(message)
+  }
 
-} else if (fs.existsSync(`${ __dirname }/../configs/providers-example.yml`)) {
-  config.providers = yml.safeLoad(fs.readFileSync(`${ __dirname }/../configs/providers-example.yml`, { encoding: 'utf-8' }))
-  debug.warning('Configs must be renamed from <configs/providers-example.yml> to <configs/providers.yml>')
-  debug.configs('[OK] loaded <configs/providers-example.yml>')
+  // SERVER
+  if (fs.existsSync(`${ __dirname }/../configs/server.yml`)) {
+    configs.server = yml.safeLoad(fs.readFileSync(`${ __dirname }/../configs/server.yml`, { encoding: 'utf-8' }))
+    debug.configs('[OK] loaded <configs/server.yml>')
 
-} else {
-  const message = 'Missing providers configs <configs/providers.yml>'
-  debug.error(message)
-  throw new Error(message)
-}
+  } else if (fs.existsSync(`${ __dirname }/../configs/server-example.yml`)) {
+    configs.server = yml.safeLoad(fs.readFileSync(`${ __dirname }/../configs/server-example.yml`, { encoding: 'utf-8' }))
+    debug.warning('Configs must be renamed from <configs/server-example.yml> to <configs/server.yml>')
+    debug.configs('[OK] loaded <configs/server-example.yml>')
 
-// BOUNDS
-if (fs.existsSync(`${ __dirname }/../configs/bounds.yml`)) {
-  config.bounds = yml.safeLoad(fs.readFileSync(`${ __dirname }/../configs/bounds.yml`, { encoding: 'utf-8' }))
-  debug.configs('[OK] loaded <configs/bounds.yml>')
+  } else {
+    const message = 'Missing server configs <configs/server.yml>'
+    debug.error(message)
+    throw new Error(message)
+  }
 
-} else if (fs.existsSync(`${ __dirname }/../configs/bounds-example.yml`)) {
-  config.bounds = yml.safeLoad(fs.readFileSync(`${ __dirname }/../configs/bounds-example.yml`, { encoding: 'utf-8' }))
-  debug.warning('Configs must be renamed from <configs/bounds-example.yml> to <configs/bounds.yml>')
-  debug.configs('[OK] loaded <configs/bounds-example.yml>')
+  // PROVIDERS
+  if (fs.existsSync(`${ __dirname }/../configs/providers.yml`)) {
+    configs.providers = yml.safeLoad(fs.readFileSync(`${ __dirname }/../configs/providers.yml`, { encoding: 'utf-8' }))
+    debug.configs('[OK] loaded <configs/providers.yml>')
 
-} else {
-  const message = 'Missing bounds configs <configs/bounds.yml>'
-  debug.error(message)
-  throw new Error(message)
+  } else if (fs.existsSync(`${ __dirname }/../configs/providers-example.yml`)) {
+    configs.providers = yml.safeLoad(fs.readFileSync(`${ __dirname }/../configs/providers-example.yml`, { encoding: 'utf-8' }))
+    debug.warning('Configs must be renamed from <configs/providers-example.yml> to <configs/providers.yml>')
+    debug.configs('[OK] loaded <configs/providers-example.yml>')
+
+  } else {
+    const message = 'Missing providers configs <configs/providers.yml>'
+    debug.error(message)
+    throw new Error(message)
+  }
+
+  // BOUNDS
+  if (fs.existsSync(`${ __dirname }/../configs/bounds.yml`)) {
+    configs.bounds = yml.safeLoad(fs.readFileSync(`${ __dirname }/../configs/bounds.yml`, { encoding: 'utf-8' }))
+    debug.configs('[OK] loaded <configs/bounds.yml>')
+
+  } else if (fs.existsSync(`${ __dirname }/../configs/bounds-example.yml`)) {
+    configs.bounds = yml.safeLoad(fs.readFileSync(`${ __dirname }/../configs/bounds-example.yml`, { encoding: 'utf-8' }))
+    debug.warning('Configs must be renamed from <configs/bounds-example.yml> to <configs/bounds.yml>')
+    debug.configs('[OK] loaded <configs/bounds-example.yml>')
+
+  } else {
+    const message = 'Missing bounds configs <configs/bounds.yml>'
+    debug.error(message)
+    throw new Error(message)
+  }
+  return configs
 }
 
 //////////////////////////////////////
@@ -83,27 +98,27 @@ if (fs.existsSync(`${ __dirname }/../configs/bounds.yml`)) {
 
 export const downloadDatasets = () => {
   const datasets: any = {}
-  keys(config.data).map(key => {
+  keys(configs.datasets).map(key => {
     // Download from URL
-    if (validator.isURL(config.data[key], { require_host: true, require_protocol: true })) {
-      debug.download(config.data[key])
-      rp.get(config.data[key]).then(
+    if (validator.isURL(configs.datasets[key], { require_host: true, require_protocol: true })) {
+      debug.download(configs.datasets[key])
+      rp.get(configs.datasets[key]).then(
         data => {
           datasets[key] = JSON.parse(data)
           debug.server(`[OK] URL dataset: ${ key }`)
         })
 
     // Require file from File Path (Must be JSON)
-    } else if (config.data[key].match(/\.(json|geojson)$/)) {
-      if (!fs.existsSync(config.data[key])) {
+    } else if (configs.datasets[key].match(/\.(json|geojson)$/)) {
+      if (!fs.existsSync(configs.datasets[key])) {
         const message = 'File Path does not exists'
         debug.error(message)
         throw new Error(message)
       }
-      datasets[key] = JSON.parse(fs.readFileSync(config.data[key], { encoding: 'utf-8' }))
+      datasets[key] = JSON.parse(fs.readFileSync(configs.datasets[key], { encoding: 'utf-8' }))
       debug.server(`[OK] File dataset: ${ key }`)
 
-    // Throw error
+    // Catching errors
     } else {
       const message = 'File must be URL or (.json|.geojson) file'
       debug.error(message)
@@ -112,6 +127,7 @@ export const downloadDatasets = () => {
   })
   return datasets
 }
-export const PORT = (process.env.PORT) ? process.env.PORT : (config.server.PORT) ? config.server.PORT : 5000
-export const SECRET = (process.env.SECRET) ? process.env.SECRET : (config.server.SECRET) ? config.server.SECRET : uuid.v4()
-export const CORES = (process.env.CORES) ? process.env.CORES : (config.server.CORES) ? config.server.CORES : os.cpus().length
+export const configs = loadConfigs()
+export const PORT = (process.env.PORT) ? process.env.PORT : (configs.server.PORT) ? configs.server.PORT : 5000
+export const SECRET = (process.env.SECRET) ? process.env.SECRET : (configs.server.SECRET) ? configs.server.SECRET : uuid.v4()
+export const CORES = (process.env.CORES) ? process.env.CORES : (configs.server.CORES) ? configs.server.CORES : os.cpus().length
