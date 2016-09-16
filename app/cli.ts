@@ -2,6 +2,7 @@ import * as program from 'commander'
 import * as fs from 'fs'
 import * as yaml from 'js-yaml'
 import { isUndefined, get, set, merge } from 'lodash'
+import { configs } from './configs'
 import debug from './debug'
 import MBTiles from './MBTiles'
 
@@ -73,10 +74,6 @@ function main() {
     output = 'tiles.mbtiles'
   } else { output = cli.args[0] }
 
-  // Load providers & bounds YAML indexes
-  const providers: any = yaml.safeLoad(fs.readFileSync(`${ __dirname }/../configs/providers.yml`, 'utf8'))
-  const bounds: any = yaml.safeLoad(fs.readFileSync(`${ __dirname }/../configs/bounds.yml`, 'utf8'))
-
   // Load custom config YAML
   const OPTIONS: any = {}
   if (cli.config) {
@@ -84,9 +81,9 @@ function main() {
     merge(OPTIONS, yaml.safeLoad(fs.readFileSync(cli.config, 'utf8')))
   }
 
-  // Load custom providers & bounds from indexes
+  // Load custom bound
   if (cli.bounds) {
-    const lookupBounds = bounds[cli.bounds.toLocaleLowerCase()]
+    const lookupBounds = configs.bounds[cli.bounds.toLocaleLowerCase()]
     if (lookupBounds) {
       set(OPTIONS, 'bounds', lookupBounds)
     } else {
@@ -99,8 +96,11 @@ function main() {
       }
     }
   }
+  // Load custom provider
   if (cli.provider) {
-    const lookupProvider = providers[cli.provider.toLowerCase()]
+    debug.log(configs.providers)
+    debug.log(cli.provider)
+    const lookupProvider = configs.providers[cli.provider.toLowerCase()]
     if (lookupProvider) {
       merge(OPTIONS, lookupProvider)
     } else {
