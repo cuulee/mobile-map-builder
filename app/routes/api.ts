@@ -16,6 +16,9 @@ router.route('/')
       datasets: keys(datasets),
       http: {
         GET: [
+          '/bounds',
+          '/providers',
+          '/datasets',
           '/datasets/<dataset>(.json|.geojson|.osm)',
           '/datasets/<dataset>/extent(.json|.geojson|.osm)',
           '/datasets/{zoom}/{x}/{y}/extent(.json|.geojson|.osm)',

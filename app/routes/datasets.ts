@@ -1,10 +1,9 @@
 import * as turf from 'turf'
-import { keys, isUndefined } from 'lodash'
+import { isUndefined } from 'lodash'
 import { Router, Request, Response } from 'express'
-import { worker } from 'cluster'
 import Tile from '../Tile'
 import debug from '../debug'
-import { downloadDatasets } from '../configs'
+import { configs, downloadDatasets } from '../configs'
 import { geojson2osm } from 'geojson2osm'
 import * as concaveman from 'concaveman'
 
@@ -27,25 +26,11 @@ interface InterfaceRequest extends Request {
 }
 
 /**
- * Documentation for API
+ * CONFIGS
  */
 router.route('/')
   .all((req: Request, res: Response) => {
-    res.json({
-      api: 'Mobile Map Builder v0.2.0',
-      cluster: (worker) ? worker.process.pid : undefined,
-      datasets: keys(datasets),
-      http: {
-        GET: [
-          '/datasets/<dataset>(.json|.geojson|.osm)',
-          '/datasets/<dataset>/extent(.json|.geojson|.osm)',
-          '/datasets/{zoom}/{x}/{y}/extent(.json|.geojson|.osm)',
-          '/datasets/{zoom}/{x}/{y}/<dataset>(.json|.geojson|.osm)',
-        ],
-      },
-      ok: true,
-      status: 200,
-    })
+    res.json(configs.datasets)
   })
 
 /**
