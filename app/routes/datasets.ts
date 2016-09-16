@@ -1,4 +1,4 @@
-import * as turf from 'turf'
+import * as turf from '@turf/turf'
 import { isUndefined } from 'lodash'
 import { Router, Request, Response } from 'express'
 import Tile from '../Tile'

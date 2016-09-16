@@ -170,10 +170,11 @@ async function main() {
   const OPTIONS = {
     bounds: [-180.0, -90.0, 180, 90],
     maxZoom: 10,
-    minZoom: 0,
+    minZoom: 3,
     scheme: 'http://tile-{switch:a,b,c}.openstreetmap.fr/hot/{zoom}/{x}/{y}.png',
   }
   const grid = new Grid(OPTIONS, 250000)
+  debug.log(grid)
   while (true) {
     const { value, done } = grid.tilesBulk.next()
     if (done) { break }

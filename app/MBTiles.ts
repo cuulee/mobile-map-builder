@@ -1,7 +1,7 @@
 import * as filesize from 'filesize'
 import * as Sequelize from 'sequelize'
 import * as ProgressBar from 'progress'
-import * as turf from 'turf'
+import * as turf from '@turf/turf'
 import debug from './debug'
 import models from './models'
 import { set, isUndefined } from 'lodash'

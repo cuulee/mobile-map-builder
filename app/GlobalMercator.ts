@@ -181,15 +181,15 @@ export const validateLngLat = (init: number[]) => {
     debug.error(message)
     throw new Error(message)
   }
-  if (lat > 85.05112877980659) {
-    const message = 'LngLat [lat] has been modified to 85.05112877980659'
+  if (lat > 85) {
+    const message = 'LngLat [lat] has been modified to 85'
     debug.warning(message)
-    lat = 85.05112877980659
+    lat = 85
   }
-  if (lat < -85.05112877980659) {
-    const message = 'LngLat [lat] has been modified to -85.05112877980659'
+  if (lat < -85) {
+    const message = 'LngLat [lat] has been modified to -85'
     debug.warning(message)
-    lat = -85.05112877980659
+    lat = -85
   }
   return [lng, lat]
 }
