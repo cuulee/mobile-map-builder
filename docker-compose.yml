@@ -6,4 +6,5 @@ services:
     ports:
      - "5000:5000"
     volumes:
-     - .:/app
+     - ./configs/:/app/configs/
+     - ./app:/app/app/
