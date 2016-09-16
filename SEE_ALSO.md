@@ -142,13 +142,16 @@ Shortest transaction:	        0.00
 
 ### GDAL
 
-Once the MBTiles are created, they can be converted into GeoTIFF using the highest
-resolution zoom level using `gdal_translate`.
+Once the MBTiles are created, they can be converted into GeoTIFF using the highest resolution zoom level using `gdal_translate`.
+
+**Compress**
 
 ```bash
 $ gdal_translate -of GTiff -b 1 -b 2 -b 3 -b mask -co "TILED=YES" \
   -co JPEG_QUALITY=100 -co COMPRESS=JPEG tiles.mbtiles tiles.tif
 ```
+
+**Overviews**
 
 Building overviews is essential for large GeoTIFF formats to be rendering fast on the client using `gdaladdo`.
 
@@ -156,10 +159,20 @@ Building overviews is essential for large GeoTIFF formats to be rendering fast o
 $ gdaladdo -r average tiles.tif 2 4 8 16
 ```
 
+**Reproject**
+
 Reproject Data to a different projection using `gdalwarp`.
 
 ```bash
 $ gdalwarp -t_srs EPSG:32617 -dstalpha tiles.mbtiles tiles-UTM17N.tif
+```
+
+**Clip**
+
+Clipping data using `gdalwarp` must provide a bbox using [minX, minY, maxY, maxY] order.
+
+```bash
+$ gdalwarp -of GTiff -te -11998972 3834099 -11969583 3863815 tiles.mbtiles tiles.tif
 ```
 
 ### References
