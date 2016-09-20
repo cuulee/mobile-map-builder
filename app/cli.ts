@@ -1,13 +1,11 @@
 import * as program from 'commander'
-import * as fs from 'fs'
-import * as yaml from 'js-yaml'
-import { isUndefined, get, set, merge } from 'lodash'
+import * as path from 'path'
+import { isUndefined, get, merge } from 'lodash'
 import { configs } from './configs'
 import debug from './debug'
 import MBTiles from './MBTiles'
 
 interface InterfaceCLI extends commander.ICommand {
-  config?: string
   format?: string
   maxZoom?: number
   minZoom?: number
@@ -19,135 +17,104 @@ interface InterfaceCLI extends commander.ICommand {
   attribution?: string
 }
 
-interface InterfaceCLIOptions {
-  name: string
-  maxZoom: number
-  minZoom: number
-  scheme: string
-  description: string
-  bounds: number[]
-  attribution: string
-  format: string
-}
-
-const pathExists = (path: string) => {
-  if (!fs.existsSync(path)) {
-    const message = `Path does not exist [${ path }]`
-    debug.error(message)
-    throw new Error(message)
-  }
-  return true
-}
-
 const customHelp = () => {
   console.log(`Examples:
 
-    $ node app/cli.js [OPTIONS] --config config.yml tiles.mbtiles
+    $ ts-node app/cli.ts --provider imagery --bounds "[-75.7,45.4,-75.6,45.5]" --min 8 --max 17 tiles.mbtiles
     `)
 }
-function main() {
-  program
-    .version('1.0.0')
-    .usage('[options] <tiles.mbtile>')
-    .description('Creates MBTiles from Web Map Tile Service')
-    .option('--config <File Path>', 'Config YML file to load CLI Options')
-    .option('--name [string]', 'Name given to MBTiles DB')
-    .option('-b, --bounds <File Path>', 'Bounds given to MBTiles DB')
-    .option('-p, --provider <File Path>', 'Proivder YML file to load CLI Options')
-    .option('--max, --maxZoom [number]', 'Maximum Zoom Level', value => JSON.parse(value))
-    .option('--min, --minZoom [number]', 'Minimum Zoom Level', value => JSON.parse(value))
-    .option('--scheme [string]', 'Scheme given to MBTiles DB')
-    .option('--attribution [string]', 'Attribution given to MBTiles DB')
-    .option('--description [string]', 'Description given to MBTiles DB')
-    .option('--format [string]', 'Tile image format [png/jpg]')
-    .option('--type [string]', 'Type of MBTiles layer [baselayer/overlay]')
-    .on('--help', customHelp)
 
-  // Parse Program
-  const cli: InterfaceCLI = program.parse(process.argv)
+program
+  .version(require(path.join(__dirname, '..', 'package.json')).version)
+  .usage('[options] <tiles.mbtile>')
+  .description('Creates MBTiles from Web Map Tile Service')
+  .option('-b, --bounds <Array<number>>', 'bounds extent in [minX, minY, maxX, maxY] order')
+  .option('-p, --provider <string>', 'provider tile server')
+  .option('--name [string]', 'Name given to MBTiles DB')
+  .option('--max, --maxZoom [number]', 'Maximum Zoom Level', value => JSON.parse(value))
+  .option('--min, --minZoom [number]', 'Minimum Zoom Level', value => JSON.parse(value))
+  .option('--scheme [string]', 'Scheme given to MBTiles DB')
+  .option('--attribution [string]', 'Attribution given to MBTiles DB')
+  .option('--description [string]', 'Description given to MBTiles DB')
+  .option('--format [string]', 'Tile image format [png/jpg]')
+  .option('--type [string]', 'Type of MBTiles layer [baselayer/overlay]')
+  .on('--help', customHelp)
 
-  // User input for MBTile file path
-  let output = ''
-  if (!cli.args.length) {
-    const message = 'Default CLI Arguments <tiles.mbtiles> will be used.'
-    debug.warning(message)
-    output = 'tiles.mbtiles'
-  } else { output = cli.args[0] }
+// Parse Program
+const cli: InterfaceCLI = program.parse(process.argv)
 
-  // Load custom config YAML
-  const OPTIONS: any = {}
-  if (cli.config) {
-    pathExists(cli.config)
-    merge(OPTIONS, yaml.safeLoad(fs.readFileSync(cli.config, 'utf8')))
-  }
+// User input for MBTile file path
+let output = ''
+if (!cli.args.length) {
+  const message = 'Default CLI Arguments <tiles.mbtiles> will be used.'
+  debug.warning(message)
+  output = 'tiles.mbtiles'
+} else { output = cli.args[0] }
 
-  // Load custom bound
-  if (cli.bounds) {
-    const lookupBounds = configs.bounds[cli.bounds.toLocaleLowerCase()]
-    if (lookupBounds) {
-      set(OPTIONS, 'bounds', lookupBounds)
-    } else {
-      try {
-        set(OPTIONS, 'bounds', JSON.parse(cli.bounds))
-      } catch (e) {
-        const message = 'CLI Options <bounds> cannot be parsed or indexed.'
-        debug.error(message)
-        throw new Error(message)
-      }
-    }
-  }
-  // Load custom provider
-  if (cli.provider) {
-    debug.log(configs.providers)
-    debug.log(cli.provider)
-    const lookupProvider = configs.providers[cli.provider.toLowerCase()]
-    if (lookupProvider) {
-      merge(OPTIONS, lookupProvider)
-    } else {
-      const message = `<provider> does not match index.`
+// Load custom config YAML
+const OPTIONS: any = {}
+
+// Load custom bound
+if (cli.bounds) {
+  const boundsLookup = configs.bounds[cli.bounds.toLocaleLowerCase()]
+  if (boundsLookup) {
+    OPTIONS.bounds = boundsLookup
+  } else {
+    try {
+      OPTIONS.bounds = JSON.parse(cli.bounds)
+    } catch (e) {
+      const message = 'CLI Options <bounds> cannot be parsed or indexed.'
       debug.error(message)
       throw new Error(message)
     }
   }
-  // Overwrite Config with user input
-  ['format', 'maxZoom', 'minZoom', 'scheme', 'attribution'].map(item => {
-    const value = get(cli, item)
-    if (typeof(value) === 'string') { set(OPTIONS, item, value)
-    } else if (!isUndefined(value)) { set(OPTIONS, item, value) }
-  })
-
-  // Overwrite Exceptions
-  if (typeof(cli.description) === 'string') { set(OPTIONS, 'description', cli.description) }
-  if (typeof(cli.name) === 'string') { set(OPTIONS, 'name', cli.name) }
-
-  // Create MBTiles
-  if (isUndefined(OPTIONS.name)) {
-    const message = 'CLI Options <name> must be included.'
-    debug.error(message)
-    throw new Error(message)
-  } else if (isUndefined(OPTIONS.bounds)) {
-    const message = 'CLI Options <bounds> must be included.'
-    debug.error(message)
-    throw new Error(message)
-  } else if (isUndefined(OPTIONS.minZoom)) {
-    const message = 'CLI Options <minZoom> must be included.'
-    debug.error(message)
-    throw new Error(message)
-  } else if (isUndefined(OPTIONS.maxZoom)) {
-    const message = 'CLI Options <maxZoom> must be included.'
-    debug.error(message)
-    throw new Error(message)
-  } else if (isUndefined(OPTIONS.scheme)) {
-    const message = 'CLI Options <scheme> must be included.'
+}
+// Load custom provider
+if (cli.provider) {
+  debug.log(configs.providers)
+  debug.log(cli.provider)
+  const providerLookup = configs.providers[cli.provider.toLowerCase()]
+  if (providerLookup) {
+    merge(OPTIONS, providerLookup)
+  } else {
+    const message = `<provider> does not match index.`
     debug.error(message)
     throw new Error(message)
   }
-  debug.cli(OPTIONS)
-  const mbtiles = new MBTiles(output)
-  mbtiles.save(OPTIONS)
 }
+// Overwrite Config with user input
+['format', 'maxZoom', 'minZoom', 'scheme', 'attribution'].map(item => {
+  const value = get(cli, item)
+  if (typeof(value) === 'string') { OPTIONS[item] = value
+  } else if (!isUndefined(value)) { OPTIONS[item] = value }
+})
 
-/* istanbul ignore next */
-if (require.main === module) {
-  main()
+// Overwrite Exceptions
+if (typeof(cli.description) === 'string') { OPTIONS.description = cli.description }
+if (typeof(cli.name) === 'string') { OPTIONS.name = cli.name }
+
+// Create MBTiles
+if (isUndefined(OPTIONS.name)) {
+  const message = 'CLI Options <name> must be included.'
+  debug.error(message)
+  throw new Error(message)
+} else if (isUndefined(OPTIONS.bounds)) {
+  const message = 'CLI Options <bounds> must be included.'
+  debug.error(message)
+  throw new Error(message)
+} else if (isUndefined(OPTIONS.minZoom)) {
+  const message = 'CLI Options <minZoom> must be included.'
+  debug.error(message)
+  throw new Error(message)
+} else if (isUndefined(OPTIONS.maxZoom)) {
+  const message = 'CLI Options <maxZoom> must be included.'
+  debug.error(message)
+  throw new Error(message)
+} else if (isUndefined(OPTIONS.scheme)) {
+  const message = 'CLI Options <scheme> must be included.'
+  debug.error(message)
+  throw new Error(message)
 }
+debug.cli(OPTIONS)
+const mbtiles = new MBTiles(output)
+mbtiles.save(OPTIONS)
