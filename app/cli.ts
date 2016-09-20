@@ -20,7 +20,7 @@ interface InterfaceCLI extends commander.ICommand {
 const customHelp = () => {
   console.log(`Examples:
 
-    $ ts-node app/cli.ts --provider imagery --bounds "[-75.7,45.4,-75.6,45.5]" --min 8 --max 17 tiles.mbtiles
+    $ node app/cli.js --provider imagery --bounds "[-75.7,45.4,-75.6,45.5]" --min 8 --max 17 tiles.mbtiles
     `)
 }
 
