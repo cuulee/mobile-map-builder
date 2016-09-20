@@ -11,9 +11,53 @@ An application that helps you build maps & data for mobile applications.
 $ git clone git@github.com:DenisCarriere/mobile-map-builder.git
 $ cd mobile-map-builder
 $ npm install
+$ npm run build
 ```
 
 ## Quickstart
+
+The core application is a Command Line Interface (CLI) which can be executed in any environment.
+
+Here's how to create your first MBTile map bundle.
+
+```bash
+$ node app/cli.js --provider imagery --bounds "[-75.7,45.4,-75.6,45.5]" --min 5 --max 17 tiles.mbtiles
+  downloading [====================] 100% (2680/2680)
+  mapping     [====================] 100% (2680/2680)
+```
+
+For more information on the optional parameters enter `--help` at the end.
+
+```bash
+$ node app/cli.js --help
+
+  Usage: cli [options] <tiles.mbtile>
+
+  Creates MBTiles from Web Map Tile Service
+
+  Options:
+
+    -h, --help                    output usage information
+    -V, --version                 output the version number
+    -b, --bounds <Array<number>>  bounds extent in [minX, minY, maxX, maxY] order
+    -p, --provider <string>       provider tile server
+    --name [string]               Name given to MBTiles DB
+    --max, --maxZoom [number]     Maximum Zoom Level
+    --min, --minZoom [number]     Minimum Zoom Level
+    --scheme [string]             Scheme given to MBTiles DB
+    --attribution [string]        Attribution given to MBTiles DB
+    --description [string]        Description given to MBTiles DB
+    --format [string]             Tile image format [png/jpg]
+    --type [string]               Type of MBTiles layer [baselayer/overlay]
+```
+
+Once your MBTiles is created, you can preview it using your application of choice (QGIS for example).
+
+![image](https://cloud.githubusercontent.com/assets/550895/18670647/f3bf8ac4-7f0e-11e6-9c7c-b5fb66b2584e.png)
+
+## Server (**in development)
+
+This application can also be hosted as a service running over HTTP(S).
 
 ```bash
 $ npm start
