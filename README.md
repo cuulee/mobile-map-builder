@@ -14,6 +14,10 @@ $ npm install
 $ npm run build
 ```
 
+## Releases
+
+Checkout the [latest releases](releases) to download a pre-built ES6 `.zip` or a Docker container `.tar`.
+
 ## Quickstart
 
 The core application is a Command Line Interface (CLI) which can be executed in any environment.
