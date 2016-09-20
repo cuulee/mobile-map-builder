@@ -21,7 +21,13 @@ The core application is a Command Line Interface (CLI) which can be executed in 
 Here's how to create your first MBTile map bundle.
 
 ```bash
-$ node app/cli.js --provider imagery --bounds "[-75.7,45.4,-75.6,45.5]" --min 5 --max 17 tiles.mbtiles
+$ node app/cli.js \
+    --provider imagery \
+    --bounds "[-75.7,45.4,-75.6,45.5]" \
+    --min 5 \
+    --max 17 \
+    tiles.mbtiles
+    
   downloading [====================] 100% (2680/2680)
   mapping     [====================] 100% (2680/2680)
 ```
