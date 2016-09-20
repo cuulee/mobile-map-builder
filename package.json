@@ -61,7 +61,7 @@
   },
   "ava": {
     "files": [
-      "dist/tests/*.tests.js"
+      "tests/*.tests.js"
     ],
     "concurrency": 5,
     "failFast": true,
