@@ -7,6 +7,7 @@
     "bluebird": "registry:dt/bluebird#3.0.0+20160907110115",
     "body-parser": "registry:dt/body-parser#0.0.0+20160619023215",
     "commander": "registry:dt/commander#2.3.0+20160317120654",
+    "concaveman": "registry:dt/concaveman#1.1.0+20160919061707",
     "debug": "registry:dt/debug#0.0.0+20160317120654",
     "del": "registry:dt/del#2.2.0+20160317120654",
     "express": "registry:dt/express#4.0.0+20160708185218",
@@ -14,6 +15,7 @@
     "filesize": "registry:dt/filesize#3.2.1+20160412140448",
     "form-data": "registry:dt/form-data#0.0.0+20160724024111",
     "geojson": "registry:dt/geojson#0.0.0+20160619034323",
+    "geojson2osm": "registry:dt/geojson2osm#0.0.5+20160907121608",
     "glob": "registry:dt/glob#5.0.10+20160317120654",
     "js-base64": "registry:dt/js-base64#2.1.9+20160804180956",
     "js-yaml": "registry:dt/js-yaml#3.5.2+20160316171810",
@@ -23,13 +25,14 @@
     "minimist": "registry:dt/minimist#1.1.3+20160317120654",
     "mongodb": "registry:dt/mongodb#2.1.0+20160602142941",
     "multer": "registry:dt/multer#0.0.0+20160829120954",
-    "node": "registry:dt/node#6.0.0+20160914131736",
+    "node": "registry:dt/node#6.0.0+20160919063032",
     "progress": "registry:dt/progress#1.1.8+20160906145338",
     "request": "registry:dt/request#0.0.0+20160726020908",
     "request-promise": "registry:dt/request-promise#3.0.0+20160906190103",
     "sequelize": "registry:dt/sequelize#3.4.1+20160815132916",
     "serve-static": "registry:dt/serve-static#0.0.0+20160606155157",
     "sqlite3": "registry:dt/sqlite3#2.2.3+20160724070935",
+    "turf": "registry:dt/turf#3.5.2+20160919065052",
     "validator": "registry:dt/validator#5.7.0+20160914130311"
   }
 }
